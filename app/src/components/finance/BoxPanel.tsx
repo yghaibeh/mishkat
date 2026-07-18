@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Field, TextField } from "@/components/ui/field";
 import { MSelect } from "@/components/ui/m-select";
-import { getUnitBox, boxReceive, boxSpend, boxHandover, boxAcknowledge } from "@/lib/api/box";
+import { getUnitBox, boxReceive, boxSpend, boxHandover, boxAcknowledge, getSalariesPlan, distributeSalariesFn } from "@/lib/api/box";
 
 type Line = { currency: string; amount: string };
 type Box = {
@@ -40,9 +40,12 @@ function LinesEditor({ lines, setLines }: { lines: Line[]; setLines: (l: Line[])
   );
 }
 
-export function BoxPanel() {
+type SalPlan = { month: string; regions: Array<{ unitId: string; name: string; usd: number; count: number }>; totalUsd: number; already: number; map: Array<{ id: string; from: string; to: string; lines: Array<{ currency: string; amount: number }>; status: string }> };
+
+export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
   const [box, setBox] = useState<Box | null>(null);
-  const [viewUnit, setViewUnit] = useState<string | undefined>(undefined);
+  const [viewUnit, setViewUnit] = useState<string | undefined>(fixedUnit);
+  const [sal, setSal] = useState<SalPlan | null>(null);
   const [op, setOp] = useState<"" | "receive" | "spend" | "handover">("");
   const [busy, setBusy] = useState(false);
   const [lines, setLines] = useState<Line[]>([{ currency: "USD", amount: "" }]);
@@ -50,7 +53,10 @@ export function BoxPanel() {
   const [category, setCategory] = useState("");
   const [toUnit, setToUnit] = useState(""); const [purpose, setPurpose] = useState("operations");
 
-  const load = (unitId?: string) => getUnitBox({ data: { unitId } }).then((r) => setBox(r as Box)).catch(() => toast.error("تعذّر تحميل الصندوق"));
+  const load = (unitId?: string) => {
+    getUnitBox({ data: { unitId } }).then((r) => setBox(r as Box)).catch(() => toast.error("تعذّر تحميل الصندوق"));
+    if (!fixedUnit) getSalariesPlan().then((r) => setSal(r as SalPlan | null)).catch(() => {});
+  };
   useEffect(() => { load(viewUnit); }, [viewUnit]);
 
   if (!box) return <div className="flex justify-center p-10"><Loader2 className="size-5 animate-spin text-ink-faint" /></div>;
@@ -129,6 +135,42 @@ export function BoxPanel() {
         </section>
       )}
 
+      {/* رواتبُ الشهر تسليماتٌ هرمية + خريطةُ التوزيع (٣٩ §٩) — لأمين المركز */}
+      {sal && box.unit.id === "root" && (sal.regions.length > 0 || sal.map.length > 0) && (
+        <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
+          <div className="border-b border-line bg-surface-2/60 px-5 py-3"><h3 className="font-display text-sm font-semibold text-ink">رواتب شهر {sal.month}</h3></div>
+          {sal.already === 0 ? (
+            <div className="space-y-3 p-5">
+              <ul className="space-y-1.5">
+                {sal.regions.map((r) => (
+                  <li key={r.unitId} className="flex items-center justify-between text-sm text-ink">
+                    <span>{r.name} — <span className="text-ink-faint">{r.count} مستحقاً</span></span>
+                    <span className="font-mono-nums font-bold text-emerald-800">${r.usd.toLocaleString()}</span>
+                  </li>
+                ))}
+              </ul>
+              {box.custodian && sal.totalUsd > 0 && (
+                <button disabled={busy} onClick={async () => { setBusy(true); try { const r = await distributeSalariesFn({ data: { month: sal.month } }); if (r && "error" in r && r.error) toast.error(r.error); else { toast.success("سُلِّمت الرواتب للمناطق — تابع الخريطة"); load(viewUnit); } } finally { setBusy(false); } }}
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-emerald-800 px-5 text-sm font-semibold text-emerald-50 hover:bg-emerald-900 disabled:opacity-60">
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowLeftRight className="size-4" />} سلِّم رواتب الشهر للمناطق (${sal.totalUsd.toLocaleString()})
+                </button>
+              )}
+            </div>
+          ) : (
+            <ul className="divide-y divide-line">
+              {sal.map.map((h) => (
+                <li key={h.id} className="flex items-center gap-3 px-5 py-3 text-sm">
+                  <span className="min-w-0 flex-1 text-ink">{h.from} ← <span className="font-semibold">{h.to}</span> · <span className="font-mono-nums">{h.lines.map((l) => fmtCur(l.currency, l.amount)).join(" + ")}</span></span>
+                  {h.status === "acknowledged"
+                    ? <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 ring-1 ring-emerald-100">أُقرّ الاستلام ✓</span>
+                    : <span className="shrink-0 rounded-full bg-gold-50 px-2.5 py-0.5 text-[11px] font-bold text-gold-800 ring-1 ring-gold-200">سُلِّم — بانتظار الإقرار</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
       {/* صناديقُ ما تحتي — اطلاعٌ ونزول (السطرُ جملة) */}
       {box.children.length > 0 && (
         <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
@@ -146,7 +188,7 @@ export function BoxPanel() {
           </ul>
         </section>
       )}
-      {viewUnit && <button onClick={() => setViewUnit(undefined)} className="text-xs font-semibold text-emerald-800 hover:underline">→ عودة لصندوقي</button>}
+      {viewUnit && !fixedUnit && <button onClick={() => setViewUnit(undefined)} className="text-xs font-semibold text-emerald-800 hover:underline">→ عودة لصندوقي</button>}
 
       {/* آخر الحركات */}
       {box.recent.length > 0 && (

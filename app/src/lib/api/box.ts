@@ -38,3 +38,17 @@ export const boxAcknowledge = createServerFn({ method: "POST" })
     const { boxAcknowledgeData } = await import("@/server/boxes.server");
     return boxAcknowledgeData(data);
   });
+
+export const getSalariesPlan = createServerFn({ method: "GET" })
+  .validator(z.object({ month: z.string().optional() }).optional())
+  .handler(async ({ data }) => {
+    const { salariesPlanData } = await import("@/server/boxes.server");
+    return salariesPlanData(data?.month);
+  });
+
+export const distributeSalariesFn = createServerFn({ method: "POST" })
+  .validator(z.object({ month: z.string() }))
+  .handler(async ({ data }) => {
+    const { distributeSalariesData } = await import("@/server/boxes.server");
+    return distributeSalariesData(data);
+  });

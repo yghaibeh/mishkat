@@ -2,7 +2,7 @@
 // المبدأ: لا دفتر موازٍ — كل عملية قيدٌ مزدوجٌ في الدفتر الواحد موسومُ الأسطر بالوحدة (unit_id)،
 // ورصيدُ صندوق كل وحدةٍ يُشتقّ اشتقاقاً. القبضُ متعدد العملات بأسطر في العملية الواحدة (ق-د٢).
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
-import { journalLines, orgUnits, roleAssignments, users, monthlyEntitlements, expenseCategories, handovers } from "../database/schema";
+import { journalLines, orgUnits, roleAssignments, users, monthlyEntitlements, expenseCategories, handovers, persons } from "../database/schema";
 import { postJournal, toCents, fromCents } from "./ledger";
 import { cashAccountFor, convertToBase, foreignCashAccounts } from "./currencies";
 import { expenseAccount } from "./ledgerPost";
@@ -168,4 +168,38 @@ export async function distributionMap(db: Db, batchId: string) {
     purpose: h.purpose, lines: JSON.parse(h.lines) as CurrencyLine[],
     status: h.status, deliveredAt: h.deliveredAt, acknowledgedAt: h.acknowledgedAt,
   }));
+}
+
+// ═══ الرواتب تسليماتٌ هرمية (٣٩ §٩): خطة الشهر مجمّعةً بالمناطق ← تسليمٌ لكلٍّ بمبلغها ═══
+// المستحقُّ منسوبٌ لوحدة صاحبه (home_org_unit_id) — فالمنطقةُ هي المقطعُ الثاني من مسارها.
+export async function salariesPlan(db: Db, month: string): Promise<{ month: string; regions: Array<{ unitId: string; name: string; usd: number; count: number }>; totalUsd: number; already: number }> {
+  const ents = await db.select({ id: monthlyEntitlements.id, personId: monthlyEntitlements.personId, gross: monthlyEntitlements.grossAmount, status: monthlyEntitlements.status })
+    .from(monthlyEntitlements).where(and(eq(monthlyEntitlements.month, month), eq(monthlyEntitlements.status, "approved"))).all();
+  const people = new Map((await db.select({ id: persons.id, home: persons.homeOrgUnitId }).from(persons).all()).map((p) => [p.id, p.home]));
+  const units = new Map((await db.select({ id: orgUnits.id, path: orgUnits.path, name: orgUnits.name }).from(orgUnits).all()).map((u) => [u.id, u]));
+  const byRegion = new Map<string, { usd: number; count: number }>();
+  for (const e of ents) {
+    const home = people.get(e.personId);
+    const u = home ? units.get(home) : null;
+    const regionId = u ? (u.path.split("/").filter(Boolean)[1] ?? u.id) : "unassigned";
+    const cur = byRegion.get(regionId) ?? { usd: 0, count: 0 };
+    cur.usd += e.gross; cur.count++; byRegion.set(regionId, cur);
+  }
+  const already = (await db.select({ id: handovers.id }).from(handovers).where(eq(handovers.batchId, `salaries:${month}`)).all()).length;
+  const regions = [...byRegion.entries()].map(([unitId, v]) => ({ unitId, name: units.get(unitId)?.name ?? "بلا وحدة", usd: Math.round(v.usd * 100) / 100, count: v.count })).sort((a, b) => b.usd - a.usd);
+  return { month, regions, totalUsd: Math.round(regions.reduce((s, r) => s + r.usd, 0) * 100) / 100, already };
+}
+
+// تسليمُ رواتب الشهر: من المركز لكلّ منطقةٍ بمبلغها — دفعةٌ موسومة `salaries:<month>` تتبعها الخريطة
+export async function distributeSalaries(db: Db, month: string, deliveredBy: string): Promise<{ created: number; batchId: string }> {
+  const batchId = `salaries:${month}`;
+  const plan = await salariesPlan(db, month);
+  if (plan.already > 0) throw new Error("رواتبُ هذا الشهر سُلِّمت للمناطق سلفاً — تابع الخريطة");
+  let created = 0;
+  for (const r of plan.regions) {
+    if (r.unitId === "unassigned" || r.usd <= 0) continue;
+    await handoverDown(db, { fromUnitId: "root", toUnitId: r.unitId, purpose: "salaries", batchId, lines: [{ currency: "USD", amount: r.usd }], note: `رواتب ${month} — ${r.count} مستحقاً`, deliveredBy });
+    created++;
+  }
+  return { created, batchId };
 }

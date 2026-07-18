@@ -7,6 +7,7 @@ import { hasCap } from "@/lib/capabilities";
 import { mosqueTabs } from "@/lib/mosque-tabs";
 import { fmtNum, fmtHijriShort, hijriMonthLabel, hijriMonthOptions } from "@/lib/format";
 import { MishkatShell } from "@/components/nav/MishkatShell";
+import { BoxPanel } from "@/components/finance/BoxPanel";
 import { SegmentedControl, TextArea } from "@/components/ui/field";
 import { KpiAmountCard, KpiPercentCard, KpiProgressCard } from "@/components/report/KpiCard";
 import { WeeklyTable } from "@/components/report/WeeklyTable";
@@ -146,7 +147,11 @@ export function MosquePage({ mosqueId, overview, report, daily, weekPoints }: { 
         {tab === "report" && <ReportTab report={report} mosqueId={mosqueId} />}
         {tab === "daily" && <DailyLogPage data={(daily ?? undefined) as never} embedded mosqueId={mosqueId} genderTrack={mosque?.genderTrack} priorWeekPoints={weekPoints ?? 0} readOnly={!(isOwn && hasCap(caps, "dailyLog.edit"))} />}
         {tab === "circles" && <CirclesTab mosqueId={mosqueId} canManage={canManageCircles} defaultGender={(mosque?.genderTrack as GenderTrack) ?? "male"} />}
-        {tab === "finance" && <FinanceTab mosqueId={mosqueId} />}
+        {tab === "finance" && (<>
+          {/* «صندوق مسجدي» (ق-د٢): الأميرُ أمينُ صندوقه — يقبض بنفسه ويقرّ عُهدةَ ما يصله من السلسلة */}
+          <BoxPanel unitId={mosqueId} />
+          <FinanceTab mosqueId={mosqueId} />
+        </>)}
         {tab === "halaqat" && <HalaqatTab mosqueId={mosqueId} canManage={canManageBaseera} />}
         {tab === "tahfeez" && <TahfeezTab mosqueId={mosqueId} canManage={canManageTahfeez} mosqueName={mosque?.name ?? ""} />}
         {tab === "lessons" && <LessonsTab mosqueId={mosqueId} canManage={isOwn ? hasCap(caps, "dailyLog.edit") : hasCap(caps, "*")} />}

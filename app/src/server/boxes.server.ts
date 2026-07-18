@@ -99,3 +99,25 @@ export async function boxAcknowledgeData(input: { handoverId: string }) {
   try { await acknowledgeHandover(db, input.handoverId, u.userId); return { ok: true as const }; }
   catch (e) { return { error: (e as Error).message }; }
 }
+
+// خطة رواتب الشهر + توزيعها تسليماتٍ + خريطة الدفعة (٣٩ §٩) — لأمين المركز (المدير)
+export async function salariesPlanData(month?: string) {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u || !isGlobalAdmin(u)) return null;
+  const { salariesPlan } = await import("./services/unitBox");
+  const { hijriMonthKey } = await import("./utils/week");
+  const m = month ?? hijriMonthKey(new Date());
+  const plan = await salariesPlan(db, m);
+  const { distributionMap } = await import("./services/unitBox");
+  const map = plan.already > 0 ? await distributionMap(db, `salaries:${m}`) : [];
+  return { ...plan, map };
+}
+
+export async function distributeSalariesData(input: { month: string }) {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u || !isGlobalAdmin(u)) return { error: "توزيع الرواتب لأمين صندوق المركز" as const };
+  try { const { distributeSalaries } = await import("./services/unitBox"); const r = await distributeSalaries(db, input.month, u.userId); return { ok: true as const, ...r }; }
+  catch (e) { return { error: (e as Error).message }; }
+}
