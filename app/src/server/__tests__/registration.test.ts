@@ -175,3 +175,25 @@ describe("ر — التسجيل الذاتيّ الهرميّ", () => {
     expect((await db.select().from(schema.registrationRequests).all()).length).toBe(0);
   });
 });
+
+describe("قاعدة المالك الواحد في التسجيل — الطلب للطبقة الأقرب المؤهلة حصراً", () => {
+  it("طلب طالبٍ لمسجدٍ له أمير: يظهر للأمير وحده — لا للمربع ولا للمنطقة ولا للمدير", async () => {
+    await submitStudent(); // targetUnitId = m-farouq وله أمير مكلّف
+    setUser(amirFarouq);
+    expect((await pendingRegistrationsData()).items.length).toBe(1);
+    setUser(squareSup);
+    expect((await pendingRegistrationsData()).items.length).toBe(0); // كان يراه أيضاً (قناة مكررة)
+    setUser(makeUser("rabita", "aleppo", "/men/aleppo/", { personId: "p-rab" }));
+    expect((await pendingRegistrationsData()).items.length).toBe(0);
+    setUser(admin);
+    expect((await pendingRegistrationsData()).items.length).toBe(0); // الإدارة: الشاغر فقط
+  });
+
+  it("سلطة البتّ للطبقة الأعلى تبقى قائمة عند القصد (canApprove) وإن لم يُوجَّه إليها", async () => {
+    const r = await submitStudent();
+    const token = (r as { token: string }).token;
+    setUser(squareSup); // المربع فوق الأمير — يستطيع البتّ قصداً وإن لم يظهر في صندوقه
+    const ok = await approveRegistrationData(token);
+    expect("ok" in ok && ok.ok).toBe(true);
+  });
+});

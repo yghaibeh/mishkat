@@ -187,19 +187,29 @@ export async function pendingRegistrationsData(): Promise<{ items: RegRequestIte
   const u = await currentUser();
   if (!u) return { items: [] };
   const rows = await db.select().from(registrationRequests).where(eq(registrationRequests.status, "pending")).all();
-  let mine = rows.filter((r) => canApprove(u, r.kind, r.targetPath ?? "/", r.targetUnitId));
-  // قاعدة المالك الواحد (٣٤ §المبادئ): الإدارةُ لا تُوجَّه لها الطلباتُ روتينيًّا — تظهر لها
-  // حصراً طلباتُ الوحدات التي لا طبقةَ إشرافيّةً مُكلَّفةً فوقها (نظير كسر الزجاج) — كانت كلُّ
-  // الطلبات تظهر للمدير ولكلّ الطبقات معًا (تدقيق ٣٣ هـ-٣: قناةٌ مكرّرةٌ عبر المستويات).
-  if (isGlobalAdmin(u)) {
-    const { approverLayerFor } = await import("./services/approvalRouting");
-    const vacant: typeof mine = [];
-    for (const r of mine) {
-      const layer = await approverLayerFor(db, r.targetPath ?? "/");
-      if (layer.kind === "vacant") vacant.push(r);
-    }
-    mine = vacant;
-  }
+  // قاعدة المالك الواحد (٣٤ §المبادئ): الطلبُ يُوجَّه للطبقة الأقرب المؤهَّلة (رتبتها أعلى من
+  // رتبة الطلب) المُكلَّفة على المسار — لا لكلّ الطبقات المغطّية معًا (كان المربعُ والمنطقةُ
+  // والقسمُ والمديرُ يرون الطلبَ نفسَه — تدقيق ٣٣ هـ-٣). الإدارةُ ترى فقط ما لا مالكَ له
+  // (نظيرُ كسر الزجاج). سلطةُ البتّ للطبقات الأعلى تبقى قائمةً عند فتح الطلب قصداً (canApprove).
+  const allActive = (await db.select({ orgUnitId: roleAssignments.orgUnitId, orgPath: roleAssignments.orgPath, role: roleAssignments.role, endDate: roleAssignments.endDate, approvalStatus: roleAssignments.approvalStatus })
+    .from(roleAssignments).all()).filter((a) => !a.endDate && a.approvalStatus === "approved");
+  const nearestOwnerUnit = (kind: string, targetPath: string, targetUnitId: string | null): string | null => {
+    const kindRank = KIND_RANK[kind] ?? 99;
+    // كلُّ مقاطع المسار (المقاطع = معرّفات الوحدات) بما فيها الوحدةُ نفسُها — المالكُ المؤهَّل
+    // قد يكون عليها (أميرُ المسجد لطلبات طلابه، ومسؤولُ المربع لطلب أميرِ مسجدٍ مقترحٍ تحته)
+    const candidates = new Set(targetPath.split("/").filter(Boolean));
+    if (targetUnitId) candidates.add(targetUnitId);
+    const eligible = allActive.filter((a) => candidates.has(a.orgUnitId) && (ROLE_RANK[a.role] ?? 99) < kindRank);
+    if (!eligible.length) return null; // شاغرٌ — يذهب للإدارة
+    return eligible.reduce((m, a) => (a.orgPath.length > m.orgPath.length ? a : m), eligible[0]).orgUnitId;
+  };
+  const admin = isGlobalAdmin(u);
+  const myUnits = new Set(u.assignments.map((a) => a.orgUnitId));
+  const mine = rows.filter((r) => {
+    if (!canApprove(u, r.kind, r.targetPath ?? "/", r.targetUnitId)) return false;
+    const owner = nearestOwnerUnit(r.kind, r.targetPath ?? "/", r.targetUnitId);
+    return admin ? owner == null : owner != null && myUnits.has(owner);
+  });
   if (!mine.length) return { items: [] };
 
   const unitIds = [...new Set(mine.flatMap((r) => [r.targetUnitId, r.proposedParentId].filter(Boolean)))] as string[];
