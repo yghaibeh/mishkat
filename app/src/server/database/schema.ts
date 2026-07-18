@@ -311,7 +311,9 @@ export const assets = sqliteTable('assets', {
   orgPath: text('org_path'),
   holderPersonId: text('holder_person_id'),
   holderName: text('holder_name'),
-  status: text('status').notNull().default('active'), // active | returned | retired
+  status: text('status').notNull().default('active'), // active | returned | retired | damaged | lost
+  condition: text('condition'),                      // new | good | fair | damaged (0076)
+  custodySince: integer('custody_since'),             // متى صارت بيد حائزها الحاليّ (0076)
   createdBy: text('created_by'),
   createdAt: integer('created_at').notNull(),
   updatedAt: integer('updated_at').notNull(),
@@ -319,6 +321,27 @@ export const assets = sqliteTable('assets', {
   kindIdx: index('idx_assets_kind').on(t.kind),
   orgIdx: index('idx_assets_org').on(t.orgPath),
   holderIdx: index('idx_assets_holder').on(t.holderPersonId),
+}))
+
+// سلسلةُ حيازة العُهدة (0076): كلُّ تسليمٍ/إعادةٍ/بلاغٍ حدثٌ لا يُحذف — «من مَن، إلى مَن، متى،
+// بأيّ حال، وبإقرار مَن». الإقرارُ (ack) بيد المستلم نفسِه كإقرار تسليم الصندوق.
+export const assetCustody = sqliteTable('asset_custody', {
+  id: text('id').primaryKey(),
+  assetId: text('asset_id').notNull(),
+  action: text('action').notNull(),
+  fromPersonId: text('from_person_id'),
+  fromName: text('from_name'),
+  toPersonId: text('to_person_id'),
+  toName: text('to_name'),
+  condition: text('condition'),
+  note: text('note'),
+  at: integer('at').notNull(),
+  byUserId: text('by_user_id'),
+  ackAt: integer('ack_at'),
+  ackBy: text('ack_by'),
+}, (t) => ({
+  assetIdx: index('idx_custody_asset').on(t.assetId),
+  toIdx: index('idx_custody_to').on(t.toPersonId),
 }))
 
 export const assetExpenses = sqliteTable('asset_expenses', {

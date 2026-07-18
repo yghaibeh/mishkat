@@ -22,6 +22,7 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as DutiesRouteImport } from './routes/duties'
 import { Route as DesignSystemRouteImport } from './routes/design-system'
+import { Route as CustodyRouteImport } from './routes/custody'
 import { Route as CompetitionRouteImport } from './routes/competition'
 import { Route as AlaBaseeraRouteImport } from './routes/ala-baseera'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -96,6 +97,11 @@ const DesignSystemRoute = DesignSystemRouteImport.update({
   path: '/design-system',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustodyRoute = CustodyRouteImport.update({
+  id: '/custody',
+  path: '/custody',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CompetitionRoute = CompetitionRouteImport.update({
   id: '/competition',
   path: '/competition',
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/ala-baseera': typeof AlaBaseeraRoute
   '/competition': typeof CompetitionRoute
+  '/custody': typeof CustodyRoute
   '/design-system': typeof DesignSystemRoute
   '/duties': typeof DutiesRoute
   '/finance': typeof FinanceRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/ala-baseera': typeof AlaBaseeraRoute
   '/competition': typeof CompetitionRoute
+  '/custody': typeof CustodyRoute
   '/design-system': typeof DesignSystemRoute
   '/duties': typeof DutiesRoute
   '/finance': typeof FinanceRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/ala-baseera': typeof AlaBaseeraRoute
   '/competition': typeof CompetitionRoute
+  '/custody': typeof CustodyRoute
   '/design-system': typeof DesignSystemRoute
   '/duties': typeof DutiesRoute
   '/finance': typeof FinanceRoute
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ala-baseera'
     | '/competition'
+    | '/custody'
     | '/design-system'
     | '/duties'
     | '/finance'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ala-baseera'
     | '/competition'
+    | '/custody'
     | '/design-system'
     | '/duties'
     | '/finance'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ala-baseera'
     | '/competition'
+    | '/custody'
     | '/design-system'
     | '/duties'
     | '/finance'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AlaBaseeraRoute: typeof AlaBaseeraRoute
   CompetitionRoute: typeof CompetitionRoute
+  CustodyRoute: typeof CustodyRoute
   DesignSystemRoute: typeof DesignSystemRoute
   DutiesRoute: typeof DutiesRoute
   FinanceRoute: typeof FinanceRoute
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DesignSystemRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/custody': {
+      id: '/custody'
+      path: '/custody'
+      fullPath: '/custody'
+      preLoaderRoute: typeof CustodyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/competition': {
       id: '/competition'
       path: '/competition'
@@ -469,6 +489,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AlaBaseeraRoute: AlaBaseeraRoute,
   CompetitionRoute: CompetitionRoute,
+  CustodyRoute: CustodyRoute,
   DesignSystemRoute: DesignSystemRoute,
   DutiesRoute: DutiesRoute,
   FinanceRoute: FinanceRoute,

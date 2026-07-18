@@ -51,6 +51,10 @@ export const CAP_CATALOG: Array<{ module: string; caps: Array<{ key: string; lab
     { key: "competition.view", label: "عرض المسابقة" },
     { key: "competition.manage", label: "إدارة المسابقة" },
   ] },
+  { module: "العُهد", caps: [
+    { key: "assets.manage", label: "عُهدُ نطاقي — تسليمٌ واستردادٌ وبلاغُ تلف" },
+    { key: "custody.own", label: "عُهدتي — ما بيدي والإقرارُ باستلامه (شخصيّة)" },
+  ] },
   { module: "الإعلام", caps: [
     { key: "media.hub", label: "مركز الإعلام — معرض صور الشبكة" },
     { key: "media.post", label: "نشر تغطية إعلامية (عملُ مسؤول الإعلام وحده)" },
@@ -138,17 +142,19 @@ const SUPERVISOR_VIEW = [
   // «الأعلى يطّلع على كلّ ما يخصّه في الأسفل» (بلاغ الميدان ٢٠٢٦-٠٧-١٨): معرضُ نطاقه — يرى
   // تغطياتِ منطقته وصورَ سجلّاتها ودروسِها. اطّلاعٌ لا نشر؛ فـ media.post قدرةٌ شخصيّةٌ لصاحب الدور.
   "media.hub",
+  "assets.manage",
 ];
 
 export const ROLE_DEFAULTS: Record<string, string[]> = {
   admin: ["*"],
   // رأس القسم: أعلى طبقة داخل قسمه — يعتمد ويدير المستخدمين والبنية ضمن قسمه (لا يرى القسم الآخر)
   // ق1-د: رأسُ القسم والمنطقة يملكان «التدخّلَ الفوقيّ» (override) لاعتماد وحدةٍ أدنى عند تعذّر الأقرب؛ المربعُ أدنى طبقةٍ فلا override له.
-  section_head: [...SUPERVISOR_VIEW, "box.view", "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "library.manage", "finance.approve", "finance.entry"],
-  rabita: [...SUPERVISOR_VIEW, "box.view", "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "finance.approve"],
-  square: [...SUPERVISOR_VIEW, "box.view", "report.approve"],
+  section_head: [...SUPERVISOR_VIEW, "box.view", "custody.own", "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "library.manage", "finance.approve", "finance.entry"],
+  rabita: [...SUPERVISOR_VIEW, "box.view", "custody.own", "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "finance.approve"],
+  square: [...SUPERVISOR_VIEW, "box.view", "custody.own", "report.approve"],
   amir: [
     "box.view",
+    "assets.manage",
     "report.view", "report.approve",
     "dailyLog.view", "dailyLog.edit",
     "mosqueFinance.view", "mosqueFinance.manage",
@@ -160,16 +166,17 @@ export const ROLE_DEFAULTS: Record<string, string[]> = {
     "competition.view", "competition.manage",
     "library.view",
     "duties.view", "duties.manage",
+    "custody.own",
   ],
   // المدرّس/المحفّظ: يدير حلقاته فقط (تُعزل بالملكية في الخادم) — بلا شبكة/مالية/تهيئة
-  teacher: ["circle.teach", "library.view", "duties.view", "duties.manage"],
+  teacher: ["circle.teach", "library.view", "duties.view", "duties.manage", "custody.own"],
   // مسؤول اللجنة: يرى ويدير لجنته فقط (تُعزل بالملكية في الخادم) — بلا شبكة/مالية/تهيئة
-  committee_head: ["committee.own", "duties.view", "library.view"],
+  committee_head: ["committee.own", "duties.view", "library.view", "custody.own"],
   // مسؤول الإعلام: مركزُ الإعلام (معرضُ صور نطاقه) ونشرُ التغطيات — بلا مالية/تهيئة
-  media: ["media.hub", "media.post", "duties.view", "library.view"],
+  media: ["media.hub", "media.post", "duties.view", "library.view", "custody.own"],
   // المسؤول الماليّ: يعمل بكامل القسم الماليّ لكنّ كلَّ فعلٍ يمسّ المال يمرّ باعتماد المدير (سياسة 0070)
   // بلا finance.approve إطلاقًا — لا يعتمد شيئًا، ولا فعلَ نفسِه (ثوابت الوثيقة ٢٨)
-  finance_officer: ["finance.view", "box.view", "finance.entry", "finance.payout", "duties.view", "library.view"],
+  finance_officer: ["finance.view", "box.view", "finance.entry", "finance.payout", "duties.view", "library.view", "custody.own"],
   // الطالب المعتمَد (تسجيلٌ ذاتيّ): «المطلوب منّي» + مكتبته فقط
   student: ["duties.view", "library.view"],
 };
@@ -191,7 +198,7 @@ export function effectiveCaps(roles: string[], overrides: Override[] = []): stri
 // «القدراتُ الشخصيّة» (قاعدة المالك الواحد ٣٤): عملٌ لا يقوم به إلا صاحبُ الدور نفسِه —
 // الشمولُ «*» يمنح الاطّلاع لا العمل. المديرُ يرى مركزَ الإعلام ولا ينشر تغطية، ويرى
 // الحلقات ولا يدرّس. أيُّ قدرةِ عملٍ شخصيّةٍ جديدةٍ تُضاف هنا فيسري عليها المنع تلقائيًّا.
-export const PERSONAL_CAPS = ["circle.teach", "committee.own", "media.post"] as const;
+export const PERSONAL_CAPS = ["circle.teach", "committee.own", "media.post", "custody.own"] as const;
 export function isPersonalCap(cap: string): boolean {
   return (PERSONAL_CAPS as readonly string[]).includes(cap);
 }

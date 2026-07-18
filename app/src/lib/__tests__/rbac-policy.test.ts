@@ -12,7 +12,7 @@ describe("RBAC policy — الأدوار", () => {
 
   it("المدرّس يملك حلقاته ومكتبته ونشاطاته فقط — لا شبكة/مالية/تهيئة", () => {
     // §ت: المعلّم جمهورٌ للمكتبة · §ن: يُنشئ نشاطاتٍ لطلابه ويتابع ردودهم
-    expect(ROLE_DEFAULTS.teacher).toEqual(["circle.teach", "library.view", "duties.view", "duties.manage"]);
+    expect(ROLE_DEFAULTS.teacher).toEqual(["circle.teach", "library.view", "duties.view", "duties.manage", "custody.own"]);
     const caps = effectiveCaps(["teacher"]);
     expect(hasCap(caps, "circle.teach")).toBe(true);
     expect(hasCap(caps, "library.view")).toBe(true);
@@ -95,6 +95,8 @@ const CAP_DOORS: Record<string, string[]> = {
   "circle.teach": ["/my-circles"],
   "competition.view": ["/competition"],
   "competition.manage": ["/competition"],
+  "assets.manage": ["/custody"],
+  "custody.own": ["/custody"],
   "media.hub": ["/media-hub"],
   "media.post": ["/media-hub"],
   "library.view": ["/library"],

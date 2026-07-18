@@ -20,6 +20,9 @@ export const NAV = [
   { to: "/manhaj", label: "المنهاج", cap: "library.view" },
   // الإعلام: معرضُ صور الشبكة (سجلّات اليوم + دروس الحلقات) + العُهدُ في العمل — للإدارة ومسؤول الإعلام
   { to: "/media-hub", label: "الإعلام", cap: "media.hub" },
+  // «العُهد» (قرار المالك ٢٠٢٦-٠٧-١٨): ميزةٌ قائمةٌ بذاتها لا تبويبٌ داخل الصندوق —
+  // يفتحها مسؤولُ الوحدة (تسليمٌ واسترداد) وصاحبُ العهدة نفسُه («عُهدتي» والإقرارُ بالاستلام).
+  { to: "/custody", label: "العُهد", cap: "assets.manage", anyOf: ["assets.manage", "custody.own"] },
   // «الإدارة» بابٌ لكلّ من يملك قدرةَ إدارةٍ ولو واحدة — لا للمدير وحدَه (بلاغ الميدان ٢٠٢٦-٠٧-١٨:
   // مسؤولُ منطقةٍ يملك orgUnit.manage وuser.manage في الخادم ولا يجد البابَ فلا يستطيع إضافةَ مسجد).
   // الصفحةُ نفسُها تُبوَّب بالقدرات، والخادمُ يعزل بالنطاق — فالبابُ الواحد يفتح لكلٍّ ما يخصّه.
@@ -57,17 +60,17 @@ export function firstAllowed(caps: string[] = []): string {
 // (المدير: الإدارة أولاً؛ المعلم: حلقاتي؛ المالي: الصندوق؛ الطالب: المنهاج…). ما ليس في الخريطة يذيَّل بترتيبه.
 const ROLE_PRECEDENCE = ["admin", "section_head", "rabita", "square", "finance_officer", "amir", "teacher", "committee_head", "media", "student"];
 const ROLE_NAV_ORDER: Record<string, string[]> = {
-  admin: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
+  admin: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/custody", "/media-hub", "/competition", "/library", "/manhaj"],
   // الطبقاتُ المشرفة: «الإدارة» ثانيةً — أهمُّ واجبٍ لمسؤول المنطقة تفعيلُ دور مسجدٍ جديد
   // (بلاغ الميدان ٢٠٢٦-٠٧-١٨)؛ ثمّ شبكتُه فصندوقُه فتعليمُه فإعلامُ نطاقه.
-  section_head: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
-  rabita: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
-  square: ["/home", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
-  finance_officer: ["/home", "/finance", "/library", "/manhaj"],
-  amir: ["/home", "/finance", "/competition", "/library", "/manhaj"],
-  teacher: ["/home", "/my-circles", "/manhaj", "/library"],
-  committee_head: ["/home", "/my-committee", "/library", "/manhaj"],
-  media: ["/home", "/media-hub", "/library", "/manhaj"],
+  section_head: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/custody", "/media-hub", "/competition", "/library", "/manhaj"],
+  rabita: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/custody", "/media-hub", "/competition", "/library", "/manhaj"],
+  square: ["/home", "/network", "/finance", "/ala-baseera", "/custody", "/media-hub", "/competition", "/library", "/manhaj"],
+  finance_officer: ["/home", "/finance", "/custody", "/library", "/manhaj"],
+  amir: ["/home", "/finance", "/custody", "/competition", "/library", "/manhaj"],
+  teacher: ["/home", "/my-circles", "/manhaj", "/library", "/custody"],
+  committee_head: ["/home", "/my-committee", "/library", "/manhaj", "/custody"],
+  media: ["/home", "/media-hub", "/custody", "/library", "/manhaj"],
   student: ["/home", "/manhaj", "/library"],
 };
 export function orderedNav(caps: string[] = [], roles: string[] = []) {
