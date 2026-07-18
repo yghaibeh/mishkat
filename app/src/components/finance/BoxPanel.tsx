@@ -18,6 +18,7 @@ type Box = {
   pendingAck: Array<{ id: string; purpose: string; lines: Array<{ currency: string; amount: number }>; deliveredAt: number; note: string | null }>;
   recent: Array<{ id: string; memo: string | null; at: number; source: string | null }>;
   categories: Array<{ key: string; label: string }>;
+  closing?: { month: string; status: string } | null; currentMonth?: string;
 };
 
 const CUR = [{ value: "USD", label: "دولار $" }, { value: "SYP", label: "ليرة سورية" }, { value: "TRY", label: "ليرة تركية" }];
@@ -200,10 +201,16 @@ export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
 
       {/* الإقفال الدوري (٣٩ §٦-٥): أقفل شهري وارفعه — والطبقة الأقرب تعتمد */}
       {box.custodian && box.unit.id !== "root" && (
+        box.closing ? (
+          <div className={cn("flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold ring-1", box.closing.status === "approved" ? "bg-emerald-50 text-emerald-800 ring-emerald-100" : "bg-gold-50 text-gold-800 ring-gold-200")}>
+            <CheckCircle2 className="size-4" /> إقفال شهر {box.closing.month}: {box.closing.status === "approved" ? "معتمدٌ من الطبقة الأعلى ✓" : "مرفوعٌ — بانتظار اعتماد الأعلى"}
+          </div>
+        ) : (
         <button disabled={busy} onClick={async () => { setBusy(true); try { const r = await submitBoxClosingFn({ data: { unitId: box.unit.id } }); if (r && "error" in r && r.error) toast.error(r.error); else { toast.success("أُقفل الشهر ورُفع للطبقة الأعلى"); load(viewUnit); } } finally { setBusy(false); } }}
           className="inline-flex items-center gap-2 rounded-xl bg-surface-2 px-4 py-2.5 text-sm font-semibold text-ink ring-1 ring-line hover:bg-surface">
           <CheckCircle2 className="size-4 text-emerald-800" /> أقفل هذا الشهر وارفعه (استلمتُ · صرفتُ · بقي)
         </button>
+        )
       )}
 
       {/* إقفالاتٌ تنتظر اعتمادي — الوحداتُ التي أنا طبقتها الأقرب (لا تُرسم فارغة) */}

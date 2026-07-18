@@ -165,3 +165,23 @@ describe("أمانة الصندوق لأدوار العهدة حصراً (تكا
     spy.mockRestore();
   });
 });
+
+describe("الإقفال على كل المستويات (سلم كامل + كسر الزجاج)", () => {
+  it("المربع→المنطقة، المنطقة→(شاغر فوقها هنا)→المدير حصراً؛ وغير المدير يُرفض على الشاغر", async () => {
+    await db.insert(schema.users).values([{ id: "u-adm", personId: "p-adm", login: "adm", passwordHash: "x", createdAt: 0 }]).run();
+    await db.insert(schema.persons).values([{ id: "p-adm", fullName: "المدير", gender: "male", createdAt: 0 }]).run();
+    await db.insert(schema.roleAssignments).values([{ id: "ra-adm", personId: "p-adm", role: "admin", orgUnitId: "men", orgPath: "/", startDate: 0, endDate: null, termNumber: 1, approvalStatus: "approved", createdAt: 0 }]).run();
+    // المربع يقفل ← الأقرب فوقه المنطقة تعتمد
+    const cSq = await submitBoxClosing(db, { unitId: "sq1", month: MONTH, submittedBy: "u-sq1" });
+    expect((await pendingClosingsFor(db, "p-r1")).map((c) => c.unitId)).toContain("sq1");
+    await approveBoxClosing(db, cSq.id, "u-r1");
+    // المنطقة تقفل ← لا طبقة فوقها في هذا الهيكل (شاغر) ⇒ للمدير حصراً (كسر زجاج)
+    const cR = await submitBoxClosing(db, { unitId: "r1", month: MONTH, submittedBy: "u-r1" });
+    await expect(approveBoxClosing(db, cR.id, "u-sq1")).rejects.toThrow(); // غير المدير على الشاغر يُرفض
+    expect((await pendingClosingsFor(db, "p-sq1", false)).map((c) => c.unitId)).not.toContain("r1");
+    expect((await pendingClosingsFor(db, "p-adm", true)).map((c) => c.unitId)).toContain("r1"); // كسر الزجاج يصعد للمدير
+    await approveBoxClosing(db, cR.id, "u-adm");
+    const all = await db.select().from(schema.boxClosings).all();
+    expect(all.filter((c) => c.status === "approved").length).toBe(2);
+  });
+});

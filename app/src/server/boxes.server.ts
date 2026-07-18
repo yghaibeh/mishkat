@@ -5,7 +5,7 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { useDb } from "./utils/db";
 import { currentUser } from "./auth.server";
 import { isGlobalAdmin } from "./utils/context";
-import { orgUnits, roleAssignments, expenseCategories, handovers, journalEntries, journalLines } from "./database/schema";
+import { orgUnits, roleAssignments, expenseCategories, handovers, journalEntries, journalLines, boxClosings } from "./database/schema";
 import { receiveToBox, spendFromBox, handoverDown, acknowledgeHandover, boxBalances, subtreeBoxSummary, type CurrencyLine } from "./services/unitBox";
 
 type U = NonNullable<Awaited<ReturnType<typeof currentUser>>>;
@@ -56,6 +56,11 @@ export async function unitBoxData(unitId?: string) {
         .from(journalEntries).orderBy(desc(journalEntries.entryDate)).all()).filter((e) => ids.includes(e.id)).slice(0, 12)
     : [];
 
+  const { hijriMonthKey } = await import("./utils/week");
+  const curMonth = hijriMonthKey(new Date());
+  const myClosing = target === "root" ? null : ((await db.select({ month: boxClosings.month, status: boxClosings.status })
+    .from(boxClosings).where(and(eq(boxClosings.unitId, target), eq(boxClosings.month, curMonth))).all())[0] ?? null);
+
   const cats = await db.select().from(expenseCategories).where(eq(expenseCategories.active, true)).orderBy(expenseCategories.sort).all();
   return {
     unit: { id: unit.id, name: unit.name },
@@ -65,6 +70,7 @@ export async function unitBoxData(unitId?: string) {
     pendingAck: pendingAck.map((h) => ({ id: h.id, purpose: h.purpose, lines: JSON.parse(h.lines) as CurrencyLine[], deliveredAt: h.deliveredAt, note: h.note })),
     recent: entries,
     categories: cats.map((c) => ({ key: c.key, label: c.label })),
+    closing: myClosing ? { ...myClosing } : null, currentMonth: curMonth,
   };
 }
 
@@ -144,7 +150,7 @@ export async function pendingClosingsData() {
   const u = await currentUser();
   if (!u) return { items: [] };
   const { pendingClosingsFor } = await import("./services/unitBox");
-  return { items: await pendingClosingsFor(db, u.personId) };
+  return { items: await pendingClosingsFor(db, u.personId, isGlobalAdmin(u)) };
 }
 
 export async function approveClosingData(input: { closingId: string }) {

@@ -259,14 +259,17 @@ export async function approveBoxClosing(db: Db, closingId: string, approverUserI
   const { approverLayerFor } = await import("./approvalRouting");
   const layer = await approverLayerFor(db, unit.path);
   const isNearest = layer.kind === "layer" && layer.approverPersonIds.includes(u.personId);
-  // الشاغر: يعتمده المدير (كسر زجاج) — يتحقق طالبُه في طبقة العرض بأنه admin
-  if (!isNearest && layer.kind !== "vacant") throw new Error("اعتمادُ الإقفال للطبقة الأقرب فوق الوحدة");
+  // الشاغر (لا طبقة فوق الوحدة — كقسمٍ كامل): كسرُ زجاجٍ للمدير حصراً
+  const approverIsAdmin = (await db.select({ id: roleAssignments.id }).from(roleAssignments)
+    .where(and(eq(roleAssignments.personId, u.personId), eq(roleAssignments.role, "admin"),
+      isNull(roleAssignments.endDate), eq(roleAssignments.approvalStatus, "approved"))).all()).length > 0;
+  if (!isNearest && !(layer.kind === "vacant" && approverIsAdmin)) throw new Error("اعتمادُ الإقفال للطبقة الأقرب فوق الوحدة (أو المدير عند الشغور)");
   await db.update(boxClosings).set({ status: "approved", approvedBy: approverUserId, approvedAt: Date.now() }).where(eq(boxClosings.id, closingId)).run();
   return { ok: true };
 }
 
 // إقفالاتٌ تنتظر اعتمادي: وحداتٌ أنا طبقتها الأقرب قدّمت إقفالها
-export async function pendingClosingsFor(db: Db, personId: string) {
+export async function pendingClosingsFor(db: Db, personId: string, isAdmin = false) {
   const subs = await db.select().from(boxClosings).where(eq(boxClosings.status, "submitted")).all();
   const out: Array<{ id: string; unitId: string; unitName: string; month: string; summary: Record<string, CurrencyLine[]> }> = [];
   const { approverLayerFor } = await import("./approvalRouting");
@@ -274,8 +277,9 @@ export async function pendingClosingsFor(db: Db, personId: string) {
     const unit = (await db.select({ path: orgUnits.path, name: orgUnits.name }).from(orgUnits).where(eq(orgUnits.id, c.unitId)).all())[0];
     if (!unit) continue;
     const layer = await approverLayerFor(db, unit.path);
-    if (layer.kind === "layer" && layer.approverPersonIds.includes(personId))
-      out.push({ id: c.id, unitId: c.unitId, unitName: unit.name, month: c.month, summary: JSON.parse(c.summary) });
+    const mine = (layer.kind === "layer" && layer.approverPersonIds.includes(personId))
+      || (layer.kind === "vacant" && isAdmin); // كسر الزجاج: الشاغرةُ طبقتُها تصعد للمدير
+    if (mine) out.push({ id: c.id, unitId: c.unitId, unitName: unit.name, month: c.month, summary: JSON.parse(c.summary) });
   }
   return out;
 }
