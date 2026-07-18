@@ -120,6 +120,8 @@ export function AdminPage({ orgUnits = [] }: { orgUnits?: OrgUnit[] }) {
           <div className="min-w-0">
             <h1 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">الإدارة</h1>
             <p className="mt-1 text-sm text-ink-soft">الهيكلية والمستخدمون والأدوار والإعلانات</p>
+            {/* أدواتُ إعداد التعليم (أماكن/معلمون/حلقات) إداريةٌ استثنائية — موضعها هنا لا تبويبٌ روتيني (بلاغ المالك) */}
+            <a href="/ala-baseera?tab=setup" className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-surface-2 px-3 py-1.5 text-xs font-semibold text-ink-soft ring-1 ring-line transition hover:text-emerald-800">إعداد التعليم: أماكن · معلمون · حلقات ←</a>
           </div>
           <div className="ms-auto hidden gap-5 sm:flex">
             <Stat label="وحدة" value={orgUnits.length} />

@@ -78,6 +78,8 @@ export function AlaBaseeraPage({ data }: { data?: AB }) {
   const ctx = useRouteContext({ strict: false }) as { user?: { caps?: string[] } };
   const isAdmin = hasCap(ctx.user?.caps ?? [], "*");
   const [section, setSection] = useState<"men" | "women">("men");
+  // «الإعداد» يبلغه المدير حصراً عبر رابط صفحة «الإدارة» — لغيره يسقط إلى «الحلقات»
+  const shownTab = tab === "setup" && !isAdmin ? "halaqat" : tab;
 
   const refetchKpis = async () => { try { setKpis(((await getAlaBaseera({ data: { section } })) as AB).kpis); } catch { /* dev */ } };
   const loadTree = async () => {
@@ -167,13 +169,14 @@ export function AlaBaseeraPage({ data }: { data?: AB }) {
           )}
         </section>
 
-        <MTabs value={tab} onValueChange={setTab}
-          options={[{ value: "halaqat", label: "الحلقات" }, { value: "supervision", label: "السجل الإشرافيّ" },
-            ...(isAdmin ? [{ value: "setup", label: "الإعداد" }] : [])]} />
+        {/* «الإعداد» ليس عملاً روتينياً حتى للمدير (قاعدة المرآة): الإنشاء الميداني عند مالكه
+            (المعلم في «حلقاتي»، الأمير في مسجده)؛ وأدوات الإعداد الإدارية تُفتح من صفحة «الإدارة» */}
+        <MTabs value={shownTab === "setup" ? "halaqat" : shownTab} onValueChange={setTab}
+          options={[{ value: "halaqat", label: "الحلقات" }, { value: "supervision", label: "السجل الإشرافيّ" }]} />
 
-        {tab === "supervision" ? (
+        {shownTab === "supervision" ? (
           <SupervisionRegister />
-        ) : tab === "halaqat" ? (
+        ) : shownTab === "halaqat" ? (
           <div className="grid gap-6 lg:grid-cols-5">
             <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line lg:col-span-3">
               <div className="flex items-center gap-3 border-b border-line bg-surface-2/60 px-4 py-2.5">
