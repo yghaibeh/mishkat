@@ -56,7 +56,7 @@ export function TopTabs() {
           <div className="grid size-8 place-items-center rounded-lg bg-emerald-800 text-emerald-100">
             <span className="font-display text-sm font-bold">{brandLetter}</span>
           </div>
-          <div className="hidden font-display text-base font-semibold tracking-tight text-ink sm:block">{brandName}</div>
+          <div className="hidden font-logo text-base font-semibold tracking-tight text-ink sm:block">{brandName}</div>
         </Link>
 
         <div ref={tabsRef} className="flex h-14 items-center gap-0.5 overflow-x-auto">

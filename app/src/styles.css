@@ -72,7 +72,10 @@
   --color-ink-soft: var(--ink-soft);
   --color-ink-faint: var(--ink-faint);
 
-  --font-display: "Reem Kufi", system-ui, sans-serif;
+  /* قرار المالك ٢٠٢٦-٠٧-١٨: عناوينُ النظام حديثةٌ هندسية (IBM Plex — الأقرب روحاً لخط «ثمانية»
+     المطلوب؛ يُستبدل بملف «ثمانية» فور توفر ترخيصه). التراثي «Reem Kufi» بقي للشعار وحده. */
+  --font-display: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-logo: "Reem Kufi", system-ui, sans-serif;
   --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
