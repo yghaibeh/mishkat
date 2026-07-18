@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link, useRouterState, useRouteContext, useNavigate } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { allowedNav } from "@/lib/access";
+import { orderedNav, allowedNav } from "@/lib/access";
 import { mosqueTabs } from "@/lib/mosque-tabs";
 import { logout } from "@/lib/api/auth";
 import { NotificationBell } from "./NotificationBell";
@@ -19,7 +19,7 @@ export function TopTabs() {
   const brandLetter = user?.brand?.letter || "م";
   const navigate = useNavigate();
 
-  const globalTabs = allowedNav(user?.caps ?? []);
+  const globalTabs = orderedNav(user?.caps ?? [], (user as { roles?: string[] })?.roles ?? []); // ترتيبٌ بأهمية الدور
 
   // الخلل المعماري (بلاغ المالك ٢٠٢٦-٠٧-١٨): تبويباتُ المسجد كانت تحلّ محلَّ قشرة التطبيق
   // لكلِّ زائرٍ — فيفقد المديرُ/المشرفُ تنقّلَه العامَّ بمجرد النزول لمسجد. القاعدة:

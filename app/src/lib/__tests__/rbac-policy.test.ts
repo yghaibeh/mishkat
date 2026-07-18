@@ -90,3 +90,16 @@ describe("التبويبات الشخصية (قاعدة المرآة ٣٤)", () 
     expect(canAccess("/my-committee", ["committee.own"])).toBe(true);
   });
 });
+
+describe("ترتيب الشريط بأهمية الدور (قرار المالك)", () => {
+  it("المدير: الإدارة بعد الرئيسية مباشرة؛ المعلم: حلقاتي؛ المالي: الصندوق", async () => {
+    const { orderedNav } = await import("@/lib/access");
+    const adminOrder = orderedNav(["*"], ["admin"]).map((n) => n.to);
+    expect(adminOrder[0]).toBe("/home");
+    expect(adminOrder[1]).toBe("/admin");
+    const teacherOrder = orderedNav(["duties.view", "library.view", "circle.teach"], ["teacher"]).map((n) => n.to);
+    expect(teacherOrder[1]).toBe("/my-circles");
+    const finOrder = orderedNav(["finance.view", "box.view", "duties.view", "library.view"], ["finance_officer"]).map((n) => n.to);
+    expect(finOrder[1]).toBe("/finance");
+  });
+});

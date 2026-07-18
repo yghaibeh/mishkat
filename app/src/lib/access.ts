@@ -45,3 +45,27 @@ export const NO_ACCESS = "/no-access";
 export function firstAllowed(caps: string[] = []): string {
   return allowedNav(caps)[0]?.to ?? NO_ACCESS;
 }
+
+// ترتيبُ الشريط حسب أهمية كل دور (قرار المالك ٢٠٢٦-٠٧-١٨): بعد «الرئيسية» يأتي أهمُّ أماكن عمل الدور
+// (المدير: الإدارة أولاً؛ المعلم: حلقاتي؛ المالي: الصندوق؛ الطالب: المنهاج…). ما ليس في الخريطة يذيَّل بترتيبه.
+const ROLE_PRECEDENCE = ["admin", "section_head", "rabita", "square", "finance_officer", "amir", "teacher", "committee_head", "media", "student"];
+const ROLE_NAV_ORDER: Record<string, string[]> = {
+  admin: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
+  section_head: ["/home", "/network", "/finance", "/ala-baseera", "/competition", "/library", "/manhaj"],
+  rabita: ["/home", "/network", "/finance", "/ala-baseera", "/competition", "/library", "/manhaj"],
+  square: ["/home", "/network", "/finance", "/ala-baseera", "/competition", "/library", "/manhaj"],
+  finance_officer: ["/home", "/finance", "/library", "/manhaj"],
+  amir: ["/home", "/finance", "/competition", "/library", "/manhaj"],
+  teacher: ["/home", "/my-circles", "/manhaj", "/library"],
+  committee_head: ["/home", "/my-committee", "/library", "/manhaj"],
+  media: ["/home", "/media-hub", "/library", "/manhaj"],
+  student: ["/home", "/manhaj", "/library"],
+};
+export function orderedNav(caps: string[] = [], roles: string[] = []) {
+  const items = allowedNav(caps);
+  const primary = ROLE_PRECEDENCE.find((r) => roles.includes(r));
+  const order = primary ? ROLE_NAV_ORDER[primary] : undefined;
+  if (!order) return items;
+  const rank = (to: string) => { const i = order.indexOf(to); return i === -1 ? 99 : i; };
+  return [...items].sort((a, b) => rank(a.to) - rank(b.to));
+}
