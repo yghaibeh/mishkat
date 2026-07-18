@@ -61,14 +61,20 @@ export function LandingPage() {
           </ol>
         </section>
 
-        {/* سطر ختامي — المنهاج للعموم */}
-        <footer className="text-center text-sm text-ink-soft">
-          <Link to="/manhaj" className="inline-flex items-center gap-1.5 font-semibold text-emerald-800 hover:underline">
-            <BookOpen className="size-4" strokeWidth={1.75} /> تصفّح منهاج «على بصيرة»
-          </Link>
-          <span className="mx-2 text-ink-faint">·</span>
-          <span>للاستفسار تواصل مع مسؤولك المباشر</span>
-        </footer>
+        {/* المنهاج — بابٌ ثالثٌ مفتوحٌ للجميع (قرار المالك: بارزٌ لا سطرَ ذيل) */}
+        <Link to="/manhaj"
+          className="group flex items-center justify-between rounded-2xl bg-gold-50 px-6 py-5 ring-1 ring-gold-200 transition hover:ring-gold-400">
+          <span className="flex items-center gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold-100 text-gold-800 ring-1 ring-gold-200"><BookOpen className="size-5" strokeWidth={1.75} /></span>
+            <span>
+              <span className="block text-lg font-semibold text-ink">منهاج «على بصيرة»</span>
+              <span className="mt-0.5 block text-[13px] text-ink-soft">مجالسُ العقيدة والفقه والسيرة والتربية — تصفُّحٌ مفتوحٌ للجميع بلا حساب</span>
+            </span>
+          </span>
+          <ChevronLeft className="size-5 text-gold-700 transition group-hover:-translate-x-0.5" />
+        </Link>
+
+        <footer className="text-center text-sm text-ink-faint">للاستفسار تواصل مع مسؤولك المباشر</footer>
       </main>
     </div>
   );
