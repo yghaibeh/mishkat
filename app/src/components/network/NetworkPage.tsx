@@ -139,15 +139,17 @@ function Browser({ data }: { data?: Browse }) {
   const k = d.kpis;
   const enteredCount = Math.round((k.enteredPct / 100) * k.mosques);
 
-  const [filter, setFilter] = useState<"all" | "struggling" | "top">("all");
+  const [filter, setFilter] = useState<"all" | "struggling" | "top" | "below" | "late">("all");
   // كلّ إحصائيّةٍ تُفضي للتفاصيل: ترشيح قائمة الوحدات ثم الهبوط إليها (ملاحظة أصحاب المشروع)
-  const goList = (f: "all" | "struggling" | "top") => {
+  const goList = (f: "all" | "struggling" | "top" | "below" | "late") => {
     setFilter(f);
     requestAnimationFrame(() => document.getElementById("units-list")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
   const shown = useMemo(() => {
     let list = [...d.children];
     if (filter === "struggling") list = list.filter((c) => c.struggling > 0).sort((a, b) => b.struggling - a.struggling);
+    else if (filter === "below") list = list.filter((c) => c.below > 0).sort((a, b) => b.below - a.below);
+    else if (filter === "late") list = list.filter((c) => c.late > 0).sort((a, b) => b.late - a.late);
     else if (filter === "top") list.sort((a, b) => b.avgPoints - a.avgPoints);
     return list;
   }, [d.children, filter]);
@@ -216,7 +218,7 @@ function Browser({ data }: { data?: Browse }) {
             </div>
             <div className="mt-4 grid grid-cols-3 gap-3">
               <Legend dot="bg-emerald-700" label="مكتمل" value={k.done} onClick={() => goList("top")} />
-              <Legend dot="bg-warn" label="دون الهدف" value={k.below} onClick={() => goList("all")} />
+              <Legend dot="bg-warn" label="دون الهدف" value={k.below} onClick={() => goList("below")} />
               <Legend dot="bg-danger" label="متعثّر" value={k.struggling} onClick={() => goList("struggling")} />
             </div>
           </div>
@@ -244,7 +246,7 @@ function Browser({ data }: { data?: Browse }) {
             </div>
             <div className="grid gap-px bg-line sm:grid-cols-3">
               <AttnItem icon={AlertTriangle} tone="danger" label="مساجد متعثّرة" value={d.attention.struggling} onClick={() => goList("struggling")} />
-              <AttnItem icon={TrendingDown} tone="warn" label="مساجد متأخرة" value={d.attention.late} onClick={() => goList("all")} />
+              <AttnItem icon={TrendingDown} tone="warn" label="مساجد متأخرة" value={d.attention.late} onClick={() => goList("late")} />
               <AttnItem icon={UserPlus} tone="info" label="طلبات منح أدوار" value={d.attention.roleRequests} to="/admin" />
             </div>
           </section>
@@ -272,19 +274,9 @@ function Browser({ data }: { data?: Browse }) {
 
         {(d.circlesTotal ?? 0) > 0 && <CircleStatsStrip stats={d.circleStats ?? {}} total={d.circlesTotal ?? 0} />}
 
-        {d.regions && d.regions.length > 0 && <RegionsSection regions={d.regions} section={d.section} />}
+        {d.scopeType === "root" && d.regions && d.regions.length > 0 && <RegionsSection regions={d.regions} section={d.section} />}
 
-        {d.glimpses && (
-          <section className="space-y-3">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint">لمحات الوحدات</p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <GlimpseCard icon={Wallet} label="المالية" value={`$${d.glimpses.financeTotal.toFixed(2)}`} sub="مستحقات آخر شهر" to="/finance" />
-              <GlimpseCard icon={BookOpen} label="على بصيرة" value={d.glimpses.halaqat} sub="حلقة" to="/ala-baseera" />
-              <GlimpseCard icon={Trophy} label="المسابقة" value={d.glimpses.participants} sub="مشترك" to="/competition" />
-              <GlimpseCard icon={Users} label="المستخدمون" value={d.glimpses.users} sub="حساب" to="/admin" />
-            </div>
-          </section>
-        )}
+        {/* «لمحات الوحدات» حُذفت (قاموس ٣٥ §٦-١): أرقام عامة بلا فعل — بدائلها بطاقات عدسة كل دور في رئيسيته */}
       </main>
     </MishkatShell>
   );
