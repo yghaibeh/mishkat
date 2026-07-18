@@ -1,6 +1,6 @@
 // Service Worker يدويّ لمشكاة — تخبئةٌ زمن-التشغيل (Cache API) للعمل دون اتصال.
 // يعمل مع الأصول المُجزَّأة (hashed) بلا precache-manifest. لا يُخبّئ عمليات الكتابة (تعالجها طبقة Outbox).
-const V = "mishkat-v1";
+const V = "mishkat-v2"; // ترقيةٌ تطهّر مخابئ v1 القديمة كلَّها (انقسام النسخ — ٢٠٢٦-٠٧-١٨)
 const SHELL = V + "-shell";
 const ASSETS = V + "-assets";
 

@@ -25,7 +25,18 @@ export function startSync() {
 // تسجيل الـservice worker (PWA) — تخبئة زمن-التشغيل للعمل دون اتصال.
 export function registerSW() {
   if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
-  const doReg = () => { void navigator.serviceWorker.register("/sw.js").catch(() => {}); };
+  // الحلُّ الجذريّ لانقسام النسخ (بلاغ المالك: «منظرٌ مختلفٌ جذريًّا بين تبويبين»):
+  // التطبيقُ SPA — التنقّلُ الداخليُّ يحمّل قطعَ صفحاتٍ مُجزَّأة؛ بعد النشر قد تُخدم قطعةٌ
+  // قديمةٌ من الكاش بجانب قطعٍ جديدة (خليطُ نسختين). العلاجُ المعياريّ:
+  // (أ) فشلُ استيراد قطعةٍ ديناميكيًّا ⇒ إعادةُ تحميلٍ فوريّة (HTML الجديد يجلب القطعَ الجديدة)
+  window.addEventListener("vite:preloadError", () => { window.location.reload(); });
+  // (ب) تولّي ServiceWorker جديدٍ (نشرةٌ جديدة) ⇒ إعادةُ تحميلٍ مرّةً واحدةً لتوحيد النسخة
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloaded) return; reloaded = true;
+    if (navigator.serviceWorker.controller) window.location.reload();
+  });
+  const doReg = () => { void navigator.serviceWorker.register("/sw.js").then((r) => r.update().catch(() => {})).catch(() => {}); };
   // إن كانت الصفحة قد حُمِّلت أصلًا (useEffect بعد load) نُسجّل فورًا، وإلا ننتظر load
   if (document.readyState === "complete") doReg();
   else window.addEventListener("load", doReg, { once: true });
