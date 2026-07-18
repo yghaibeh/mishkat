@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouteContext } from "@tanstack/react-router";
+import { MTabs } from "@/components/ui/m-tabs";
 import { cn } from "@/lib/utils";
 import { escapeHtml } from "@/lib/escape-html";
 import { hasCap } from "@/lib/capabilities";
@@ -76,6 +77,8 @@ export function FinancePage({ data }: { data?: FinanceData }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [pay, setPay] = useState<Record<string, string>>({});
   const [payslipFor, setPayslipFor] = useState<string | null>(null); // معرّفُ المستحقّ لكشف الراتب
+  // ن٢ (الوثيقة ٣٨): أربعُ مساحات عملٍ بدل ٢١ قسماً متراكماً في لفافةٍ واحدة (تدقيق ٣٣ هـ-٢)
+  const [tab, setTab] = useState<string>(canSupervise ? "money" : "entitlements");
 
   // مستحقّات الشهر ضمن شجرة الهيكلية (تفادي اختلاط أسماء المستفيدين المتشابهة عبر الوحدات)
   const [tree, setTree] = useState<{ units: TreeUnit[]; leaves: Row[] }>({ units: [], leaves: [] });
@@ -197,6 +200,14 @@ export function FinancePage({ data }: { data?: FinanceData }) {
           </div>
         </header>
 
+        <MTabs value={tab} onValueChange={setTab} options={[
+          ...(canSupervise || canOperate ? [{ value: "money", label: "القرارات" }] : []),
+          { value: "entitlements", label: "الاستحقاقات" },
+          { value: "ledger", label: "الدفتر والقوائم" },
+          { value: "donors", label: "المانحون" },
+        ]} />
+
+        {tab === "entitlements" && (<>
         {/* KPI */}
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-2xl bg-surface p-5 ring-1 ring-line transition hover:ring-line-strong">
@@ -260,10 +271,15 @@ export function FinancePage({ data }: { data?: FinanceData }) {
           </div>
         </section>
 
-        {/* الاعتمادُ الثنائيّ (الوثيقة ٢٨): صندوقُ المدير + «مقترحاتي» للمسؤول الماليّ */}
-        {canSupervise && <ApprovalInbox onChanged={refreshAll} />}
-        <MyProposals />
+        </>)}
 
+        {/* الاعتمادُ الثنائيّ (الوثيقة ٢٨): صندوقُ المدير + «مقترحاتي» للمسؤول الماليّ — مساحة «القرارات» */}
+        {tab === "money" && (<>
+          {canSupervise && <ApprovalInbox onChanged={refreshAll} />}
+          <MyProposals />
+        </>)}
+
+        {tab === "entitlements" && (<>
         {/* مسار الصرف — توزيع حالات المستحقات */}
         {distTotal > 0 && (
           <div className="rounded-2xl bg-surface p-5 ring-1 ring-line">
@@ -353,45 +369,46 @@ export function FinancePage({ data }: { data?: FinanceData }) {
             />
           )}
         </section>
+        </>)}
 
-        {canApprove && <IncentivesSection month={state.month} />}
+        {tab === "entitlements" && canApprove && <IncentivesSection month={state.month} />}
 
         {/* المرحلة ٠: أرصدةُ الصناديق + ميزانُ المراجعة — قراءةٌ من الدفتر المحاسبيّ الخفيّ */}
-        <LedgerOverview canManage={canApprove} />
+        {tab === "ledger" && <LedgerOverview canManage={canApprove} />}
 
         {/* تعدّدُ العملات: أرصدةٌ + أسعارُ الصرف + التصريف */}
-        <CurrencySection canManage={canOperate} />
+        {tab === "ledger" && <CurrencySection canManage={canOperate} />}
 
         {/* المرحلة ١: المانحون وكشوفهم + التعهّدات */}
-        <DonorsSection />
-        <PledgesSection canEnter={hasCap(caps, "finance.entry") || canApprove} />
+        {tab === "donors" && <DonorsSection />}
+        {tab === "donors" && <PledgesSection canEnter={hasCap(caps, "finance.entry") || canApprove} />}
 
         {/* المرحلة ٢: الموازنة (مخطّطٌ مقابل فعليّ) */}
-        <BudgetSection canSet={canOperate} />
+        {tab === "ledger" && <BudgetSection canSet={canOperate} />}
 
         {/* المرحلة ٣: مطالبات الصرف (فصلُ المهامّ: مُدخِلٌ يطلب، معتمِدٌ يُقرّ) */}
-        <ClaimsSection canEnter={hasCap(caps, "finance.entry") || canApprove} canDecide={canOperate} />
+        {tab === "ledger" && <ClaimsSection canEnter={hasCap(caps, "finance.entry") || canApprove} canDecide={canOperate} />}
 
         {/* القوائم الماليّة (قائمةُ النشاط + المركزُ الماليّ) — من الدفتر */}
-        <StatementsSection />
+        {tab === "ledger" && <StatementsSection />}
 
         {/* المرحلة ٤ (تكملة): سُلَفُ الموظّفين — تُمنَح من كشف الراتب وتُستردُّ أقساطًا */}
-        <AdvancesSection canManage={canOperate} />
+        {tab === "entitlements" && <AdvancesSection canManage={canOperate} />}
 
         {/* المرحلة ٣ (متخصّص): الصناديقُ النثريّة — سلفةٌ مستديمةٌ تُصرَف وتُزوَّد */}
-        <PettyCashSection canManage={canOperate} />
+        {tab === "ledger" && <PettyCashSection canManage={canOperate} />}
 
         {/* المرحلة ٥: الأصولُ الثابتةُ والإهلاك — رسملةٌ ثمّ إهلاكٌ شهريٌّ بالقسط الثابت */}
-        <FixedAssetsSection canManage={canOperate} />
+        {tab === "ledger" && <FixedAssetsSection canManage={canOperate} />}
 
         {/* المرحلة ٣ (متخصّص): دفعاتُ الصرف المجمّعة — قيدٌ واحدٌ + كشفُ صرفٍ للطباعة */}
-        <PaymentBatchesSection canEnter={hasCap(caps, "finance.entry") || canApprove} canPay={canOperate} />
+        {tab === "entitlements" && <PaymentBatchesSection canEnter={hasCap(caps, "finance.entry") || canApprove} canPay={canOperate} />}
 
         {/* المرحلة ٣ (متخصّص): المطابقةُ البنكيّة/النقديّة */}
-        <ReconciliationSection canManage={canApprove} />
+        {tab === "ledger" && <ReconciliationSection canManage={canApprove} />}
 
         {/* د٤ (الوثيقة ٢٨): الاستيرادُ بالقوالب — للمُدخِل والمعتمِد (يمرّ بالاعتماد لمن عليه سياسة) */}
-        {canOperate && <ImportSection onChanged={refreshAll} />}
+        {tab === "entitlements" && canOperate && <ImportSection onChanged={refreshAll} />}
 
         {payslipFor && <PayslipModal entitlementId={payslipFor} canEdit={canOperate} onClose={() => setPayslipFor(null)} onChanged={refreshAll} />}
 
