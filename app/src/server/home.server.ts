@@ -6,6 +6,7 @@ import { useDb } from "./utils/db";
 import {
   orgUnits, weeklyRecords, financeActions, roleAssignments, persons,
   halaqat, venues, lessonSessions, monthlyEntitlements, pointsSchemes,
+  enrollments, curriculumProgress, examSubmissions, teachers,
 } from "./database/schema"; // ساكنٌ حصرًا — الديناميكيّ يكسر النشر
 import { weekStartSaturday, hijriMonthKey } from "./utils/week";
 import { isGlobalAdmin } from "./utils/context";
@@ -306,12 +307,54 @@ export async function financeOfficerHomeData(): Promise<FinanceHome | null> {
   return { role: "finance", proposals: proposals.map((p) => ({ id: p.id, summary: p.summary, status: p.status, rejectReason: p.rejectReason ?? null })), pendingCount, ledgerBalanced };
 }
 
+// ===== رئيسية الطالب (ع١٠): مطلوباتي + تقدمي — عدسةُ الطالب كانت غائبةً كليًّا (تدقيق ٣٣ د-٤) =====
+export type StudentHome = {
+  role: "student";
+  cards: Array<{ key: string; label: string; count: number; to: string; tone: string }>;
+  circle: { name: string; teacher: string | null } | null;
+  progress: { completed: number; lastMajlis: string | null } | null;
+  lastScores: Array<{ score: number; maxScore: number }>;
+};
+
+export async function studentHomeData(): Promise<StudentHome | null> {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u) return null;
+  const { myTasksSummaryData } = await import("./myTasks.server");
+  const { cards } = await myTasksSummaryData();
+
+  const enr = (await db.select().from(enrollments)
+    .where(and(eq(enrollments.personId, u.personId), eq(enrollments.status, "active"))).all())[0] ?? null;
+
+  let circle: StudentHome["circle"] = null;
+  let progress: StudentHome["progress"] = null;
+  if (enr) {
+    const h = (await db.select().from(halaqat).where(eq(halaqat.id, enr.halaqaId)).all())[0];
+    let teacherName: string | null = null;
+    if (h) {
+      const t = (await db.select({ pid: teachers.personId }).from(teachers).where(eq(teachers.id, h.teacherId)).all())[0];
+      if (t) teacherName = (await db.select({ n: persons.fullName }).from(persons).where(eq(persons.id, t.pid)).all())[0]?.n ?? null;
+    }
+    circle = h ? { name: h.name, teacher: teacherName } : null;
+    const prog = await db.select({ key: curriculumProgress.manhajKey, status: curriculumProgress.status, at: curriculumProgress.updatedAt })
+      .from(curriculumProgress).where(eq(curriculumProgress.enrollmentId, enr.id)).all();
+    const done = prog.filter((p) => p.status === "completed");
+    const last = done.sort((a, b) => b.at - a.at)[0];
+    progress = { completed: done.length, lastMajlis: last?.key ?? null };
+  }
+  const lastScores = (await db.select({ score: examSubmissions.score, maxScore: examSubmissions.maxScore })
+    .from(examSubmissions).where(eq(examSubmissions.personId, u.personId)).all()).slice(-3);
+
+  return { role: "student", cards, circle, progress, lastScores };
+}
+
 // ===== الموزّع: رئيسيةُ الدور (البقيّة تسقط لبطاقات «مهامّي» حتى تُبنى دفعتُها) =====
 export type HomeData =
   | AdminHome
   | AmirHome
   | SupervisorHome
   | FinanceHome
+  | StudentHome
   | { role: "redirect"; to: string }
   | { role: "generic"; cards: Array<{ key: string; label: string; count: number; to: string; tone: string }> }
   | null;
@@ -328,6 +371,7 @@ export async function homeData(): Promise<HomeData> {
   if (roles.has("teacher")) return { role: "redirect", to: "/my-circles" };
   if (roles.has("committee_head")) return { role: "redirect", to: "/my-committee" };
   if (roles.has("media")) return { role: "redirect", to: "/media-hub" };
+  if (roles.has("student")) return studentHomeData();
   const { myTasksSummaryData } = await import("./myTasks.server");
   const { cards } = await myTasksSummaryData();
   return { role: "generic", cards };

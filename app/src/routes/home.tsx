@@ -8,6 +8,7 @@ import { AdminHome } from "@/components/home/AdminHome";
 import { AmirHome } from "@/components/home/AmirHome";
 import { SupervisorHome } from "@/components/home/SupervisorHome";
 import { FinanceHome } from "@/components/home/FinanceHome";
+import { StudentHome } from "@/components/home/StudentHome";
 import { GenericHome } from "@/components/home/GenericHome";
 import type { HomeData } from "@/server/home.server";
 import type { TaskCard } from "@/server/myTasks.server";
@@ -53,6 +54,7 @@ function HomeRoute() {
   }
   if (home.role === "supervisor") return <SupervisorHome data={home} />;
   if (home.role === "finance") return <FinanceHome data={home} />;
+  if (home.role === "student") return <StudentHome data={home} />;
   if (home.role !== "generic") return null; // redirect عولج في الـloader
   return <GenericHome cards={home.cards} />;
 }

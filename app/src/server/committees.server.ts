@@ -124,3 +124,69 @@ export async function setCommitteePlanStatusData(input: { planId: string; status
   await db.update(committeePlans).set({ status: input.status }).where(eq(committeePlans.id, input.planId)).run();
   return { ok: true as const };
 }
+
+// ===== إدخال أنشطة اللجنة (ق1 — العدسة ع٧): اللجنة تُدخل أنشطتها في سجل مسجدها =====
+// كانت الفجوة: لا مسار إدخالٍ لمسؤول اللجنة إطلاقاً (تدقيق ٣٣ فئة ج-٣). المسار: اللجنة تُدخل
+// (enteredByCommittee) ← تظهر في سجل المسجد ← إقرار الأمير = اعتماد سجله (ق1) ← الطبقة الأقرب.
+import { dayCode, weekStartSaturday } from "./utils/week";
+import { getMosqueOrThrow } from "./utils/records";
+import { syncEntries } from "./services/records";
+import { dailyEntries, activityTypes, weeklyRecords } from "./database/schema";
+
+async function myCommitteeOrThrow() {
+  const u = await requireUser();
+  const db = useDb();
+  const c = (await db.select().from(committees)
+    .where(and(eq(committees.headPersonId, u.personId), eq(committees.status, "active")))
+    .orderBy(asc(committees.createdAt)).all())[0];
+  if (!c) throw new Error("لا لجنة مسندة إليك");
+  return { u, c };
+}
+
+// أنشطة هذا الأسبوع التي أدخلتها لجنتي + حالة سجل المسجد (أين وصل إقرارها)
+export async function myCommitteeWeekData() {
+  const { c } = await myCommitteeOrThrow();
+  const db = useDb();
+  const weekStart = weekStartSaturday(new Date());
+  const rows = await db.select({
+    id: dailyEntries.id, day: dailyEntries.day, count: dailyEntries.count, points: dailyEntries.points,
+    activityTypeId: dailyEntries.activityTypeId, committee: dailyEntries.enteredByCommittee,
+  }).from(dailyEntries)
+    .where(and(eq(dailyEntries.mosqueId, c.mosqueId), eq(dailyEntries.weekStart, weekStart))).all();
+  const mine = rows.filter((r) => r.committee === c.name);
+  const actIds = [...new Set(mine.map((m) => m.activityTypeId))];
+  const acts = actIds.length
+    ? await db.select({ id: activityTypes.id, name: activityTypes.name }).from(activityTypes).where(inArray(activityTypes.id, actIds)).all()
+    : [];
+  const nameOf = new Map(acts.map((a) => [a.id, a.name]));
+  const rec = (await db.select({ status: weeklyRecords.status }).from(weeklyRecords)
+    .where(and(eq(weeklyRecords.mosqueId, c.mosqueId), eq(weeklyRecords.weekStart, weekStart))).all())[0];
+  // أنواع الأنشطة المتاحة للإدخال (مسار جنس المسجد)
+  const mosque = await getMosqueOrThrow(db, c.mosqueId);
+  const allActs = await db.select({ id: activityTypes.id, name: activityTypes.name })
+    .from(activityTypes).where(eq(activityTypes.genderTrack, mosque.genderTrack === "female" ? "female" : "male")).all();
+  const status = !rec ? "draft" : rec.status; // draft = بانتظار إقرار الأمير ضمن سجله
+  return {
+    committeeName: c.name, weekStart, recordStatus: status,
+    points: mine.reduce((s, r) => s + r.points, 0),
+    items: mine.map((m) => ({ id: m.id, day: m.day, count: m.count, points: m.points, activity: nameOf.get(m.activityTypeId) ?? m.activityTypeId })),
+    activities: allActs,
+  };
+}
+
+// إدخال نشاطٍ منفَّذٍ اليوم باسم لجنتي — يُحتسب في سجل المسجد بعد إقرار الأمير (ق1)
+export async function submitCommitteeActivityData(input: { activityTypeId: string; count: number; note?: string }) {
+  const { u, c } = await myCommitteeOrThrow();
+  if (!Number.isFinite(input.count) || input.count < 1 || input.count > 99) throw new Error("عددٌ غير صالح");
+  const db = useDb();
+  const mosque = await getMosqueOrThrow(db, c.mosqueId);
+  const now = Date.now();
+  const weekStart = weekStartSaturday(new Date(now));
+  const res = await syncEntries(db, mosque as never, { userId: u.userId, canEditLocked: false, committee: c.name }, [{
+    clientUuid: `${c.id}:${weekStart}:${input.activityTypeId}:${now}`,
+    weekStart, day: dayCode(new Date(now)), activityTypeId: input.activityTypeId,
+    count: input.count, participantCount: 1, note: input.note?.trim() || undefined, shuraConfirmed: false,
+    recordedAt: now,
+  }]);
+  return { ok: true as const, applied: res.applied };
+}

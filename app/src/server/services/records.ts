@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNotNull } from 'drizzle-orm'
 import { dailyEntries, weeklyRecords, orgUnits, activityTypes } from '../database/schema'
 import { currentScheme, weightMap } from '../utils/scheme'
 import { getOrCreateWeeklyRecord, recomputeWeeklyTotal } from '../utils/records'
@@ -158,15 +158,28 @@ export async function approveRecord(
   caps: { isAmir: boolean; isLayer: boolean; isAdmin: boolean; userId: string; via?: 'nearest' | 'override' | 'breakglass' },
 ): Promise<{ status: string; error?: string }> {
   const layerAction = caps.via === 'breakglass' ? 'admin_breakglass_approve' : 'layer_approve_record'
+  // ق1: «لجنة تُدخل ← أمير يُقرّ»: قيودُ اللجان تدخل بلا shura فلا تُحتسب — إقرارُ المُعتمِد
+  // (الأمير، أو الطبقة إذ سلطتُها أعلى) يُثبّت شوراها ويُعيد الجمع. كانت نقاطُ اللجان لا تُحتسب أبدًا.
+  const confirmCommitteeEntries = async () => {
+    const pending = await db.select({ id: dailyEntries.id }).from(dailyEntries)
+      .where(and(eq(dailyEntries.weeklyRecordId, record.id), isNotNull(dailyEntries.enteredByCommittee), eq(dailyEntries.shuraConfirmed, false))).all()
+    if (!pending.length) return
+    await db.update(dailyEntries).set({ shuraConfirmed: true })
+      .where(and(eq(dailyEntries.weeklyRecordId, record.id), isNotNull(dailyEntries.enteredByCommittee))).run()
+    await recomputeWeeklyTotal(db, record, '')
+    await writeAudit(db, { actorUserId: caps.userId, action: 'confirm_committee_entries', entity: 'weekly_record', entityId: record.id, after: { confirmed: pending.length } })
+  }
   if (record.status === 'draft') {
     // المعتمِدُ الأقرب يعتمد المسودة نهائياً (اعتمادٌ يتجاوز إقرار الأمير عند الحاجة، لأن سلطته أعلى)
     if (caps.isLayer) {
+      await confirmCommitteeEntries()
       await db.update(weeklyRecords).set({ status: 'layer_approved', approvedByLayer: caps.userId, locked: true, lockedAt: Date.now(), rejectionReason: null, rejectedByLayer: null }).where(eq(weeklyRecords.id, record.id)).run()
       await writeAudit(db, { actorUserId: caps.userId, action: layerAction, entity: 'weekly_record', entityId: record.id, after: { status: 'layer_approved', from: 'draft', via: caps.via ?? 'nearest' } })
       return { status: 'layer_approved' }
     }
     // الأمير يُقِرّ تقريره (مسودة → اعتماد الأمير)
     if (!caps.isAmir) return { status: record.status, error: 'اعتماد المسودة من أمير المسجد أو الطبقة الأقرب فوقه' }
+    await confirmCommitteeEntries()
     await db.update(weeklyRecords).set({ status: 'amir_approved', approvedByAmir: caps.userId, amirApprovedAt: Date.now(), rejectionReason: null, rejectedByLayer: null }).where(eq(weeklyRecords.id, record.id)).run()
     await writeAudit(db, { actorUserId: caps.userId, action: 'amir_approve_record', entity: 'weekly_record', entityId: record.id, after: { status: 'amir_approved' } })
     return { status: 'amir_approved' }

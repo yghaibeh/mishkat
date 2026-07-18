@@ -173,6 +173,6 @@ describe("homeData — الموزّع", () => {
     setUser(makeUser("teacher", "m1", "/men/r1/sq1/m1/"));
     expect(await homeData()).toMatchObject({ role: "redirect", to: "/my-circles" });
     setUser(makeUser("student", "m1", "/men/r1/sq1/m1/"));
-    expect((await homeData())!.role).toBe("generic");
+    expect((await homeData())!.role).toBe("student"); // عدسة الطالب (ع١٠) — كانت غائبة
   });
 });

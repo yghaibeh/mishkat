@@ -47,3 +47,16 @@ export const setCommitteePlanStatus = createServerFn({ method: "POST" })
     const { setCommitteePlanStatusData } = await import("@/server/committees.server");
     return setCommitteePlanStatusData(data);
   });
+
+// إدخال أنشطة اللجنة (ق1 — ع٧): «أنشطتنا هذا الأسبوع» + الإدخال باسم اللجنة
+export const getMyCommitteeWeek = createServerFn({ method: "GET" }).handler(async () => {
+  const { myCommitteeWeekData } = await import("@/server/committees.server");
+  return myCommitteeWeekData();
+});
+
+export const submitCommitteeActivity = createServerFn({ method: "POST" })
+  .validator(z.object({ activityTypeId: z.string().min(1), count: z.number().int().min(1).max(99), note: z.string().max(500).optional() }))
+  .handler(async ({ data }) => {
+    const { submitCommitteeActivityData } = await import("@/server/committees.server");
+    return submitCommitteeActivityData(data);
+  });
