@@ -12,6 +12,7 @@ export const CAP_CATALOG: Array<{ module: string; caps: Array<{ key: string; lab
   ] },
   { module: "المالية المركزية", caps: [
     { key: "finance.view", label: "عرض الملف المالي (مطّلِع)" },
+    { key: "box.view", label: "الصندوق (عهدة الوحدة)" },
     { key: "finance.entry", label: "إدخال الحركات المالية (مُدخِل)" },
     { key: "finance.approve", label: "اعتماد الصرف (معتمِد)" },
     { key: "finance.payout", label: "تسجيل الصرف" },
@@ -139,10 +140,11 @@ export const ROLE_DEFAULTS: Record<string, string[]> = {
   admin: ["*"],
   // رأس القسم: أعلى طبقة داخل قسمه — يعتمد ويدير المستخدمين والبنية ضمن قسمه (لا يرى القسم الآخر)
   // ق1-د: رأسُ القسم والمنطقة يملكان «التدخّلَ الفوقيّ» (override) لاعتماد وحدةٍ أدنى عند تعذّر الأقرب؛ المربعُ أدنى طبقةٍ فلا override له.
-  section_head: [...SUPERVISOR_VIEW, "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "library.manage", "finance.approve", "finance.entry"],
-  rabita: [...SUPERVISOR_VIEW, "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "finance.approve"],
-  square: [...SUPERVISOR_VIEW, "report.approve"],
+  section_head: [...SUPERVISOR_VIEW, "box.view", "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "library.manage", "finance.approve", "finance.entry"],
+  rabita: [...SUPERVISOR_VIEW, "box.view", "report.approve", "report.approve.override", "user.manage", "orgUnit.manage", "audit.view", "finance.approve"],
+  square: [...SUPERVISOR_VIEW, "box.view", "report.approve"],
   amir: [
+    "box.view",
     "report.view", "report.approve",
     "dailyLog.view", "dailyLog.edit",
     "mosqueFinance.view", "mosqueFinance.manage",
@@ -163,7 +165,7 @@ export const ROLE_DEFAULTS: Record<string, string[]> = {
   media: ["media.hub", "duties.view", "library.view"],
   // المسؤول الماليّ: يعمل بكامل القسم الماليّ لكنّ كلَّ فعلٍ يمسّ المال يمرّ باعتماد المدير (سياسة 0070)
   // بلا finance.approve إطلاقًا — لا يعتمد شيئًا، ولا فعلَ نفسِه (ثوابت الوثيقة ٢٨)
-  finance_officer: ["finance.view", "finance.entry", "finance.payout", "duties.view", "library.view"],
+  finance_officer: ["finance.view", "box.view", "finance.entry", "finance.payout", "duties.view", "library.view"],
   // الطالب المعتمَد (تسجيلٌ ذاتيّ): «المطلوب منّي» + مكتبته فقط
   student: ["duties.view", "library.view"],
 };

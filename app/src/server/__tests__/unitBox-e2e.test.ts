@@ -144,3 +144,24 @@ describe("E2E: من قبض المركز حتى يد المعلم — بثلاث 
     expect(cashRows.every((l) => !!l.unitId)).toBe(true);
   });
 });
+
+describe("أمانة الصندوق لأدوار العهدة حصراً (تكامل الأدوار)", () => {
+  it("المعلم صاحب تكليف على المسجد ليس أميناً؛ والأمير أمين؛ والمدير للمركز فقط", async () => {
+    const { boxReceiveData } = await import("@/server/boxes.server");
+    const { vi: _ } = await import("vitest");
+    // مستخدم معلم بتكليف teacher على m1 — يجب ألا يقبض لصندوق المسجد
+    const mk = (role: string, unit: string, path: string, userId: string) => ({
+      userId, personId: `p-${userId}`, fullName: "x", caps: [],
+      assignments: [{ role, orgUnitId: unit, orgPath: path, portfolio: null }],
+    });
+    const authMod = await import("@/server/auth.server");
+    const spy = vi.spyOn(authMod, "currentUser");
+    spy.mockResolvedValue(mk("teacher", "m1", "/men/r1/sq1/m1/", "u-t") as never);
+    expect(await boxReceiveData({ unitId: "m1", lines: [{ currency: "USD", amount: 5 }] })).toMatchObject({ error: expect.stringContaining("أمين") });
+    spy.mockResolvedValue(mk("amir", "m1", "/men/r1/sq1/m1/", "u-m1") as never);
+    expect(await boxReceiveData({ unitId: "m1", lines: [{ currency: "USD", amount: 5 }] })).toMatchObject({ ok: true });
+    spy.mockResolvedValue(mk("finance_officer", "root", "/", "u-f") as never);
+    expect(await boxReceiveData({ unitId: "root", lines: [{ currency: "USD", amount: 5 }] })).toMatchObject({ error: expect.stringContaining("أمين") });
+    spy.mockRestore();
+  });
+});

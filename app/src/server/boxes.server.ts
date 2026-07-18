@@ -10,10 +10,13 @@ import { receiveToBox, spendFromBox, handoverDown, acknowledgeHandover, boxBalan
 
 type U = NonNullable<Awaited<ReturnType<typeof currentUser>>>;
 
-// أمينُ الوحدة: تكليفٌ نشطٌ عليها بعينها (أو المدير للمركز "root")
+// أمينُ الوحدة: صاحبُ دورِ عهدةٍ عليها بعينها (أو المدير للمركز "root").
+// أدوارُ العهدة حصراً (سؤال المالك «تأكد أن كل شيء متكامل»): المشرفون والأمير — لا المعلم
+// ولا المالي ولا أي تكليفٍ عارضٍ على الوحدة (المالي يسجّل عبر مقترحات «القرارات» — وثيقة ٢٨).
+const CUSTODIAN_ROLES = new Set(["section_head", "rabita", "square", "amir"]);
 function isCustodian(u: U, unitId: string): boolean {
   if (unitId === "root") return isGlobalAdmin(u);
-  return u.assignments.some((a) => a.orgUnitId === unitId); // تكليفات السياق نشطة أصلاً
+  return u.assignments.some((a) => a.orgUnitId === unitId && CUSTODIAN_ROLES.has(a.role));
 }
 // اطلاعٌ نزولاً: سلَفٌ يغطي مسار الوحدة (أو المدير)
 async function canView(db: ReturnType<typeof useDb>, u: U, unitId: string): Promise<boolean> {

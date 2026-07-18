@@ -73,6 +73,8 @@ export function FinancePage({ data }: { data?: FinanceData }) {
   const canEntry = hasCap(caps, "finance.entry");
   const canOperate = canApprove || canEntry;              // المسؤولُ الماليُّ (مُدخِل) يرى النماذجَ ويقترح
   const canSupervise = hasCap(caps, "finance.supervise"); // المديرُ يعتمد (تشمل «*»)
+  // أدوارُ العهدة (box.view بلا finance.view): صندوقُهم وحده — المحاسبة ليست شأنهم (دفعة ب + ق-د٢)
+  const boxOnly = !hasCap(caps, "finance.view");
   const EMPTY: FinanceData = { month: null, months: [], rates: [], eligibleCount: 0, totals: { gross: 0, approved: 0, paid: 0, beneficiaries: 0 }, dist: { proposed: 0, approved: 0, paid: 0 } };
   const [state, setState] = useState<FinanceData>(data ?? EMPTY);
   const [busy, setBusy] = useState<string | null>(null);
@@ -144,6 +146,16 @@ export function FinancePage({ data }: { data?: FinanceData }) {
   const distTotal = proposedCount + approvedCount + paidCount;
   const finPct = (n: number) => (distTotal ? `${(n / distTotal) * 100}%` : "0%");
 
+  // أدوارُ العهدة (box.view بلا finance.view): وجهُ «الصندوق» وحده — لا ترويسةَ شهرٍ ولا مساحاتِ محاسبة
+  if (boxOnly) return (
+    <MishkatShell>
+      <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-6 md:py-12">
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">الصندوق</h1>
+        <BoxPanel />
+      </main>
+    </MishkatShell>
+  );
+
   return (
     <MishkatShell>
       <main className="mx-auto max-w-5xl space-y-8 px-4 py-8 md:px-6 md:py-12">
@@ -201,13 +213,13 @@ export function FinancePage({ data }: { data?: FinanceData }) {
           </div>
         </header>
 
-        <MTabs value={tab} onValueChange={setTab} options={[
+        {boxOnly ? null : <MTabs value={tab} onValueChange={setTab} options={[
           { value: "box", label: "الصندوق" },
           ...(canSupervise || canOperate ? [{ value: "money", label: "القرارات" }] : []),
           { value: "entitlements", label: "الاستحقاقات" },
           { value: "ledger", label: "الدفتر والقوائم" },
           { value: "donors", label: "المانحون" },
-        ]} />
+        ]} />}
 
         {tab === "box" && <BoxPanel />}
 

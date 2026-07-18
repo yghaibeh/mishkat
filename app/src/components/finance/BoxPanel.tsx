@@ -65,6 +65,12 @@ export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
 
   const parsed = () => lines.filter((l) => Number(l.amount) > 0).map((l) => ({ currency: l.currency, amount: Number(l.amount) }));
   const reset = () => { setOp(""); setLines([{ currency: "USD", amount: "" }]); setWho(""); setMemo(""); setCategory(""); setToUnit(""); };
+  // أفعالُ الإقرار/الاعتماد لا مبلغَ لها — لا تمرّ بفاحص المبلغ (كان «استلمتُ» يفشل بـ«أدخل مبلغاً»)
+  const act = async (fn: () => Promise<{ error?: string } | { ok: true }>) => {
+    setBusy(true);
+    try { const r = await fn(); if (r && "error" in r && r.error) toast.error(r.error); else { toast.success("تم"); load(viewUnit); } }
+    catch { toast.error("تعذّرت العملية"); } finally { setBusy(false); }
+  };
   const run = async (fn: () => Promise<{ error?: string } | { ok: true }>) => {
     if (!parsed().length) { toast.error("أدخل مبلغاً"); return; }
     setBusy(true);
@@ -92,7 +98,7 @@ export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
             {box.pendingAck.map((h) => (
               <li key={h.id} className="flex items-center gap-3 px-5 py-3">
                 <div className="min-w-0 flex-1 text-sm text-ink">{PURPOSE.find((p) => p.value === h.purpose)?.label ?? h.purpose} · <span className="font-mono-nums font-semibold">{h.lines.map((l) => fmtCur(l.currency, l.amount)).join(" + ")}</span>{h.note && <span className="text-[11px] text-ink-faint"> — {h.note}</span>}</div>
-                <button disabled={busy} onClick={() => run(() => boxAcknowledge({ data: { handoverId: h.id } }))} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-semibold text-emerald-50 hover:bg-emerald-900"><CheckCircle2 className="size-3.5" /> استلمتُ</button>
+                <button disabled={busy} onClick={() => act(() => boxAcknowledge({ data: { handoverId: h.id } }))} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-semibold text-emerald-50 hover:bg-emerald-900"><CheckCircle2 className="size-3.5" /> استلمتُ</button>
               </li>
             ))}
           </ul>
@@ -211,7 +217,7 @@ export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
                   <span className="font-semibold">{c.unitName}</span> — شهر {c.month}:
                   <span className="text-[12px] text-ink-soft"> استلم {c.summary.received?.map((l) => fmtCur(l.currency, l.amount)).join(" + ") || "—"} · صرف {c.summary.spent?.map((l) => fmtCur(l.currency, l.amount)).join(" + ") || "—"} · بقي {c.summary.remaining?.length ? c.summary.remaining.map((l) => fmtCur(l.currency, l.amount)).join(" + ") : "لا شيء"}</span>
                 </div>
-                <button disabled={busy} onClick={() => run(() => approveBoxClosingFn({ data: { closingId: c.id } }))} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-semibold text-emerald-50 hover:bg-emerald-900"><CheckCircle2 className="size-3.5" /> اعتماد</button>
+                <button disabled={busy} onClick={() => act(() => approveBoxClosingFn({ data: { closingId: c.id } }))} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-semibold text-emerald-50 hover:bg-emerald-900"><CheckCircle2 className="size-3.5" /> اعتماد</button>
               </li>
             ))}
           </ul>

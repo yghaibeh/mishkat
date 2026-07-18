@@ -6,7 +6,7 @@ export const NAV = [
   // «الرئيسية» أولاً — رئيسيةُ كلّ دورٍ وصفحةُ هبوطه (الوثيقة ٣٦). duties.view يملكه كلُّ دور.
   { to: "/home", label: "الرئيسية", cap: "duties.view" },
   { to: "/network", label: "الشبكة", cap: "network.view" },
-  { to: "/finance", label: "الصندوق", cap: "finance.view" },
+  { to: "/finance", label: "الصندوق", cap: "box.view" },
   // على بصيرة الشبكية للمشرفين/الإدارة (viewAll) فقط — الأمير يصل حلقات مسجده من تبويب مسجده
   // (كانت تظهر له مرتين: تبويب عام + تبويب مسجد — تدقيق ٣٣ هـ-١)
   { to: "/ala-baseera", label: "على بصيرة", cap: "alaBaseera.viewAll" },
