@@ -40,7 +40,17 @@ const STATUS: Record<Status, { label: string; cls: string; dot: string; bar: str
   },
 };
 
-export function WeeklyTable({ rows }: { rows: Row[] }) {
+// «آخر تحديث» حقيقيٌّ من السجل (كان نصًّا جامدًا «منذ ساعتين» — تدقيق ٣٣ §٥)
+function lastUpdatedLabel(ms: number | null | undefined): string | null {
+  if (!ms) return null;
+  const mins = Math.max(0, Math.round((Date.now() - ms) / 60_000));
+  if (mins < 60) return `آخر تحديث: قبل ${mins} دقيقة`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `آخر تحديث: قبل ${hours} ساعة`;
+  return `آخر تحديث: قبل ${Math.round(hours / 24)} يوم`;
+}
+
+export function WeeklyTable({ rows, lastEntryAt }: { rows: Row[]; lastEntryAt?: number | null }) {
   const router = useRouter();
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -74,7 +84,9 @@ export function WeeklyTable({ rows }: { rows: Row[] }) {
     <div className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
       <div className="flex items-center justify-between border-b border-line bg-surface-2/60 px-5 py-3.5">
         <h3 className="font-display text-sm font-semibold text-ink">سجل النقاط الأسبوعي</h3>
-        <span className="text-[11px] text-ink-faint">آخر تحديث: منذ ساعتين</span>
+        {lastUpdatedLabel(lastEntryAt) && (
+          <span className="text-[11px] text-ink-faint">{lastUpdatedLabel(lastEntryAt)}</span>
+        )}
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-right text-sm">

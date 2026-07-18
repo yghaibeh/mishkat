@@ -260,7 +260,10 @@ export async function mosqueReportData(mosqueId: string) {
         note,
       };
     }),
-    activities: rep.activities.map((a) => ({ name: a.name, count: a.times, points: a.points, target: a.points })),
+    // لا نِسَبَ زائفة: كان target=points فتظهر 100% دائمًا (تدقيق ٣٣ §٥) — العدُّ والنقاطُ فقط
+    activities: rep.activities.map((a) => ({ name: a.name, count: a.times, points: a.points })),
+    // «آخر تحديث» الحقيقيّ (كان نصًّا جامدًا «منذ ساعتين»)
+    lastEntryAt: monthRecs.reduce<number | null>((m, r) => (r.lastEntryAt && (!m || r.lastEntryAt > m) ? r.lastEntryAt : m), null),
   };
 }
 

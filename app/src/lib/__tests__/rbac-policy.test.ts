@@ -51,8 +51,10 @@ describe("RBAC policy — الملاحة والهبوط", () => {
     expect(canAccess("/network", ["circle.teach"])).toBe(false);
   });
 
-  it("المدير لا يهبط على /my-circles (الشبكة أولاً) رغم امتلاكه «*»", () => {
-    expect(firstAllowed(effectiveCaps(["admin"]))).toBe("/network");
+  it("كل الأدوار تهبط على «الرئيسية» أولاً (الوثيقة ٣٦ §١) — والمدير لا يهبط على /my-circles رغم «*»", () => {
+    expect(firstAllowed(effectiveCaps(["admin"]))).toBe("/home");
+    expect(firstAllowed(effectiveCaps(["amir"]))).toBe("/home");
+    expect(firstAllowed(effectiveCaps(["square"]))).toBe("/home");
   });
 
   it("ثابت التوجيه الكليّ: مَن بلا صلاحيات ⇒ /no-access (لا /login) ⇒ استحالةُ حلقةِ تحويل", () => {

@@ -55,7 +55,7 @@ type Report = {
   kpis: { total: number; target: number; percent: number; amount: string };
   approval: { allApproved: boolean; canAmirApprove: boolean; canLayerApprove: boolean };
   weeklyRows: Array<{ weeklyRecordId: string | null; week: string; points: number; target: number; status: "done" | "below"; approvalStatus: string; canLayerReject: boolean; note: string }>;
-  activities: Array<{ name: string; count: number; points: number; target: number }>;
+  activities: Array<{ name: string; count: number; points: number }>;
 };
 type DailyData = { tracks: { m: unknown[]; w: unknown[] }; weekTarget: number };
 
@@ -65,7 +65,7 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   draft: { label: "مسودة", cls: "bg-gold-50 text-gold-700 ring-gold-100" },
 };
 
-export function MosquePage({ mosqueId, overview, report, daily }: { mosqueId: string; overview?: Overview | null; report?: Report | null; daily?: DailyData | null }) {
+export function MosquePage({ mosqueId, overview, report, daily, weekPoints }: { mosqueId: string; overview?: Overview | null; report?: Report | null; daily?: DailyData | null; weekPoints?: number }) {
   const ctx = useRouteContext({ strict: false }) as { user?: { caps?: string[]; homeMosqueId?: string | null; features?: Record<string, boolean> } };
   const caps = ctx.user?.caps ?? [];
   const isOwn = ctx.user?.homeMosqueId === mosqueId;   // طاقم المسجد يرى مسجده بلا مسار شبكة، والتبويبات في الشريط العلوي
@@ -133,7 +133,7 @@ export function MosquePage({ mosqueId, overview, report, daily }: { mosqueId: st
         {/* تبويبات المسجد صارت في الشريط العلوي (TopTabs) — لا تكرار هنا */}
         {tab === "overview" && <Overview overview={overview} onGo={setTab} tabs={tabs.map((t) => t.k)} />}
         {tab === "report" && <ReportTab report={report} mosqueId={mosqueId} />}
-        {tab === "daily" && <DailyLogPage data={(daily ?? undefined) as never} embedded mosqueId={mosqueId} genderTrack={mosque?.genderTrack} readOnly={!(isOwn && hasCap(caps, "dailyLog.edit"))} />}
+        {tab === "daily" && <DailyLogPage data={(daily ?? undefined) as never} embedded mosqueId={mosqueId} genderTrack={mosque?.genderTrack} priorWeekPoints={weekPoints ?? 0} readOnly={!(isOwn && hasCap(caps, "dailyLog.edit"))} />}
         {tab === "circles" && <CirclesTab mosqueId={mosqueId} canManage={canManageCircles} defaultGender={(mosque?.genderTrack as GenderTrack) ?? "male"} />}
         {tab === "finance" && <FinanceTab mosqueId={mosqueId} />}
         {tab === "halaqat" && <HalaqatTab mosqueId={mosqueId} canManage={canManageBaseera} />}
@@ -236,7 +236,7 @@ function ReportTab({ report, mosqueId }: { report?: Report | null; mosqueId: str
         <KpiAmountCard label="القيمة المستحقة (تقديرية)" amount={report.kpis.amount} note="تُصرف بعد الاعتماد النهائي." />
       </section>
       <div className="grid gap-6 lg:grid-cols-5">
-        <div className="space-y-6 lg:col-span-3"><WeeklyTable rows={report.weeklyRows} /><FormulaNote /></div>
+        <div className="space-y-6 lg:col-span-3"><WeeklyTable rows={report.weeklyRows} lastEntryAt={(report as { lastEntryAt?: number | null }).lastEntryAt} /><FormulaNote /></div>
         <aside className="lg:col-span-2"><ActivityList items={report.activities} /></aside>
       </div>
     </div>

@@ -663,7 +663,7 @@ function MosqueLeaf({ data, report }: { data: Leaf; report: Report | null }) {
 
             <div className="grid gap-6 lg:grid-cols-5">
               <div className="space-y-6 lg:col-span-3">
-                <WeeklyTable rows={r.weeklyRows} />
+                <WeeklyTable rows={r.weeklyRows} lastEntryAt={(r as { lastEntryAt?: number | null }).lastEntryAt} />
                 <FormulaNote />
               </div>
               <aside className="lg:col-span-2">

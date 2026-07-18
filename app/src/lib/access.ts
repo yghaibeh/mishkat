@@ -3,6 +3,8 @@ import { hasCap } from "./capabilities";
 
 // التبويبات العُليا = الشاشات العامة فقط (شاشات المسجد داخل /mosque/$id).
 export const NAV = [
+  // «الرئيسية» أولاً — رئيسيةُ كلّ دورٍ وصفحةُ هبوطه (الوثيقة ٣٦). duties.view يملكه كلُّ دور.
+  { to: "/home", label: "الرئيسية", cap: "duties.view" },
   { to: "/network", label: "الشبكة", cap: "network.view" },
   { to: "/finance", label: "الملف المالي", cap: "finance.view" },
   // على بصيرة: الأميرُ يراها بـalaBaseera.view (مسجده)، والمشرف/الإدارة بـviewAll (الشبكة) — كلاهما يملك view

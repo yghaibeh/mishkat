@@ -18,6 +18,7 @@ import { Route as MediaHubRouteImport } from './routes/media-hub'
 import { Route as ManhajRouteImport } from './routes/manhaj'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LibraryRouteImport } from './routes/library'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as DutiesRouteImport } from './routes/duties'
 import { Route as DesignSystemRouteImport } from './routes/design-system'
@@ -73,6 +74,11 @@ const LoginRoute = LoginRouteImport.update({
 const LibraryRoute = LibraryRouteImport.update({
   id: '/library',
   path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FinanceRoute = FinanceRouteImport.update({
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/design-system': typeof DesignSystemRoute
   '/duties': typeof DutiesRoute
   '/finance': typeof FinanceRoute
+  '/home': typeof HomeRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/manhaj': typeof ManhajRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/design-system': typeof DesignSystemRoute
   '/duties': typeof DutiesRoute
   '/finance': typeof FinanceRoute
+  '/home': typeof HomeRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/manhaj': typeof ManhajRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/design-system': typeof DesignSystemRoute
   '/duties': typeof DutiesRoute
   '/finance': typeof FinanceRoute
+  '/home': typeof HomeRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/manhaj': typeof ManhajRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/duties'
     | '/finance'
+    | '/home'
     | '/library'
     | '/login'
     | '/manhaj'
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/duties'
     | '/finance'
+    | '/home'
     | '/library'
     | '/login'
     | '/manhaj'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/design-system'
     | '/duties'
     | '/finance'
+    | '/home'
     | '/library'
     | '/login'
     | '/manhaj'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   DesignSystemRoute: typeof DesignSystemRoute
   DutiesRoute: typeof DutiesRoute
   FinanceRoute: typeof FinanceRoute
+  HomeRoute: typeof HomeRoute
   LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
   ManhajRoute: typeof ManhajRoute
@@ -349,6 +362,13 @@ declare module '@tanstack/react-router' {
       path: '/library'
       fullPath: '/library'
       preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/finance': {
@@ -452,6 +472,7 @@ const rootRouteChildren: RootRouteChildren = {
   DesignSystemRoute: DesignSystemRoute,
   DutiesRoute: DutiesRoute,
   FinanceRoute: FinanceRoute,
+  HomeRoute: HomeRoute,
   LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
   ManhajRoute: ManhajRoute,

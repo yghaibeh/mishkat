@@ -1,7 +1,7 @@
 // المرحلة ٣ (متخصّص) — الصندوقُ النثريّ بنظام السلفة المستديمة (imprest):
 // سقفٌ ثابتٌ يُحوَّل من النقد (Dr 1130 / Cr 1110)، يُصرَف منه (Dr مصروف / Cr 1130)، ويُزوَّد دوريًّا ليعود للسقف.
 // المستخدمُ يرى «رصيدًا وسقفًا وما صُرِف»؛ الدفترُ خلفه يوازن. الرصيدُ التشغيليُّ في السجلّ، والحقيقةُ في حساب 1130.
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { pettyCashBoxes, pettyCashTxns, persons } from "../database/schema";
 import { postJournal, toCents } from "./ledger";
 import { expenseAccount } from "./ledgerPost";
@@ -96,5 +96,6 @@ export async function listBoxes(db: Db): Promise<Array<{ id: string; name: strin
 // سجلُّ حركاتِ صندوقٍ (الأحدثُ أولًا) — للمُطالعة والطباعة.
 export async function boxTxns(db: Db, boxId: string): Promise<Array<{ id: string; kind: string; amount: number; category: string | null; note: string | null; createdAt: number }>> {
   return db.select({ id: pettyCashTxns.id, kind: pettyCashTxns.kind, amount: pettyCashTxns.amount, category: pettyCashTxns.category, note: pettyCashTxns.note, createdAt: pettyCashTxns.createdAt })
-    .from(pettyCashTxns).where(eq(pettyCashTxns.boxId, boxId)).orderBy(desc(pettyCashTxns.createdAt)).all();
+    // كاسرُ تعادلٍ حتميّ (rowid) — التساوي في createdAt (نفسُ الملّيثانية) كان يقلب الترتيب عشوائيًّا
+    .from(pettyCashTxns).where(eq(pettyCashTxns.boxId, boxId)).orderBy(desc(pettyCashTxns.createdAt), desc(sql`rowid`)).all();
 }

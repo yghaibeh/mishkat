@@ -19,6 +19,20 @@ export const approveMonth = createServerFn({ method: "POST" }).handler(async () 
   return approveMonthlyReportData();
 });
 
+// «الرئيسية» لكل دور (الوثيقة ٣٦) — المنطق في src/server/home.server.ts
+export const getHome = createServerFn({ method: "GET" }).handler(async () => {
+  const { homeData } = await import("@/server/home.server");
+  return homeData();
+});
+
+// تقدُّم الأسبوع الحقيقيّ لمسجد — يغذّي «سجل اليوم» (إصلاح الثابت الوهميّ)
+export const getWeekProgress = createServerFn({ method: "GET" })
+  .validator(z.object({ mosqueId: z.string().min(1) }))
+  .handler(async ({ data }) => {
+    const { weekProgressData } = await import("@/server/home.server");
+    return weekProgressData(data.mosqueId);
+  });
+
 export const getDailyActivities = createServerFn({ method: "GET" })
   .validator(z.object({ track: z.enum(["male", "female"]) }))
   .handler(async ({ data }) => {

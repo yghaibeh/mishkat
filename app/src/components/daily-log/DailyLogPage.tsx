@@ -30,11 +30,10 @@ type Track = "m" | "w";
 type Activity = { activityTypeId?: string; name: string; pts: number; hint?: string; maxPerDay?: number | null; minParticipationPct?: number | null };
 type DailyData = { tracks: Record<Track, Activity[]>; weekTarget: number };
 
-// أنشطة المسارين تأتي من قاعدة البيانات (مخطط النقاط — seed_points.sql) — لا بيانات وهمية في الكود.
-const PRIOR_WEEK = 41;
+// أنشطة المسارين ونقاطُ الأسبوع تأتي من قاعدة البيانات — لا ثوابتَ وهميّةً في الكود (تدقيق ٣٣ §٥).
 const RATE = 50 / 280;
 
-export function DailyLogPage({ data, embedded, readOnly, mosqueId, genderTrack }: { data?: DailyData; embedded?: boolean; readOnly?: boolean; mosqueId?: string; genderTrack?: string }) {
+export function DailyLogPage({ data, embedded, readOnly, mosqueId, genderTrack, priorWeekPoints }: { data?: DailyData; embedded?: boolean; readOnly?: boolean; mosqueId?: string; genderTrack?: string; priorWeekPoints?: number }) {
   const SETS: Record<Track, Activity[]> = data?.tracks ?? { m: [], w: [] };
   const WEEK_TARGET = data?.weekTarget ?? 70;
   // المسار يُشتقّ من جنس المستخدم/المسجد — لا اختيار يدويّ (الفصل التام بين القسمين)
@@ -112,7 +111,7 @@ export function DailyLogPage({ data, embedded, readOnly, mosqueId, genderTrack }
     () => counts.reduce((s, n) => s + (n ?? 0), 0),
     [counts],
   );
-  const weekPts = PRIOR_WEEK + todayPts;
+  const weekPts = (priorWeekPoints ?? 0) + todayPts;
   const weekPct = Math.min(100, Math.round((weekPts / WEEK_TARGET) * 100));
   const money = (weekPts * RATE).toFixed(2);
 
