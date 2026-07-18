@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Field, TextField } from "@/components/ui/field";
 import { MSelect } from "@/components/ui/m-select";
-import { getUnitBox, boxReceive, boxSpend, boxHandover, boxAcknowledge, getSalariesPlan, distributeSalariesFn } from "@/lib/api/box";
+import { getUnitBox, boxReceive, boxSpend, boxHandover, boxAcknowledge, getSalariesPlan, distributeSalariesFn, submitBoxClosingFn, getPendingClosings, approveBoxClosingFn } from "@/lib/api/box";
 
 type Line = { currency: string; amount: string };
 type Box = {
@@ -46,6 +46,7 @@ export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
   const [box, setBox] = useState<Box | null>(null);
   const [viewUnit, setViewUnit] = useState<string | undefined>(fixedUnit);
   const [sal, setSal] = useState<SalPlan | null>(null);
+  const [closings, setClosings] = useState<Array<{ id: string; unitName: string; month: string; summary: Record<string, Array<{ currency: string; amount: number }>> }>>([]);
   const [op, setOp] = useState<"" | "receive" | "spend" | "handover">("");
   const [busy, setBusy] = useState(false);
   const [lines, setLines] = useState<Line[]>([{ currency: "USD", amount: "" }]);
@@ -56,6 +57,7 @@ export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
   const load = (unitId?: string) => {
     getUnitBox({ data: { unitId } }).then((r) => setBox(r as Box)).catch(() => toast.error("تعذّر تحميل الصندوق"));
     if (!fixedUnit) getSalariesPlan().then((r) => setSal(r as SalPlan | null)).catch(() => {});
+    getPendingClosings().then((r) => setClosings((r as { items: never[] }).items)).catch(() => {});
   };
   useEffect(() => { load(viewUnit); }, [viewUnit]);
 
@@ -189,6 +191,32 @@ export function BoxPanel({ unitId: fixedUnit }: { unitId?: string } = {}) {
         </section>
       )}
       {viewUnit && !fixedUnit && <button onClick={() => setViewUnit(undefined)} className="text-xs font-semibold text-emerald-800 hover:underline">→ عودة لصندوقي</button>}
+
+      {/* الإقفال الدوري (٣٩ §٦-٥): أقفل شهري وارفعه — والطبقة الأقرب تعتمد */}
+      {box.custodian && box.unit.id !== "root" && (
+        <button disabled={busy} onClick={async () => { setBusy(true); try { const r = await submitBoxClosingFn({ data: { unitId: box.unit.id } }); if (r && "error" in r && r.error) toast.error(r.error); else { toast.success("أُقفل الشهر ورُفع للطبقة الأعلى"); load(viewUnit); } } finally { setBusy(false); } }}
+          className="inline-flex items-center gap-2 rounded-xl bg-surface-2 px-4 py-2.5 text-sm font-semibold text-ink ring-1 ring-line hover:bg-surface">
+          <CheckCircle2 className="size-4 text-emerald-800" /> أقفل هذا الشهر وارفعه (استلمتُ · صرفتُ · بقي)
+        </button>
+      )}
+
+      {/* إقفالاتٌ تنتظر اعتمادي — الوحداتُ التي أنا طبقتها الأقرب (لا تُرسم فارغة) */}
+      {closings.length > 0 && (
+        <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-gold-300/50">
+          <div className="border-b border-line bg-gold-50/60 px-5 py-3"><h3 className="font-display text-sm font-semibold text-ink">إقفالاتُ عهدةٍ تنتظر اعتمادك</h3></div>
+          <ul className="divide-y divide-line">
+            {closings.map((c) => (
+              <li key={c.id} className="flex items-center gap-3 px-5 py-3">
+                <div className="min-w-0 flex-1 text-sm text-ink">
+                  <span className="font-semibold">{c.unitName}</span> — شهر {c.month}:
+                  <span className="text-[12px] text-ink-soft"> استلم {c.summary.received?.map((l) => fmtCur(l.currency, l.amount)).join(" + ") || "—"} · صرف {c.summary.spent?.map((l) => fmtCur(l.currency, l.amount)).join(" + ") || "—"} · بقي {c.summary.remaining?.length ? c.summary.remaining.map((l) => fmtCur(l.currency, l.amount)).join(" + ") : "لا شيء"}</span>
+                </div>
+                <button disabled={busy} onClick={() => run(() => approveBoxClosingFn({ data: { closingId: c.id } }))} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-semibold text-emerald-50 hover:bg-emerald-900"><CheckCircle2 className="size-3.5" /> اعتماد</button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* آخر الحركات */}
       {box.recent.length > 0 && (

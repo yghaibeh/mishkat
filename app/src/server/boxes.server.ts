@@ -121,3 +121,33 @@ export async function distributeSalariesData(input: { month: string }) {
   try { const { distributeSalaries } = await import("./services/unitBox"); const r = await distributeSalaries(db, input.month, u.userId); return { ok: true as const, ...r }; }
   catch (e) { return { error: (e as Error).message }; }
 }
+
+// الإقفال الدوري (٣٩ §٦-٥): أمينُ الوحدة يقفل شهره ويرفعه؛ الطبقةُ الأقرب تعتمد (NESSA)
+export async function submitClosingData(input: { unitId: string; month?: string }) {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u) return { error: "يلزم تسجيل الدخول" as const };
+  if (!isCustodian(u, input.unitId)) return { error: "الإقفال لأمين الصندوق حصراً" as const };
+  const { hijriMonthKey } = await import("./utils/week");
+  try {
+    const { submitBoxClosing } = await import("./services/unitBox");
+    const r = await submitBoxClosing(db, { unitId: input.unitId, month: input.month ?? hijriMonthKey(new Date()), submittedBy: u.userId });
+    return { ok: true as const, summary: r.summary };
+  } catch (e) { return { error: (e as Error).message }; }
+}
+
+export async function pendingClosingsData() {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u) return { items: [] };
+  const { pendingClosingsFor } = await import("./services/unitBox");
+  return { items: await pendingClosingsFor(db, u.personId) };
+}
+
+export async function approveClosingData(input: { closingId: string }) {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u) return { error: "يلزم تسجيل الدخول" as const };
+  try { const { approveBoxClosing } = await import("./services/unitBox"); await approveBoxClosing(db, input.closingId, u.userId); return { ok: true as const }; }
+  catch (e) { return { error: (e as Error).message }; }
+}

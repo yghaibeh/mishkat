@@ -2,7 +2,7 @@
 // المبدأ: لا دفتر موازٍ — كل عملية قيدٌ مزدوجٌ في الدفتر الواحد موسومُ الأسطر بالوحدة (unit_id)،
 // ورصيدُ صندوق كل وحدةٍ يُشتقّ اشتقاقاً. القبضُ متعدد العملات بأسطر في العملية الواحدة (ق-د٢).
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
-import { journalLines, orgUnits, roleAssignments, users, monthlyEntitlements, expenseCategories, handovers, persons } from "../database/schema";
+import { journalLines, journalEntries, orgUnits, roleAssignments, users, monthlyEntitlements, expenseCategories, handovers, persons, boxClosings } from "../database/schema";
 import { postJournal, toCents, fromCents } from "./ledger";
 import { cashAccountFor, convertToBase, foreignCashAccounts } from "./currencies";
 import { expenseAccount } from "./ledgerPost";
@@ -202,4 +202,80 @@ export async function distributeSalaries(db: Db, month: string, deliveredBy: str
     created++;
   }
   return { created, batchId };
+}
+
+// ═══ الإقفال الدوري (٣٩ §٦-٥): «استلمتُ، صرفتُ، وزّعتُ، بقي» — يُرفع للأعلى فيعتمده ═══
+
+function addLines(into: Map<string, number>, ls: CurrencyLine[], sign = 1) {
+  for (const l of ls) into.set(l.currency, (into.get(l.currency) ?? 0) + sign * l.amount);
+}
+const mapToLines = (m: Map<string, number>): CurrencyLine[] => [...m.entries()].filter(([, v]) => v !== 0).map(([currency, amount]) => ({ currency, amount: Math.round(amount * 100) / 100 }));
+
+export async function submitBoxClosing(db: Db, input: { unitId: string; month: string; submittedBy: string }): Promise<{ id: string; summary: Record<string, CurrencyLine[]> }> {
+  const exists = (await db.select({ id: boxClosings.id }).from(boxClosings)
+    .where(and(eq(boxClosings.unitId, input.unitId), eq(boxClosings.month, input.month))).all())[0];
+  if (exists) throw new Error("أُقفل هذا الشهر سلفاً لهذه الوحدة");
+  // الاستلام: تسليماتٌ وصلتني (وأقررتُها) — والتوزيع: تسليماتٌ سلّمتها نزولاً
+  const inH = await db.select().from(handovers).where(eq(handovers.toUnitId, input.unitId)).all();
+  const outH = await db.select().from(handovers).where(eq(handovers.fromUnitId, input.unitId)).all();
+  const received = new Map<string, number>(), handedDown = new Map<string, number>();
+  for (const h of inH) addLines(received, JSON.parse(h.lines));
+  for (const h of outH) addLines(handedDown, JSON.parse(h.lines));
+  // القبض المباشر والصرف: من قيود box_receive/box_spend الموسومة بالوحدة
+  const cashAccounts = new Set<string>([CASH_USD, ...(await foreignCashAccounts(db))]);
+  const entries = await db.select({ id: journalEntries.id, source: journalEntries.source }).from(journalEntries).all();
+  const srcOf = new Map(entries.map((e) => [e.id, e.source]));
+  const rows = await db.select().from(journalLines).where(eq(journalLines.unitId, input.unitId)).all();
+  const directIn = new Map<string, number>(), spent = new Map<string, number>(), remaining = new Map<string, number>();
+  for (const r of rows) {
+    if (!cashAccounts.has(r.accountId)) continue;
+    const src = srcOf.get(r.entryId);
+    const cur = r.currency ?? "USD";
+    const amt = r.currency ? (r.amountOrig ?? 0) : fromCents((r.debitCents ?? 0) || (r.creditCents ?? 0));
+    const sign = (r.debitCents ?? 0) > 0 ? 1 : -1;
+    remaining.set(cur, (remaining.get(cur) ?? 0) + sign * amt);
+    if (src === "box_receive" && sign > 0) directIn.set(cur, (directIn.get(cur) ?? 0) + amt);
+    if (src === "box_spend" && sign < 0) spent.set(cur, (spent.get(cur) ?? 0) + amt);
+  }
+  const summary = {
+    received: mapToLines(received), directIn: mapToLines(directIn),
+    spent: mapToLines(spent), handedDown: mapToLines(handedDown), remaining: mapToLines(remaining),
+  };
+  const id = crypto.randomUUID();
+  const now = Date.now();
+  await db.insert(boxClosings).values({ id, unitId: input.unitId, month: input.month, summary: JSON.stringify(summary), status: "submitted", submittedBy: input.submittedBy, submittedAt: now, createdAt: now }).run();
+  return { id, summary };
+}
+
+// اعتمادُ الإقفال — للطبقة الأقرب فوق الوحدة (NESSA — نفس سلسلة اعتماد التقارير)
+export async function approveBoxClosing(db: Db, closingId: string, approverUserId: string): Promise<{ ok: true }> {
+  const c = (await db.select().from(boxClosings).where(eq(boxClosings.id, closingId)).all())[0];
+  if (!c) throw new Error("الإقفال غير موجود");
+  if (c.status === "approved") return { ok: true };
+  const unit = (await db.select({ path: orgUnits.path }).from(orgUnits).where(eq(orgUnits.id, c.unitId)).all())[0];
+  if (!unit) throw new Error("الوحدة غير موجودة");
+  const u = (await db.select({ personId: users.personId }).from(users).where(eq(users.id, approverUserId)).all())[0];
+  if (!u) throw new Error("لا مستخدم");
+  const { approverLayerFor } = await import("./approvalRouting");
+  const layer = await approverLayerFor(db, unit.path);
+  const isNearest = layer.kind === "layer" && layer.approverPersonIds.includes(u.personId);
+  // الشاغر: يعتمده المدير (كسر زجاج) — يتحقق طالبُه في طبقة العرض بأنه admin
+  if (!isNearest && layer.kind !== "vacant") throw new Error("اعتمادُ الإقفال للطبقة الأقرب فوق الوحدة");
+  await db.update(boxClosings).set({ status: "approved", approvedBy: approverUserId, approvedAt: Date.now() }).where(eq(boxClosings.id, closingId)).run();
+  return { ok: true };
+}
+
+// إقفالاتٌ تنتظر اعتمادي: وحداتٌ أنا طبقتها الأقرب قدّمت إقفالها
+export async function pendingClosingsFor(db: Db, personId: string) {
+  const subs = await db.select().from(boxClosings).where(eq(boxClosings.status, "submitted")).all();
+  const out: Array<{ id: string; unitId: string; unitName: string; month: string; summary: Record<string, CurrencyLine[]> }> = [];
+  const { approverLayerFor } = await import("./approvalRouting");
+  for (const c of subs) {
+    const unit = (await db.select({ path: orgUnits.path, name: orgUnits.name }).from(orgUnits).where(eq(orgUnits.id, c.unitId)).all())[0];
+    if (!unit) continue;
+    const layer = await approverLayerFor(db, unit.path);
+    if (layer.kind === "layer" && layer.approverPersonIds.includes(personId))
+      out.push({ id: c.id, unitId: c.unitId, unitName: unit.name, month: c.month, summary: JSON.parse(c.summary) });
+  }
+  return out;
 }

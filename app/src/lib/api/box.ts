@@ -52,3 +52,22 @@ export const distributeSalariesFn = createServerFn({ method: "POST" })
     const { distributeSalariesData } = await import("@/server/boxes.server");
     return distributeSalariesData(data);
   });
+
+export const submitBoxClosingFn = createServerFn({ method: "POST" })
+  .validator(z.object({ unitId: z.string(), month: z.string().optional() }))
+  .handler(async ({ data }) => {
+    const { submitClosingData } = await import("@/server/boxes.server");
+    return submitClosingData(data);
+  });
+
+export const getPendingClosings = createServerFn({ method: "GET" }).handler(async () => {
+  const { pendingClosingsData } = await import("@/server/boxes.server");
+  return pendingClosingsData();
+});
+
+export const approveBoxClosingFn = createServerFn({ method: "POST" })
+  .validator(z.object({ closingId: z.string() }))
+  .handler(async ({ data }) => {
+    const { approveClosingData } = await import("@/server/boxes.server");
+    return approveClosingData(data);
+  });

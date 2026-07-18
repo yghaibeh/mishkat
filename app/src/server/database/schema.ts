@@ -1298,3 +1298,21 @@ export const expenseCategories = sqliteTable('expense_categories', {
   active: integer('active', { mode: 'boolean' }).notNull().default(true),
   sort: integer('sort').notNull().default(0),
 })
+
+
+// ٠٠٧٤ — الإقفال الدوري للصندوق (٣٩): تقريرُ عهدةٍ شهريٌّ يُرفع للأعلى فيعتمده
+export const boxClosings = sqliteTable('box_closings', {
+  id: text('id').primaryKey(),
+  unitId: text('unit_id').notNull(),
+  month: text('month').notNull(),
+  summary: text('summary').notNull(),          // JSON: received/spent/handedDown/remaining بأسطر عملات
+  status: text('status').notNull().default('submitted'), // submitted | approved
+  submittedBy: text('submitted_by').notNull(),
+  submittedAt: integer('submitted_at').notNull(),
+  approvedBy: text('approved_by'),
+  approvedAt: integer('approved_at'),
+  createdAt: integer('created_at').notNull(),
+}, (t) => ({
+  unitMonthIdx: uniqueIndex('idx_bc_unit_month').on(t.unitId, t.month),
+  statusIdx: index('idx_bc_status').on(t.status),
+}))
