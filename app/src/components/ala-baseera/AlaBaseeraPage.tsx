@@ -135,7 +135,7 @@ export function AlaBaseeraPage({ data }: { data?: AB }) {
           </div>
           <div className="min-w-0">
             <h1 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">على بصيرة</h1>
-            <p className="mt-1 text-sm text-ink-soft">التعليم الشبابي الأسري — محاسبة المعلّم بالساعة</p>
+            <p className="mt-1 text-sm text-ink-soft">{isAdmin ? "التعليم الشبابي الأسري — محاسبة المعلّم بالساعة" : "حلقات التعليم في نطاقك — اطّلاعٌ وزيارات"}</p>
           </div>
           {isAdmin && (
             <div className="ms-auto w-56">
@@ -149,22 +149,27 @@ export function AlaBaseeraPage({ data }: { data?: AB }) {
           <Kpi icon={Library} value={kpis.halaqat} label="الحلقات" />
           <Kpi icon={GraduationCap} value={kpis.teachers} label="المعلّمون" />
           <Kpi icon={Users} value={kpis.students} label="الطلاب" />
-          <div className="relative overflow-hidden rounded-2xl bg-emerald-900 p-5 text-emerald-50 ring-1 ring-emerald-900">
-            <div aria-hidden className="pointer-events-none absolute -bottom-12 -left-12 size-40 rounded-full border-[10px] border-emerald-50/5" />
-            <div className="flex items-center justify-between">
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-50/10 text-gold-100 ring-1 ring-emerald-50/10"><Clock className="size-[18px]" strokeWidth={1.75} /></span>
-              <span className="text-[11px] font-medium text-emerald-100/70">ساعات الشهر</span>
+          {/* «ساعات الشهر بقيمتها $» للمدير حصراً (قاموس ٣٥ §٤): مالية المعلم في «ماليتي» والمستحقات — لا وسط شاشة الإشراف */}
+          {isAdmin ? (
+            <div className="relative overflow-hidden rounded-2xl bg-emerald-900 p-5 text-emerald-50 ring-1 ring-emerald-900">
+              <div className="flex items-center justify-between">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-50/10 text-gold-100 ring-1 ring-emerald-50/10"><Clock className="size-[18px]" strokeWidth={1.75} /></span>
+                <span className="text-[11px] font-medium text-emerald-100/70">ساعات الشهر المعتمدة</span>
+              </div>
+              <div className="mt-3 flex items-baseline gap-1 font-mono-nums">
+                <span className="text-3xl font-semibold tracking-tight text-gold-100 sm:text-4xl">{fmtNum(kpis.hoursMonth)}</span>
+                <span className="text-sm text-emerald-100/80">ساعة</span>
+              </div>
+              <p className="mt-3 text-[11px] text-emerald-100/60">قيمتها ${kpis.hoursValue.toFixed(2)} — تدخل مستحقات المعلمين.</p>
             </div>
-            <div className="mt-3 flex items-baseline gap-1 font-mono-nums">
-              <span className="text-3xl font-semibold tracking-tight text-gold-100 sm:text-4xl">{fmtNum(kpis.hoursMonth)}</span>
-              <span className="text-sm text-emerald-100/80">ساعة</span>
-            </div>
-            <p className="mt-3 text-[11px] text-emerald-100/60">قيمتها ${kpis.hoursValue.toFixed(2)} · تُضاف لمستحق المعلّم.</p>
-          </div>
+          ) : (
+            <Kpi icon={Clock} value={kpis.hoursMonth} label="جلسات الشهر (ساعة)" />
+          )}
         </section>
 
         <MTabs value={tab} onValueChange={setTab}
-          options={[{ value: "halaqat", label: "الحلقات" }, { value: "supervision", label: "السجل الإشرافيّ" }, { value: "setup", label: "الإعداد" }]} />
+          options={[{ value: "halaqat", label: "الحلقات" }, { value: "supervision", label: "السجل الإشرافيّ" },
+            ...(isAdmin ? [{ value: "setup", label: "الإعداد" }] : [])]} />
 
         {tab === "supervision" ? (
           <SupervisionRegister />
@@ -187,7 +192,7 @@ export function AlaBaseeraPage({ data }: { data?: AB }) {
                   counts={tree.counts}
                   loadLeaves={tree.lazy ? async (unitId) => (await getUnitHalaqat({ data: { unitId } })).halaqat as TreeLeaf[] : undefined}
                   filter={hq.trim() ? (l) => l.name.includes(hq.trim()) : undefined}
-                  emptyLabel={hq ? "لا حلقات مطابقة." : "لا حلقات ضمن نطاقك بعد — أنشئها من «الإعداد»."}
+                  emptyLabel={hq ? "لا حلقات مطابقة." : isAdmin ? "لا حلقات ضمن نطاقك بعد — أنشئها من «الإعداد»." : "لا حلقات ضمن نطاقك بعد."}
                   renderLeaf={(h) => {
                     const full = h.students >= h.capacity;
                     const pct = Math.min(100, Math.round((h.students / Math.max(1, h.capacity)) * 100));
@@ -215,8 +220,8 @@ export function AlaBaseeraPage({ data }: { data?: AB }) {
               {!selected ? (
                 <div className="grid place-items-center gap-2 rounded-2xl bg-surface px-6 py-14 text-center ring-1 ring-line">
                   <BookOpen className="size-7 text-ink-faint" strokeWidth={1.25} />
-                  <p className="text-sm text-ink-soft">اختر حلقة لإدارتها</p>
-                  <p className="text-[11px] text-ink-faint">تسجيل طالب أو جلسة درس.</p>
+                  <p className="text-sm text-ink-soft">{isAdmin ? "اختر حلقة للاطلاع" : "اختر حلقة للاطلاع أو الزيارة"}</p>
+                  <p className="text-[11px] text-ink-faint">تفاصيلها ودروسها وسجلّ زياراتها — الإدخال لمعلّمها وأمير مكانها.</p>
                 </div>
               ) : (
                 <div className="space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line">

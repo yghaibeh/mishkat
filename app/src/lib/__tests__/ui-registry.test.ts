@@ -17,8 +17,8 @@ const TECHNICAL = new Set(["__root", "no-access"]);
 const LEGACY = new Set([
   "index", "login", "register", "manhaj", "student.$token",
   "mosque.$mosqueId",
-  "admin", "ala-baseera", "competition", "duties",
-  "library", "media-hub", "my-circles", "my-committee", "design-system",
+  "admin", "competition", "duties",
+  "library", "media-hub", "my-committee", "design-system",
 ]); // ن١ (٣٨): شُطبت الشبكة — لها مواصفتا network.md وnetwork-unit.md
 
 function routeNames(): string[] {

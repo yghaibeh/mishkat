@@ -90,7 +90,7 @@ export function MyCirclesPage() {
                   <div className="flex items-center gap-3 px-5 py-3">
                     <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-2 text-emerald-800 ring-1 ring-line"><BookOpen className="size-4" strokeWidth={1.75} /></span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-ink">{c.name}{c.genderTrack === "female" && <span className="ms-1.5 text-[10px] text-gold-700">نساء</span>}</p>
+                      <p className="truncate text-sm font-medium text-ink">{c.name}{c.genderTrack === "female" && <span className="ms-1.5 rounded-full bg-gold-50 px-1.5 text-[10px] text-gold-700">نسائية</span>}</p>
                       <p className="truncate text-[11px] text-ink-faint">{curriculumLabel(c.curriculum)} · {c.students} طالب · {c.lessons} درس{c.hours ? ` · ${c.hours} ساعة` : ""}</p>
                     </div>
                     <button onClick={() => setOpen(open === c.id ? null : c.id)} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-surface-2 px-2.5 py-1 text-[11px] font-semibold text-ink-soft ring-1 ring-line transition hover:text-emerald-800">
@@ -102,8 +102,9 @@ export function MyCirclesPage() {
                   {open === c.id && (
                     <div>
                       <EditHalaqa circle={c} onSaved={load} />
-                      <HalaqaStudents halaqaId={c.id} onChanged={load} />
+                      {/* ترتيبُ أسئلة المعلّم (ع٦ — ن٣): ماذا أسجّل الآن؟ ← طلابي ← ما درّسته ← لوحتي الأسبوعية */}
                       <RecordLesson halaqaId={c.id} onSaved={load} />
+                      <HalaqaStudents halaqaId={c.id} onChanged={load} />
                       <LessonsList halaqaId={c.id} refreshKey={c.lessons} />
                       <WeeklyHalaqaPanel halaqaId={c.id} notesReadOnly />
                     </div>
@@ -203,7 +204,7 @@ export function LessonsList({ halaqaId, refreshKey, onChanged }: { halaqaId: str
             return (
               <li key={l.id} className="rounded-lg bg-surface px-3 py-2 text-[12px] ring-1 ring-line">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="min-w-0 flex-1 truncate font-medium text-ink">{l.title}{l.majlis ? <span className="ms-1 text-ink-faint">· مجلس {l.majlis}</span> : ""}</span>
+                  <span className="min-w-0 flex-1 truncate font-medium text-ink">{l.title}{l.majlis ? <span className="ms-1 text-ink-faint">· {l.majlis}</span> : ""}</span>
                   <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1", st.cls)}>{st.label}</span>
                   <span className="shrink-0 font-mono-nums text-[10px] text-emerald-800">{l.durationHours} س</span>
                   {l.dateHijri && <span className="shrink-0 font-mono-nums text-[9px] text-ink-faint">{l.dateHijri}</span>}

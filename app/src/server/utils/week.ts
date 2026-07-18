@@ -100,7 +100,7 @@ export function weekHijriRange(weekStart: string): string {
   const sp = hijriParts(start)
   const ep = hijriParts(end)
   if (sp.month === ep.month && sp.year === ep.year) {
-    return `${HIJRI_AR_DAY.format(start)} – ${HIJRI_AR_LONG.format(end)} هـ`
+    return `${HIJRI_AR_DAY.format(start)} – ${HIJRI_AR_LONG.format(end)}` // Intl يلحق «هـ» بنفسه — لا إلحاق يدوي (كانت «هـ هـ»)
   }
-  return `${HIJRI_AR_LONG.format(start)} – ${HIJRI_AR_LONG.format(end)} هـ`
+  return `${HIJRI_AR_LONG.format(start)} – ${HIJRI_AR_LONG.format(end)}`
 }
