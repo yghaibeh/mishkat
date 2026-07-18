@@ -19,3 +19,6 @@ dist/
 
 # ملفات العميل الكبيرة (APK) — تبقى محليًا خارج git
 from_client/
+
+# نسخ احتياطية محلية للإنتاج — لا تُرفع
+backups/prod_backup*.sql
