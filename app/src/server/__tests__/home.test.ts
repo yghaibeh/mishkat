@@ -176,3 +176,20 @@ describe("homeData — الموزّع", () => {
     expect((await homeData())!.role).toBe("student"); // عدسة الطالب (ع١٠) — كانت غائبة
   });
 });
+
+describe("قاعدة المالك الواحد (ق1-د المعمّمة) — الإدارة اطّلاع لا تشغيل", () => {
+  it("المدير لا يُكلَّف بتقديم تقرير وحدةٍ ولا تُدفع له بطاقة زيارات", async () => {
+    setUser(admin);
+    const { layerReportStatusData } = await import("@/server/data.server");
+    expect((await layerReportStatusData("r1")).applicable).toBe(false); // كان يظهر له زر «تقديم للاعتماد»
+    const { myTasksSummaryData } = await import("@/server/myTasks.server");
+    const cards = (await myTasksSummaryData()).cards;
+    expect(cards.find((c) => c.key === "supervision")).toBeUndefined(); // «تحتاج زيارتك» ليست للمدير
+  });
+
+  it("صاحب التكليف على الوحدة يبقى قادرًا على تقريرها", async () => {
+    setUser(makeUser("rabita", "r1", "/men/r1/", { personId: "p-r1" }));
+    const { layerReportStatusData } = await import("@/server/data.server");
+    expect((await layerReportStatusData("r1")).applicable).toBe(true);
+  });
+});

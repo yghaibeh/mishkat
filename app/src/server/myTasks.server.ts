@@ -39,7 +39,10 @@ export async function myTasksSummaryData(): Promise<{ cards: TaskCard[] }> {
   } catch { /* */ }
 
   // ٣) زياراتٌ إشرافيّةٌ مطلوبة (لم تُزَر/متأخّرة) + زياراتٌ بانتظار اعتمادك
-  try {
+  // قاعدة المالك الواحد (ق1-د): الزياراتُ تكليفُ الطبقات لا الإدارة — المديرُ اطّلاعٌ فقط،
+  // فلا تُدفع له بطاقةُ «تحتاج زيارتك» (كان يرى ١٢٨ حلقةً «تحتاج زيارتك» — بلاغ المالك حرفيًّا).
+  const isViewOnlyAdmin = u.assignments.some((a) => a.role === "admin");
+  if (!isViewOnlyAdmin) try {
     const { supervisionDashboardData, supervisionVisitsData } = await import("./supervision.server");
     const d = await supervisionDashboardData();
     const due = ("summary" in d && d.summary) ? d.summary.never + d.summary.overdue : 0;

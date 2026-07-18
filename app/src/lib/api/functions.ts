@@ -33,6 +33,14 @@ export const getWeekProgress = createServerFn({ method: "GET" })
     return weekProgressData(data.mosqueId);
   });
 
+// تشخيص الوحدة لصفحة النزول («لماذا هذه الوحدة؟» — ٣٦ §٢)
+export const getUnitDiagnosis = createServerFn({ method: "GET" })
+  .validator(z.object({ unitId: z.string().min(1) }))
+  .handler(async ({ data }) => {
+    const { unitDiagnosisData } = await import("@/server/home.server");
+    return unitDiagnosisData(data.unitId);
+  });
+
 export const getDailyActivities = createServerFn({ method: "GET" })
   .validator(z.object({ track: z.enum(["male", "female"]) }))
   .handler(async ({ data }) => {

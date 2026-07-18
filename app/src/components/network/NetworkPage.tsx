@@ -11,7 +11,7 @@ import { hasCap } from "@/lib/capabilities";
 import { exportNetworkRollup, getNetwork, getPendingApprovals, getBreakGlassApprovals, approveMosqueMonth, rejectUnitPending, getLayerReportStatus, submitLayerReport } from "@/lib/api/network";
 import { MTabs } from "@/components/ui/m-tabs";
 import { RegistrationInbox } from "@/components/registration/RegistrationInbox";
-import { getSupervisionDashboard } from "@/lib/api/supervision";
+import { getUnitDiagnosis } from "@/lib/api/functions";
 import { Stamp, CheckCircle2, Send, BadgeCheck } from "lucide-react";
 import { govLabel } from "@/lib/syria-regions";
 import { CIRCLE_TYPES } from "@/lib/circles";
@@ -56,6 +56,33 @@ function leafNouns(section?: "men" | "women") {
 export function NetworkPage({ data, report }: { data?: NetData; report?: Report | null }) {
   if (data?.leaf) return <MosqueLeaf data={data} report={report ?? null} />;
   return <Browser data={data as Browse | undefined} />;
+}
+
+// «لماذا هذه الوحدة؟» — جوابُ النزول السؤالي (٣٦ §٢): حالُها هذا الأسبوع ومَن قائدُها ليُسأل.
+// لا أدواتِ تشغيلٍ هنا لغير مالكها (قاعدة المالك الواحد) — كانت الصفحة نسخةَ قالبٍ عامّ.
+function UnitDiagnosis({ unitId, entered, total, noun }: { unitId: string | null; entered: number; total: number; noun: string }) {
+  const [diag, setDiag] = useState<{ leaderName: string | null; leaderRole: string | null; vacant: boolean } | null>(null);
+  useEffect(() => {
+    if (!unitId) return;
+    getUnitDiagnosis({ data: { unitId } }).then((r) => setDiag(r as never)).catch(() => {});
+  }, [unitId]);
+  if (!unitId) return null;
+  const behind = total - entered;
+  return (
+    <section className="rounded-2xl bg-surface px-5 py-4 ring-1 ring-line">
+      <p className="text-sm text-ink">
+        {behind > 0
+          ? <>لم يُدخل <span className="font-bold text-danger font-mono-nums">{behind}</span> من {total} {noun} سجلَّ هذا الأسبوع بعد.</>
+          : <>كل الوحدات هنا أدخلت سجلَّها هذا الأسبوع ✓</>}
+        {" "}
+        {diag?.vacant
+          ? <span className="font-semibold text-danger">هذه الوحدة بلا مسؤولٍ مكلَّف — عيِّن مسؤولًا ليتولّاها.</span>
+          : diag?.leaderName
+            ? <span className="text-ink-faint">المسؤول عنها: <span className="font-semibold text-ink">{diag.leaderName}</span> ({diag.leaderRole}) — هو من يُتابعها ويُسأل عنها.</span>
+            : null}
+      </p>
+    </section>
+  );
 }
 
 function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
@@ -156,10 +183,11 @@ function Browser({ data }: { data?: Browse }) {
           <RollupExport section={d.section} unitId={d.breadcrumbs[d.breadcrumbs.length - 1]?.id ?? undefined} />
         </header>
 
+        {d.scopeType !== "root" && <UnitDiagnosis unitId={d.breadcrumbs[d.breadcrumbs.length - 1]?.id ?? null} entered={enteredCount} total={k.mosques} noun={noun.counted} />}
         <RegistrationInbox />
         <PendingApprovals />
         <PendingApprovals breakGlass />
-        <SupervisionDueCard />
+        {/* بطاقةُ «تحتاج زيارتك» أُزيلت من صفحات الشبكة (قاعدة القناة الواحدة — ٣٦ §١.٣): موضعُها رئيسيةُ المشرف */}
         <LayerReportAction unitId={d.breadcrumbs[d.breadcrumbs.length - 1]?.id ?? undefined} />
 
         {/* بطاقة الصدارة + توزيع حالة المساجد — كلّ إحصائيّةٍ تنقر فتهبط على قائمة الوحدات مُرشَّحة */}
@@ -197,7 +225,15 @@ function Browser({ data }: { data?: Browse }) {
         {/* مؤشرات — قابلةٌ للنقر إلى التفاصيل */}
         <section className="grid gap-4 sm:grid-cols-3">
           <StatCard icon={d.section === "women" ? Home : Building2} label={noun.plural} value={k.mosques} onClick={() => goList("all")} />
-          <StatCard icon={Target} label="متوسط النقاط" value={k.avgPoints} suffix="/ 70" sub={`${Math.round((k.avgPoints / 70) * 100)}% من الهدف`} onClick={() => goList("top")} />
+          {/* قاعدة الأربعة (٣٥): لا متوسط بلا إدخال — كان يعرض «12/70» بجانب «0% إدخال» (تناقض) */}
+          {enteredCount > 0 ? (
+            <StatCard icon={Target} label="متوسط النقاط" value={k.avgPoints} suffix="/ 70" sub={`${Math.round((k.avgPoints / 70) * 100)}% من الهدف`} onClick={() => goList("top")} />
+          ) : (
+            <div className="rounded-2xl bg-surface px-5 py-4 ring-1 ring-line">
+              <p className="flex items-center gap-1.5 text-xs text-ink-faint"><Target className="size-3.5" /> متوسط النقاط</p>
+              <p className="mt-2 text-sm text-ink-faint">يظهر بعد بدء إدخال هذا الأسبوع.</p>
+            </div>
+          )}
           <StatCard icon={AlertTriangle} label={`${noun.one === "مسجد" ? "مساجد" : "حلقات"} متعثّرة`} value={k.struggling} tone="danger" sub={k.struggling > 0 ? "يحتاج دعماً" : "لا متعثّر"} onClick={() => goList("struggling")} />
         </section>
 
@@ -379,29 +415,6 @@ function PendingApprovals({ breakGlass = false }: { breakGlass?: boolean }) {
   );
 }
 
-// السجل الإشرافيّ في الصفحة الرئيسة للمشرف (ملاحظة أصحاب المشروع): زياراتٌ مطلوبةٌ بارزةٌ + دخولٌ مباشر
-function SupervisionDueCard() {
-  const [sum, setSum] = useState<{ total: number; never: number; overdue: number } | null>(null);
-  useEffect(() => {
-    getSupervisionDashboard().then((r) => {
-      const d = r as { summary?: { total: number; never: number; overdue: number } };
-      if (d.summary) setSum(d.summary);
-    }).catch(() => {});
-  }, []);
-  if (!sum || (sum.never + sum.overdue) === 0) return null;
-  const due = sum.never + sum.overdue;
-  return (
-    <Link to={"/ala-baseera" as never} search={{ tab: "supervision" } as never}
-      className="flex items-center gap-3 rounded-2xl bg-surface px-5 py-4 ring-1 ring-danger/30 transition hover:bg-danger-bg/40">
-      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-danger-bg text-danger ring-1 ring-danger/20"><MapPin className="size-[18px]" strokeWidth={1.75} /></span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold text-ink">الإشراف الميدانيّ: <span className="text-danger">{due} حلقةً تحتاج زيارتك</span></span>
-        <span className="mt-0.5 block text-[11px] text-ink-faint">{sum.never} لم تُزَر بعد · {sum.overdue} تجاوزت دورة الثلاثين يومًا — ادخل السجلَّ الإشرافيّ وسجّل زياراتك</span>
-      </span>
-      <span className="shrink-0 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-semibold text-emerald-50">السجل الإشرافيّ ←</span>
-    </Link>
-  );
-}
 
 // ر.١ — زرّ تصدير التقرير القياديّ (PDF عبر طباعة المتصفّح، أو CSV) — للقيادة فقط
 function RollupExport({ section, unitId }: { section?: "men" | "women"; unitId?: string }) {

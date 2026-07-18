@@ -348,6 +348,22 @@ export async function studentHomeData(): Promise<StudentHome | null> {
   return { role: "student", cards, circle, progress, lastScores };
 }
 
+// تشخيصُ وحدةٍ لصفحة النزول (٣٦ §٢ «النزول السؤالي»): يجيب «لماذا هذه الوحدة على حالها؟»
+// للمطّلعين من فوق — قائدُها (أو شاغر) ليعرف الزائرُ مَن يسأل، لا أدواتِ تشغيلٍ ليست له.
+export async function unitDiagnosisData(unitId: string): Promise<{ leaderName: string | null; leaderRole: string | null; vacant: boolean } | null> {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u) return null;
+  const rows = await db.select({ role: roleAssignments.role, name: persons.fullName })
+    .from(roleAssignments).innerJoin(persons, eq(roleAssignments.personId, persons.id))
+    .where(and(eq(roleAssignments.orgUnitId, unitId),
+      inArray(roleAssignments.role, ["section_head", "rabita", "square", "amir"]),
+      isNull(roleAssignments.endDate), eq(roleAssignments.approvalStatus, "approved"))).all();
+  const r = rows[0] ?? null;
+  const label: Record<string, string> = { section_head: "مشرف القسم", rabita: "مسؤول المنطقة", square: "مسؤول المربع", amir: "أمير المسجد" };
+  return r ? { leaderName: r.name, leaderRole: label[r.role] ?? r.role, vacant: false } : { leaderName: null, leaderRole: null, vacant: true };
+}
+
 // ===== الموزّع: رئيسيةُ الدور (البقيّة تسقط لبطاقات «مهامّي» حتى تُبنى دفعتُها) =====
 export type HomeData =
   | AdminHome

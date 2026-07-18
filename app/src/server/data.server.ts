@@ -167,8 +167,9 @@ export async function layerReportStatusData(unitId: string) {
   if (!u) return { applicable: false as const };
   const unit = (await db.select().from(orgUnits).where(eq(orgUnits.id, unitId)).all())[0] as Unit | undefined;
   if (!unit || !LAYER_TYPES.includes(unit.type)) return { applicable: false as const };
-  // المالك = صاحب تكليفٍ على هذه الوحدة بعينها، أو الإدارة
-  const isOwner = isGlobalAdmin(u) || u.assignments.some((a) => a.orgUnitId === unitId);
+  // قاعدة المالك الواحد (ق1-د + ٣٤): تقديمُ تقرير الطبقة لصاحب التكليف على الوحدة بعينها حصراً —
+  // كان يظهر للمدير العام زرُّ «تقديم للاعتماد» داخل صفحات الوحدات (يقدّم لمن؟) وهو اطّلاعٌ فقط.
+  const isOwner = u.assignments.some((a) => a.orgUnitId === unitId);
   if (!isOwner) return { applicable: false as const };
   const weekStart = weekStartSaturday(new Date(Date.now()));
   const rec = (await db.select().from(weeklyRecords).where(and(eq(weeklyRecords.unitId, unitId), eq(weeklyRecords.weekStart, weekStart))).all())[0];

@@ -187,7 +187,19 @@ export async function pendingRegistrationsData(): Promise<{ items: RegRequestIte
   const u = await currentUser();
   if (!u) return { items: [] };
   const rows = await db.select().from(registrationRequests).where(eq(registrationRequests.status, "pending")).all();
-  const mine = rows.filter((r) => canApprove(u, r.kind, r.targetPath ?? "/", r.targetUnitId));
+  let mine = rows.filter((r) => canApprove(u, r.kind, r.targetPath ?? "/", r.targetUnitId));
+  // قاعدة المالك الواحد (٣٤ §المبادئ): الإدارةُ لا تُوجَّه لها الطلباتُ روتينيًّا — تظهر لها
+  // حصراً طلباتُ الوحدات التي لا طبقةَ إشرافيّةً مُكلَّفةً فوقها (نظير كسر الزجاج) — كانت كلُّ
+  // الطلبات تظهر للمدير ولكلّ الطبقات معًا (تدقيق ٣٣ هـ-٣: قناةٌ مكرّرةٌ عبر المستويات).
+  if (isGlobalAdmin(u)) {
+    const { approverLayerFor } = await import("./services/approvalRouting");
+    const vacant: typeof mine = [];
+    for (const r of mine) {
+      const layer = await approverLayerFor(db, r.targetPath ?? "/");
+      if (layer.kind === "vacant") vacant.push(r);
+    }
+    mine = vacant;
+  }
   if (!mine.length) return { items: [] };
 
   const unitIds = [...new Set(mine.flatMap((r) => [r.targetUnitId, r.proposedParentId].filter(Boolean)))] as string[];
