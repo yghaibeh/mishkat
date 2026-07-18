@@ -143,14 +143,16 @@ export function SupervisionRegister() {
         )}
       </section>
 
-      <section className="lg:col-span-3">
+      {/* قاعدة صندوق التكليف (٣٤ §المبادئ-٧): لا يُرسَم إلا بمحتواه ولمالكه — كان يظهر
+          فارغاً بعنوان «بانتظار اعتمادك» لكل فاتحٍ للسجل حتى المدير (بلاغ المالك) */}
+      {pending.length > 0 && <section className="lg:col-span-3">
         <div className="overflow-hidden rounded-2xl bg-surface ring-1 ring-gold-300/50">
           <div className="flex items-center gap-2 border-b border-line bg-gold-50/60 px-4 py-3">
             <Stamp className="size-4 text-gold-700" strokeWidth={1.75} />
             <h3 className="font-display text-sm font-semibold text-ink">زياراتٌ بانتظار اعتمادك</h3>
             <span className="rounded-full bg-gold-100 px-2 py-0.5 font-mono-nums text-[11px] font-bold text-gold-800">{pending.length}</span>
           </div>
-          {pending.length === 0 ? <p className="px-4 py-8 text-center text-xs text-ink-soft">لا زيارات بانتظار اعتمادك.</p> : (
+          {pending.length === 0 ? null : (
             <ul className="divide-y divide-line">
               {pending.map((v) => (
                 <li key={v.id} className="px-4 py-3">
@@ -170,7 +172,7 @@ export function SupervisionRegister() {
             </ul>
           )}
         </div>
-      </section>
+      </section>}
       </div>
     </div>
   );
