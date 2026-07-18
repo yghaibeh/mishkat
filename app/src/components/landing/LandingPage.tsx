@@ -30,7 +30,7 @@ const STEPS = [
 
 const STATS = [
   { value: 26, label: "وحدة في منهاج على بصيرة", suffix: "" },
-  { value: 4, label: "أدوار + دور المدرّس", suffix: "" },
+  { value: 10, label: "أدوار لكلٍّ رئيسيتُه على مقاسه", suffix: "" },
   { value: 100, label: "هجريّ بالكامل", suffix: "٪" },
   { value: 24, label: "نوع نشاطٍ قابل للقياس", suffix: "+" },
 ];

@@ -15,6 +15,9 @@ import {
 const CATEGORIES = [
   { key: "aqeedah", label: "عقيدة" }, { key: "fiqh", label: "فقه" }, { key: "seerah", label: "سيرة" },
   { key: "tarbiya", label: "تربية" }, { key: "admin_training", label: "تدريب إداريّ" }, { key: "other", label: "أخرى" },
+  // بذرة المواد تستعمل هذه المفاتيح — كانت تظهر أكواداً إنجليزية خاماً فوق العناوين (تدقيق ٣٣ ب)
+  { key: "supervision", label: "مهارات الإشراف" }, { key: "education", label: "التعليم والتربية" },
+  { key: "tech", label: "تقنية وأمن معلومات" }, { key: "safety", label: "سلامة وإسعاف" }, { key: "media", label: "إعلام" },
 ];
 const AUDIENCES = [
   { key: "amir", label: "مسؤولو المساجد" }, { key: "teacher", label: "المعلّمون" },

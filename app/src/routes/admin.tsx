@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin")({
   },
   head: () => ({
     meta: [
-      { title: "التهيئة الإدارية — مشكاة" },
+      { title: "الإدارة — مشكاة" },
       { name: "description", content: "إنشاء الهيكلية ومنح الأدوار في نظام مشكاة." },
     ],
   }),

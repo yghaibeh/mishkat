@@ -118,8 +118,8 @@ export function AdminPage({ orgUnits = [] }: { orgUnits?: OrgUnit[] }) {
             <Network className="size-5" strokeWidth={1.5} />
           </div>
           <div className="min-w-0">
-            <h1 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">التهيئة الإدارية</h1>
-            <p className="mt-1 text-sm text-ink-soft">بناء الهيكلية ومنح الأدوار — للإدارة العليا</p>
+            <h1 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">الإدارة</h1>
+            <p className="mt-1 text-sm text-ink-soft">الهيكلية والمستخدمون والأدوار والإعلانات</p>
           </div>
           <div className="ms-auto hidden gap-5 sm:flex">
             <Stat label="وحدة" value={orgUnits.length} />

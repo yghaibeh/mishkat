@@ -16,7 +16,7 @@ export const NAV = [
   { to: "/library", label: "المكتبة", cap: "library.view" },
   // الإعلام: معرضُ صور الشبكة (سجلّات اليوم + دروس الحلقات) + العُهدُ في العمل — للإدارة ومسؤول الإعلام
   { to: "/media-hub", label: "الإعلام", cap: "media.hub" },
-  { to: "/admin", label: "التهيئة", cap: "admin.view" },
+  { to: "/admin", label: "الإدارة", cap: "admin.view" },
   // حلقاتي: أخيراً — حتى لا يصبح صفحة هبوط المدير (الذي يملك "*")؛ المدرّس وحده نطاقُه هذا
   { to: "/my-circles", label: "حلقاتي", cap: "circle.teach" },
   // لجنتي: صفحةُ مسؤول اللجنة (نطاقُه لجنته وحدها)

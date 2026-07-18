@@ -11,15 +11,13 @@ const ROUTES_DIR = join(HERE, "..", "..", "routes");
 const UI_DIR = join(HERE, "..", "..", "..", "..", "product", "ui");
 
 // مساراتٌ تقنيّةٌ لا شاشات (غلاف/حراسة) — لا تحتاج مواصفة
-const TECHNICAL = new Set(["__root", "no-access"]);
+// design-system: مرجعُ نظامٍ بصريٍّ داخليٌّ لأصحاب المشروع لا شاشةَ مستخدم
+const TECHNICAL = new Set(["__root", "no-access", "design-system"]);
 
 // شاشات ما قبل إعادة البناء (تُحذف من هنا عند إعادة بناء كلٍّ منها — بوابةُ دفعتها)
-const LEGACY = new Set([
-  "index", "login", "register", "manhaj", "student.$token",
-  "mosque.$mosqueId",
-  "admin", "competition", "duties",
-  "library", "media-hub", "my-committee", "design-system",
-]); // ن١ (٣٨): شُطبت الشبكة — لها مواصفتا network.md وnetwork-unit.md
+// ✅ فارغةٌ منذ إتمام خطة «صفر شاشات قديمة» (٣٨) في ٢٠٢٦-٠٧-١٨ — كلُّ شاشةٍ لها مواصفةٌ في product/ui/.
+// لا يُضاف اسمٌ هنا أبداً: الشاشةُ الجديدة تُولَد بمواصفتها (بروتوكول ٣٧ §٦) وإلا أحمرّ هذا الحارس.
+const LEGACY = new Set<string>([]);
 
 function routeNames(): string[] {
   return readdirSync(ROUTES_DIR)

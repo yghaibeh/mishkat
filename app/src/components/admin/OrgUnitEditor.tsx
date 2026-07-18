@@ -77,7 +77,7 @@ export function OrgUnitEditor({ unit, onClose, onChanged }: { unit: Unit; onClos
               className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-danger-bg px-4 text-sm font-semibold text-danger ring-1 ring-danger/20 transition hover:opacity-90">
               <Archive className="size-4" /> أرشفة الوحدة
             </button>
-            <p className="text-[11px] text-ink-faint">الأرشفة تُخفي الوحدة من الشبكة والتهيئة (حذف ناعم). يلزم نقل/أرشفة التابعين أولًا.</p>
+            <p className="text-[11px] text-ink-faint">الأرشفة تُخفي الوحدة من الشبكة وصفحة الإدارة (حذف ناعم). يلزم نقل/أرشفة التابعين أولًا.</p>
           </div>
         </div>
       </MDrawer>
