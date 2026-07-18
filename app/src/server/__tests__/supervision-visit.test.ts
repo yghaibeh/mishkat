@@ -138,4 +138,14 @@ describe("supervisionOverviewData — عرض المطّلع القيادي (بل
     setUser(square);
     expect(await supervisionOverviewData()).toBeNull();
   });
+
+  it("لمسؤول المنطقة: تقييم بحسب المربع + يحتفظ بلوحته التشغيلية", async () => {
+    const { supervisionOverviewData } = await import("@/server/supervision.server");
+    setUser(rabita);
+    const ov = await supervisionOverviewData();
+    expect(ov).not.toBeNull();
+    expect(ov!.alsoOperational).toBe(true);
+    // التجميع بأبناء نطاقه المباشرين (المربع sq) لا بالمنطقة نفسها
+    expect(ov!.rows.every((r) => r.unitId !== "aleppo")).toBe(true);
+  });
 });

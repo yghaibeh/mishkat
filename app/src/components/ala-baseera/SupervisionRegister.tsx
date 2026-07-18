@@ -38,7 +38,7 @@ export function SupervisionRegister() {
   const [pending, setPending] = useState<Visit[]>([]);
   // العرض القيادي للمطّلع (المدير/رأس القسم): تقييمٌ بحسب المنطقة بدل قائمة الحلقات التشغيلية
   type OverviewRow = { unitId: string; name: string; section: string | null; total: number; visited: number; due: number; avgScore: number | null; leaderName: string | null };
-  const [overview, setOverview] = useState<{ rows: OverviewRow[]; cadenceDays: number } | null>(null);
+  const [overview, setOverview] = useState<{ rows: OverviewRow[]; cadenceDays: number; alsoOperational?: boolean } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [preset, setPreset] = useState("");
@@ -73,7 +73,7 @@ export function SupervisionRegister() {
         <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
           <div className="flex items-center gap-2 border-b border-line bg-surface-2/60 px-5 py-3.5">
             <MapPin className="size-4 text-emerald-800" strokeWidth={1.75} />
-            <h3 className="font-display text-sm font-semibold text-ink">تقييم الإشراف الميدانيّ بحسب المنطقة</h3>
+            <h3 className="font-display text-sm font-semibold text-ink">{overview?.alsoOperational ? "تقييم الإشراف بحسب المربع" : "تقييم الإشراف الميدانيّ بحسب المنطقة"}</h3>
             <span className="text-[11px] text-ink-faint">— دورة الزيارة {overview.cadenceDays} يومًا · الأدنى تغطيةً أولاً</span>
           </div>
           <ul className="divide-y divide-line">
@@ -101,7 +101,7 @@ export function SupervisionRegister() {
       )}
 
       {/* اللوحة التشغيلية — للمُكلَّفين بالزيارات حصراً (المربع/المنطقة) */}
-      {!overview && dash && dash.circles.length > 0 && (
+      {(!overview || overview.alsoOperational) && dash && dash.circles.length > 0 && (
         <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
           <div className="flex flex-wrap items-center gap-2 border-b border-line bg-surface-2/60 px-5 py-3.5">
             <MapPin className="size-4 text-emerald-800" strokeWidth={1.75} />
@@ -146,14 +146,14 @@ export function SupervisionRegister() {
       )}
 
       {/* تقييم الحلقات الدوريّ عبر نطاق المشرف (المربع/المنطقة) */}
-      {!overview && <CircleRankings title="ترتيب الحلقات في نطاقك" />}
+      {(!overview || overview.alsoOperational) && <CircleRankings title="ترتيب الحلقات في نطاقك" />}
 
       <div className="grid gap-6 lg:grid-cols-5">
       <section id="visit-form" className="space-y-3 scroll-mt-20 lg:col-span-2">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-1.5 font-display text-sm font-semibold text-ink"><ClipboardCheck className="size-4 text-emerald-800" strokeWidth={1.75} /> السجل الإشرافيّ</h2>
           {/* الزيارات عملُ المُكلَّفين لا المطّلعين (قاعدة المالك الواحد) */}
-          {!overview && <button onClick={() => { setPreset(""); setOpen((v) => !v); }} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-900">
+          {(!overview || overview.alsoOperational) && <button onClick={() => { setPreset(""); setOpen((v) => !v); }} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-900">
             <Plus className="size-3.5" /> زيارةٌ جديدة
           </button>}
         </div>

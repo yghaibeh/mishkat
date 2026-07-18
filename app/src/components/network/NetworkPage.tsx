@@ -301,6 +301,9 @@ function LayerReportAction({ unitId }: { unitId?: string }) {
           <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-100"><BadgeCheck className="size-4" /> معتمَدٌ نهائيًّا</span>
         ) : submitted ? (
           <span className="inline-flex items-center gap-1.5 rounded-lg bg-gold-50 px-3 py-2 text-xs font-semibold text-gold-800 ring-1 ring-gold-200"><Stamp className="size-4" /> مُقدَّم — بانتظار اعتماد الأعلى</span>
+        ) : (st.rollup ?? 0) === 0 ? (
+          /* محظور ع٣: لا تقديمَ فوق صفر («كيف يعتمد أرقاماً صفرية؟») — حالةٌ موجِّهة بدل الزر */
+          <span className="inline-flex items-center gap-1.5 rounded-lg bg-surface-2 px-3 py-2 text-xs font-semibold text-ink-soft ring-1 ring-line">لا إدخال في نطاقك بعد — ذكّر مساجدك ثم قدِّم</span>
         ) : (
           <button onClick={submit} disabled={busy}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-2 text-xs font-semibold text-emerald-50 shadow-soft transition hover:bg-emerald-900 disabled:opacity-60">

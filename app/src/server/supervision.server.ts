@@ -195,19 +195,25 @@ export async function supervisionOverviewData() {
   if (!u) return null;
   const isAdmin = isGlobalAdmin(u);
   const isSectionHead = u.assignments.some((a) => a.role === "section_head");
-  if (!isAdmin && !isSectionHead) return null; // المُكلَّفون (مربع/منطقة) لهم اللوحةُ التشغيلية
+  const isRabita = u.assignments.some((a) => a.role === "rabita");
+  // كلُّ طبقةٍ تُقيِّم من تحتها (بلاغ المالك «على جميع المستويات»): المدير/رأس القسم بالمناطق،
+  // ومسؤولُ المنطقة بمربعاته (ويحتفظ بلوحته التشغيلية لما هو الأقربُ له — alsoOperational).
+  if (!isAdmin && !isSectionHead && !isRabita) return null; // المربع: لوحةٌ تشغيلية فقط
   const d = await supervisionDashboardData("scope");
-  if (!("summary" in d) || !d.summary || !d.circles.length) return { rows: [], cadenceDays: VISIT_CADENCE_DAYS };
+  if (!("summary" in d) || !d.summary || !d.circles.length) return { rows: [], cadenceDays: VISIT_CADENCE_DAYS, alsoOperational: false };
 
   const units = await db.select({ id: orgUnits.id, path: orgUnits.path, name: orgUnits.name, section: orgUnits.section }).from(orgUnits).all();
   const byId = new Map(units.map((x) => [x.id, x]));
+  // عمقُ التجميع: أبناءُ نطاق الناظر مباشرةً (المدير/القسم ← المناطق i=1؛ المنطقة ← المربعات i=2)
+  const supLens = u.assignments.filter((a) => ["rabita", "section_head"].includes(a.role)).map((a) => a.orgPath.split("/").filter(Boolean).length);
+  const groupIndex = isAdmin ? 1 : Math.max(1, Math.min(...(supLens.length ? supLens : [1])));
   type Row = { unitId: string; name: string; section: string | null; total: number; due: number; scores: number[] };
   const groups = new Map<string, Row>();
   for (const c of d.circles) {
     const unit = c.mosqueId ? byId.get(c.mosqueId) : null;
     if (!unit) continue;
-    const segs = unit.path.split("/").filter(Boolean); // [القسم، المنطقة، ...]
-    const regionId = segs[1] ?? segs[0];
+    const segs = unit.path.split("/").filter(Boolean); // [القسم، المنطقة، المربع، ...]
+    const regionId = segs[groupIndex] ?? segs[segs.length - 1];
     const region = byId.get(regionId);
     const row = groups.get(regionId) ?? { unitId: regionId, name: region?.name ?? regionId, section: region?.section ?? unit.section, total: 0, due: 0, scores: [] };
     row.total++;
@@ -230,7 +236,7 @@ export async function supervisionOverviewData() {
       leaderName: leaderByUnit.get(r.unitId) ?? null,
     }))
     .sort((a, b) => (b.due / Math.max(b.total, 1)) - (a.due / Math.max(a.total, 1))); // الأسوأ تغطيةً أولاً
-  return { rows, cadenceDays: VISIT_CADENCE_DAYS };
+  return { rows, cadenceDays: VISIT_CADENCE_DAYS, alsoOperational: isRabita && !isAdmin && !isSectionHead };
 }
 
 // قائمة الحلقات المتاحة للمشرف لإنشاء زيارة (تحفيظ + على‑بصيرة ضمن نطاقه)
