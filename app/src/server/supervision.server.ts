@@ -148,11 +148,11 @@ export const VISIT_CADENCE_DAYS = 30;
 const DAY_MS = 86_400_000;
 
 // لوحة الإشراف الميدانيّ: حلقات المشرف + حالة آخر زيارةٍ لكلٍّ منها (لم تُزَر/حديثة/متأخّرة)
-export async function supervisionDashboardData() {
+export async function supervisionDashboardData(mode: "tasking" | "scope" = "tasking") {
   const db = useDb();
   const u = await currentUser();
   if (!u) return { circles: [], cadenceDays: VISIT_CADENCE_DAYS };
-  const { items } = await supervisableCirclesData();
+  const { items } = await supervisableCirclesData(mode);
   if (!items.length) return { circles: [], cadenceDays: VISIT_CADENCE_DAYS };
 
   // آخر زيارةٍ لكلّ حلقة (بأيّ مشرف) — للحالة الزمنيّة. نقرأ الجدول كاملًا مرتَّبًا (جدولٌ صغير)
@@ -193,7 +193,7 @@ export async function supervisionOverviewData() {
   const isAdmin = isGlobalAdmin(u);
   const isSectionHead = u.assignments.some((a) => a.role === "section_head");
   if (!isAdmin && !isSectionHead) return null; // المُكلَّفون (مربع/منطقة) لهم اللوحةُ التشغيلية
-  const d = await supervisionDashboardData();
+  const d = await supervisionDashboardData("scope");
   if (!("summary" in d) || !d.summary || !d.circles.length) return { rows: [], cadenceDays: VISIT_CADENCE_DAYS };
 
   const units = await db.select({ id: orgUnits.id, path: orgUnits.path, name: orgUnits.name, section: orgUnits.section }).from(orgUnits).all();
@@ -231,7 +231,7 @@ export async function supervisionOverviewData() {
 }
 
 // قائمة الحلقات المتاحة للمشرف لإنشاء زيارة (تحفيظ + على‑بصيرة ضمن نطاقه)
-export async function supervisableCirclesData() {
+export async function supervisableCirclesData(mode: "tasking" | "scope" = "tasking") {
   const db = useDb();
   const u = await currentUser();
   if (!u) return { items: [] as Array<{ kind: string; id: string; name: string; mosqueName: string; mosqueId: string | null }> };
@@ -246,6 +246,8 @@ export async function supervisableCirclesData() {
   const covers = (path: string | null): boolean => {
     if (isAdmin) return true;
     if (!path) return false;
+    // scope: للمطّلع القيادي — كلُّ نطاقه لا المُسندُ له فقط (رأسُ القسم يقيّم قسمَه كلَّه)
+    if (mode === "scope") return u.assignments.some((a) => path.startsWith(a.orgPath));
     const parents = ancestorIds(path).reverse(); // الأقربُ أوّلًا
     const nearest = parents.find((id) => staffedUnits.has(id));
     return nearest != null && myUnits.has(nearest);
