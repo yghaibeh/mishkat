@@ -142,7 +142,7 @@ async function notifyApprovers(db: ReturnType<typeof useDb>, req: { id: string; 
   const targets = pool.filter((a) => a.orgPath.length === deepest.orgPath.length);
   for (const t of targets) {
     await db.insert(notifications).values({
-      id: crypto.randomUUID(), personId: t.personId, channel: "inapp", kind: "registration_pending",
+      id: crypto.randomUUID(), personId: t.personId, channel: "telegram", kind: "registration_pending", // تصل الجرسَ وتُرسل تيليغرام معاً
       payload: JSON.stringify({ requestId: req.id, fullName: req.fullName, roleLabel: label(req.kind), unitName: req.proposedUnitName ?? undefined }),
       status: "queued", createdAt: req.now, sentAt: null,
     }).run();
@@ -342,6 +342,13 @@ async function finalizeApproval(
     createdUnitId, createdPersonId: personId, createdUserId: userId,
   }).where(eq(registrationRequests.id, id)).run();
   await writeAudit(db, { actorUserId: u.userId, action: "approve_registration", entity: "registration_request", entityId: id, after: { kind: r.kind, login: r.login, unitId, createdUnitId } });
+  // ترحيبٌ بالمعتمَد (له شخصٌ وحسابٌ الآن): يجده في جرسه أوّلَ دخولٍ — يُغلق حلقة إشعارات التسجيل
+  try {
+    await db.insert(notifications).values({
+      id: crypto.randomUUID(), personId, channel: "inapp", kind: "registration_approved",
+      payload: JSON.stringify({ roleLabel: label(r.kind) }), status: "queued", createdAt: Date.now(), sentAt: null,
+    }).run();
+  } catch { /* الإشعار تحسينيّ — لا يُفشل الاعتماد */ }
   return { ok: true as const, createdUnitId };
 }
 

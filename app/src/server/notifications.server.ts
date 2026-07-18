@@ -97,6 +97,8 @@ function notifText(kind: string, payload: Record<string, unknown>): string {
       const d = payload.daysSince as number | undefined;
       return `تذكير المكتبة: مادّة «${t}» إلزاميّةٌ لم تُنجَز بعد${d ? ` (منذ ${d} يومًا)` : ""} — أتمّها وأقرّ بذلك.`;
     }
+    case "registration_approved":
+      return "اعتُمد انضمامُك — افتح رئيسيتك وابدأ عملك، بارك الله فيك.";
     case "registration_pending": {
       const who = (payload.fullName as string) ?? "";
       const role = (payload.roleLabel as string) ?? "";
@@ -139,7 +141,8 @@ export async function myNotificationsData(limit = 30) {
     if (kind === "layer_approval_needed" || kind === "week_approved" || kind === "week_rejected" || kind === "entry_reminder")
       return p.mosqueId ? `/mosque/${p.mosqueId as string}?t=report` : null;
     if (kind === "supervision_due" || kind === "supervision_visit_submitted") return "/ala-baseera?tab=supervision";
-    if (kind === "registration_pending") return "/duties";
+    if (kind === "registration_pending") return "/home"; // صندوق الطلبات في الرئيسية (كان /duties الذائبة)
+    if (kind === "registration_approved") return "/home";
     if (kind === "material_reminder") return "/library";
     if (kind === "tahfeez_register_due") return "/my-circles";
     if (kind === "lesson_reminder") return p.mosqueId ? `/mosque/${p.mosqueId as string}?t=lessons` : null;
