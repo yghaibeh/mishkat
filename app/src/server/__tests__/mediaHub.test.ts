@@ -6,7 +6,8 @@ const state = vi.hoisted(() => ({ db: null as unknown, user: null as unknown }))
 vi.mock("@/server/utils/db", () => ({ useDb: () => state.db, getCloudflareEnv: () => ({}), setCloudflareEnv: () => {} }));
 vi.mock("@/server/auth.server", () => ({ currentUser: async () => state.user }));
 
-import { mediaGalleryData, mediaAssetsData } from "@/server/mediaHub.server";
+import { mediaGalleryData, mediaAssetsData, createCoverageData, coverageDetailData, deleteCoverageData } from "@/server/mediaHub.server";
+import { eq } from "drizzle-orm";
 import * as schema from "@/server/database/schema";
 
 let db: TestDb;
@@ -25,9 +26,20 @@ beforeEach(async () => {
   ];
   for (const u of units) await db.insert(schema.orgUnits).values({ ...u, section: "men", genderTrack: "male", status: "active", createdAt: 0 } as never).run();
 
+  // أشخاصٌ وحسابات: نسبةُ كلّ صورةٍ لصاحبها تُحلّ من users → persons
+  await db.insert(schema.persons).values([
+    { id: "p-media", fullName: "مسؤول الإعلام", gender: "male", createdAt: 0 },
+    { id: "p-amir-m1", fullName: "أمير الفاروق", gender: "male", createdAt: 0 },
+    { id: "p-t", fullName: "الأستاذ عمر", gender: "male", createdAt: 0 },
+  ] as never).run();
+  await db.insert(schema.users).values([
+    { id: "u-media-r1", personId: "p-media", login: "media", passwordHash: "x", createdAt: 0 },
+    { id: "u-amir", personId: "p-amir-m1", login: "amir", passwordHash: "x", createdAt: 0 },
+  ] as never).run();
+
   // (أ) صورةُ سجلّ اليوم: سجلُّ أسبوعٍ للفاروق + مرفق
   await db.insert(schema.weeklyRecords).values({ id: "wr1", mosqueId: "m1", mosquePath: "/men/r1/sq1/m1/", weekStart: "2026-07-11", schemeId: "s1", totalPoints: 0, createdAt: 0 } as never).run();
-  await db.insert(schema.attachments).values({ id: "att-d", scope: "daily_record", refId: "wr1", r2Key: "daily/1.jpg", caption: "توزيع سلال", uploadedBy: null, clientUuid: null, createdAt: 100 } as never).run();
+  await db.insert(schema.attachments).values({ id: "att-d", scope: "daily_record", refId: "wr1", r2Key: "daily/1.jpg", caption: "توزيع سلال", uploadedBy: "u-amir", clientUuid: null, createdAt: 100 } as never).run();
 
   // (ب) صورةُ درسٍ: مكانٌ على المسجد ← حلقة ← جلسة ← مرفق
   await db.insert(schema.venues).values({ id: "v1", type: "mosque", name: "قاعة", orgUnitId: "m1", genderTrack: "male", createdAt: 0 }).run();
@@ -59,6 +71,18 @@ describe("مركزُ الإعلام (TDD)", () => {
     expect(daily.caption).toBe("توزيع سلال");
   });
 
+  // النسبةُ لا تسقط إلى «غير منسوبة» ما دام المسؤولُ معلومًا (احتياطُ أمير الوحدة)
+  it("صورةُ سجلّ يومٍ بلا حسابِ رافعٍ تُنسب لأمير مسجدها", async () => {
+    await db.update(schema.attachments).set({ uploadedBy: null }).where(eq(schema.attachments.id, "att-d")).run();
+    await db.insert(schema.roleAssignments).values({
+      id: "ra-amir-m1", personId: "p-amir-m1", role: "amir", orgUnitId: "m1", orgPath: "/men/r1/sq1/m1/",
+      startDate: 0, endDate: null, termNumber: 1, approvalStatus: "approved", createdAt: 0,
+    } as never).run();
+    setUser(admin);
+    const daily = (await mediaGalleryData(0)).items.find((i) => i.source === "daily")!;
+    expect(daily.byName).toBe("أمير الفاروق");
+  });
+
   it("مسؤولُ إعلام منطقةٍ يرى صورَ منطقته، وصاحبُ المنطقة الأخرى لا يرى شيئًا", async () => {
     setUser(mediaR1);
     const mine = await mediaGalleryData(0);
@@ -84,6 +108,72 @@ describe("مركزُ الإعلام (TDD)", () => {
     expect((await mediaAssetsData()).items.length).toBe(0);
     setUser(admin); // المديرُ لا عُهدةَ باسمه ⇒ لا تبويبَ له أصلًا
     expect((await mediaAssetsData()).items.length).toBe(0);
+  });
+
+  // ===== التغطية الإعلاميّة: سجلُّ حدثٍ لا صورةٌ عائمة (بلاغ المالك: «ما سياقها؟ من قام بها؟») =====
+  it("التغطيةُ تُنشأ بعنوانها ونوعها ووحدتها وتاريخِ وقوعها، وتظهر في المعرض منسوبةً لناشرها بألبومها", async () => {
+    setUser(mediaR1);
+    const r = await createCoverageData({ title: "افتتاحُ حلقة التحفيظ", kind: "opening", orgUnitId: "m1", occurredAt: 5000, body: "بحضور الأهالي" });
+    expect("id" in r && r.id).toBeTruthy();
+    const covId = (r as { id: string }).id;
+    // صورتان في ألبومٍ واحد
+    await db.insert(schema.attachments).values([
+      { id: "att-p1", scope: "media_post", refId: covId, r2Key: "media-posts/a.jpg", caption: null, uploadedBy: "u-media-r1", clientUuid: null, createdAt: 5001 },
+      { id: "att-p2", scope: "media_post", refId: covId, r2Key: "media-posts/b.jpg", caption: null, uploadedBy: "u-media-r1", clientUuid: null, createdAt: 5002 },
+    ] as never).run();
+
+    const g = await mediaGalleryData(0);
+    const post = g.items.find((i) => i.source === "post")!;
+    expect(post.title).toBe("افتتاحُ حلقة التحفيظ");     // ماذا
+    expect(post.kind).toBe("opening");                    // نوعُ الحدث
+    expect(post.mosqueName).toBe("مسجد الفاروق");         // أين
+    expect(post.regionName).toBe("منطقة إدلب");
+    expect(post.createdAt).toBe(5000);                    // متى وقع (لا متى رُفع)
+    expect(post.byName).toBe("مسؤول الإعلام");            // مَن
+    expect(post.photoCount).toBe(2);                      // ألبومٌ لا صورة
+    expect(post.url).toBe("/media/media-posts/a.jpg");
+
+    const d = await coverageDetailData(covId);
+    expect(d.photos.length).toBe(2);
+    expect(d.body).toBe("بحضور الأهالي");
+    expect(d.mine).toBe(true);
+  });
+
+  it("تغطيةٌ بلا صورةٍ لا تُعرض في المعرض (فلا بطاقةَ فارغة)", async () => {
+    setUser(mediaR1);
+    await createCoverageData({ title: "بلا صور", kind: "event", orgUnitId: "m1", occurredAt: 9000 });
+    const g = await mediaGalleryData(0);
+    expect(g.items.some((i) => i.title === "بلا صور")).toBe(false);
+  });
+
+  it("النشرُ قدرةٌ شخصيّة: الأميرُ يُرفض، والمديرُ يُرفض رغم «*» (قاعدة المالك الواحد)", async () => {
+    setUser(makeUser("amir", "m1", "/men/r1/sq1/m1/"));
+    expect(await createCoverageData({ title: "ت", kind: "event", orgUnitId: "m1", occurredAt: 1 })).toHaveProperty("error");
+    setUser(admin);
+    expect(await createCoverageData({ title: "ت", kind: "event", orgUnitId: "m1", occurredAt: 1 })).toHaveProperty("error");
+  });
+
+  it("التغطيةُ معزولةٌ بالنطاق كسائر الروافد: لا تغطّي وحدةً خارج نطاقك ولا ترى تغطيةَ غيرك", async () => {
+    setUser(mediaR2); // مسؤول إعلام منطقة حلب
+    expect(await createCoverageData({ title: "تعدٍّ", kind: "event", orgUnitId: "m1", occurredAt: 1 })).toHaveProperty("error", "الوحدة خارج نطاقك");
+    setUser(mediaR1);
+    const c = await createCoverageData({ title: "لقاءُ إدلب", kind: "event", orgUnitId: "m1", occurredAt: 7000 }) as { id: string };
+    await db.insert(schema.attachments).values({ id: "att-p3", scope: "media_post", refId: c.id, r2Key: "media-posts/c.jpg", caption: null, uploadedBy: "u-media-r1", clientUuid: null, createdAt: 7001 } as never).run();
+    setUser(mediaR2);
+    expect((await mediaGalleryData(0)).items.length).toBe(0);
+    await expect(coverageDetailData(c.id)).rejects.toThrow("خارج نطاقك");
+  });
+
+  it("الحذفُ لناشر التغطية وحدَه، ويأخذ معه صورَها", async () => {
+    setUser(mediaR1);
+    const c = await createCoverageData({ title: "حدثٌ يُحذف", kind: "visit", orgUnitId: "m1", occurredAt: 8000 }) as { id: string };
+    await db.insert(schema.attachments).values({ id: "att-p9", scope: "media_post", refId: c.id, r2Key: "media-posts/z.jpg", caption: null, uploadedBy: "u-media-r1", clientUuid: null, createdAt: 8001 } as never).run();
+    setUser(mediaR2);
+    expect(await deleteCoverageData(c.id)).toHaveProperty("error");
+    setUser(mediaR1);
+    expect(await deleteCoverageData(c.id)).toHaveProperty("ok", true);
+    const left = await db.select().from(schema.attachments).where(eq(schema.attachments.refId, c.id)).all();
+    expect(left.length).toBe(0);
   });
 
   // تشخيصُ الفراغ: «لا صور» تُفرَّق عن «لا مسؤولَ إعلامٍ معيَّن» (قاعدة السطر المفهوم ٣٤)

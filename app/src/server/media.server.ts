@@ -2,7 +2,7 @@
 import { eq } from "drizzle-orm";
 import { useDb } from "./utils/db";
 import { userFromToken } from "./utils/context";
-import { lessonSessions, halaqat, venues, teachers, lessonAttachments, weeklyRecords, attachments, materials } from "./database/schema";
+import { lessonSessions, halaqat, venues, teachers, lessonAttachments, weeklyRecords, attachments, materials, mediaCoverages } from "./database/schema";
 // استيرادٌ ساكنٌ لا ديناميكيّ (حارس ns=0): أيُّ import() داخل ملفّ خادمٍ يُسرّب المخطّط إلى الحزمة
 import { userCaps } from "./permissions.server";
 import { hasCap } from "../lib/capabilities";
@@ -110,11 +110,16 @@ export async function handleMediaRequest(request: Request, env: Env): Promise<Re
     if (scope === "media_post") {
       const caps = await userCaps(db, [...new Set(user.assignments.map((a) => a.role))]);
       if (!hasCap(caps, "media.post")) return bad(403, "نشرُ التغطيات لمسؤول الإعلام وحده");
+      // الصورةُ تُرفع **إلى تغطيةٍ قائمة** لناشرها — فلا صورةَ يتيمةٌ بلا حدثٍ ولا مكانٍ ولا ناشر
+      // (بلاغ المالك ٢٠٢٦-٠٧-١٨: «ما سياقها؟ من قام بها؟»)
+      const cov = (await db.select().from(mediaCoverages).where(eq(mediaCoverages.id, refId)).all())[0];
+      if (!cov) return bad(404, "التغطية غير موجودة");
+      if (cov.createdBy !== user.userId) return bad(403, "الصورُ تُضاف لتغطيتك أنت");
       const key = `media-posts/${crypto.randomUUID()}.${(file.type.split("/")[1] || "jpg").replace(/[^a-z0-9]/gi, "").slice(0, 6)}`;
       await env.MEDIA.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: file.type } });
       const id = crypto.randomUUID();
       await db.insert(attachments).values({
-        id, scope: "media_post", refId: id, r2Key: key, caption: caption || null,
+        id, scope: "media_post", refId: cov.id, r2Key: key, caption: caption || null,
         contentType: file.type, sizeBytes: file.size, uploadedBy: user.userId,
         clientUuid: clientUuid || crypto.randomUUID(), createdAt: Date.now(),
       } as never).run();

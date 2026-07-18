@@ -580,6 +580,24 @@ export const lessonAttachments = sqliteTable('lesson_attachments', {
   createdAt: integer('created_at').notNull(),
 }, (t) => ({ lessonIdx: index('idx_lesson_att_lesson').on(t.lessonSessionId) }))
 
+// التغطية الإعلاميّة (0075): سجلُّ حدثٍ له عنوانٌ ونوعٌ ووحدةٌ وتاريخُ وقوعٍ وناشر،
+// وصورُه ألبومٌ في attachments بنطاق media_post وref_id = معرّفها.
+export const mediaCoverages = sqliteTable('media_coverages', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  kind: text('kind').notNull(),
+  orgUnitId: text('org_unit_id'),
+  orgPath: text('org_path'),
+  occurredAt: integer('occurred_at').notNull(),
+  dateHijri: text('date_hijri'),
+  body: text('body'),
+  createdBy: text('created_by'),
+  createdAt: integer('created_at').notNull(),
+}, (t) => ({
+  orgIdx: index('idx_media_cov_org').on(t.orgPath),
+  atIdx: index('idx_media_cov_at').on(t.occurredAt),
+}))
+
 // مرفقات عامّة (صور توثيقية) لأيّ كيان — تُخزَّن في Cloudflare R2.
 // scope='daily_record' و refId=معرّف سجل الأسبوع: توثيق أنشطة اليوم لاطّلاع الإشراف والإعلام.
 export const attachments = sqliteTable('attachments', {

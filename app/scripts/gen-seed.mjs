@@ -41,7 +41,8 @@ const nm = (g) => `${pick(g === "male" ? MALE : FEMALE)} ${pick(g === "male" ? S
 
 const persons = [], menMosques = [], amirs = [], teacherRows = [], venueRows = [], circleIds = [], allHalaqat = [];
 function person(name, gender, home) { const id = uid("zp"); add("persons", { id, full_name: name, gender, birth_year_hijri: rint(1380, 1432), home_org_unit_id: home, status: "active", created_at: NOW }); persons.push({ id, gender }); return id; }
-function user(personId, login, last) { add("users", { id: uid("zu"), person_id: personId, login, password_hash: PW, last_login: last ?? null, mfa_secret: null, mfa_enabled: 0, created_at: NOW }); }
+const amirUserOf = new Map(); // مسجد → حسابُ أميره (لنسبة صور سجلّ اليوم لصاحبها)
+function user(personId, login, last) { const id = uid("zu"); add("users", { id, person_id: personId, login, password_hash: PW, last_login: last ?? null, mfa_secret: null, mfa_enabled: 0, created_at: NOW }); return id; }
 function role(personId, role_, unitId, unitPath, portfolio) { add("role_assignments", { id: uid("zra"), person_id: personId, role: role_, org_unit_id: unitId, org_path: unitPath, portfolio: portfolio ?? null, start_date: NOW - rint(60, 700) * DAY, end_date: null, term_number: 1, approval_status: "approved", approved_by: "u-admin", created_at: NOW }); }
 const org = (o) => add("org_units", { city: null, governorate: null, district: null, status: "active", created_at: NOW, ...o });
 
@@ -86,7 +87,8 @@ function menSquare(sqId, sqPath, gname, gid, firstSq) {
     org({ id: mid, parent_id: sqId, path: mpath, type: "mosque", section: "men", gender_track: "male", name: mname, city: gname, governorate: gid, district: distOf(gid) });
     menMosques.push({ id: mid, path: mpath });
     const pAmir = person("أمير " + mname, "male", mid); role(pAmir, "amir", mid, mpath);
-    if (firstSq && m === 0) user(pAmir, "amir", NOW - rint(0, 6) * DAY); else if (chance(0.5)) user(pAmir, uid("zam"));
+    const amirU = (firstSq && m === 0) ? user(pAmir, "amir", NOW - rint(0, 6) * DAY) : (chance(0.5) ? user(pAmir, uid("zam")) : null);
+    if (amirU) amirUserOf.set(mid, amirU);
     const recentPts = chance(0.1) ? null : pick([rint(58, 75), rint(58, 75), rint(42, 55), rint(20, 39), rint(0, 19)]);
     amirs.push({ personId: pAmir, mosqueId: mid, mosquePath: mpath, recentPoints: recentPts });
     // أسرة المسجد
@@ -348,9 +350,51 @@ for (const m of menMosques) if (chance(0.5)) for (let l = 0; l < rint(1, 3); l++
 const MANHAJ_KEYS = ["unit-01__lesson-01", "unit-02__lesson-01", "unit-03__lesson-02", "unit-09__lesson-04", "unit-05__lesson-01"];
 for (const en of (rows.enrollments ?? []).slice(0, 200)) if (chance(0.5)) for (const mk of MANHAJ_KEYS) if (chance(0.5)) add("curriculum_progress", { id: uid("zcp2"), enrollment_id: en.id, manhaj_key: mk, status: pick(["done", "done", "in_progress"]), rating: rint(3, 5), source: "lesson", date_hijri: dh(), updated_at: NOW - rint(1, 40) * DAY });
 
-// ===== مرفقات الإعلام (صور مربوطة بالسجلّ اليوميّ ودروس الحلقات) =====
-const weeklyIds = (rows.weekly_records ?? []).map((w) => w.id);
-// لا بذرَ لمرفقات الصور: r2 لا يُبذر — صفوفٌ بلا ملفات كانت تسقط صامتةً على NOT NULL (خلل مكتشف ٢٠٢٦-٠٧-١٨)
+// ===== الإعلام: تغطياتٌ بسياقها + صورُ سجلّ اليوم ودروس الحلقات =====
+// ملفّات الصور حقيقيّةٌ في scripts/seed-media وتُرفع إلى R2 بـ scripts/seed_media_r2.sh قبل هذه البذرة
+// (الدرسُ المستفاد ٢٠٢٦-٠٧-١٨: صفُّ مرفقٍ بلا ملفٍّ يسقط صامتاً — فالمفتاح هنا يقابل ملفًّا موجودًا).
+const IMG = (i) => `seed-media/${String((i % 12) + 1).padStart(2, "0")}.jpg`;
+let imgN = 0;
+const COVERAGES = [
+  { kind: "opening", title: "افتتاحُ مصلّى الحيّ الجديد", body: "افتُتح المصلّى بحضور أهالي الحيّ ومسؤول المنطقة، وأُقيمت فيه أوّلُ صلاة جماعةٍ وحلقةُ تعريفٍ بالمنهاج.", photos: 3 },
+  { kind: "distribution", title: "توزيعُ السلال الغذائيّة على الأسر المتعفّفة", body: "وزّعت لجنةُ الإغاثة ١٢٠ سلّةً غذائيّةً على أسر الحيّ، بإشراف أمير المسجد ومتابعة اللجنة.", photos: 3 },
+  { kind: "ceremony", title: "تكريمُ حفّاظ الجزء الثلاثين", body: "كُرّم ثمانيةَ عشرَ طالباً أتمّوا حفظَ الجزء الثلاثين، بحضور ذويهم ومعلّميهم.", photos: 2 },
+  { kind: "visit", title: "زيارةُ مسؤول المنطقة لحلقات المسجد", body: "جولةٌ ميدانيّةٌ على ثلاث حلقاتٍ ولقاءٌ مع المعلّمين حول متابعة المنهاج.", photos: 2 },
+  { kind: "lesson", title: "درسُ «على بصيرة» — مجلسُ العقيدة", body: null, photos: 2 },
+  { kind: "event", title: "ملتقى أمراء المساجد الفصليّ", body: "ملتقًى فصليٌّ جمع أمراءَ المساجد لعرض خطّة الفصل ومناقشة معوّقات الميدان.", photos: 3 },
+];
+if (pMedia && menMosques.length) {
+  COVERAGES.forEach((c, i) => {
+    const mq = menMosques[(i * 3) % menMosques.length];
+    const cid = uid("zmc");
+    const at = NOW - rint(2, 60) * DAY;
+    add("media_coverages", {
+      id: cid, title: c.title, kind: c.kind, org_unit_id: mq.id, org_path: mq.path,
+      occurred_at: at, date_hijri: HD(at), body: c.body, created_by: "u-media", created_at: at,
+    });
+    for (let p = 0; p < c.photos; p++) add("attachments", {
+      id: uid("zat"), scope: "media_post", ref_id: cid, r2_key: IMG(imgN++), caption: null,
+      content_type: "image/jpeg", uploaded_by: "u-media", client_uuid: uid("cu"), created_at: at + p,
+    });
+  });
+}
+// صورُ توثيق سجلّ اليوم — منسوبةٌ لأميرها حين يكون له حساب (وإلّا فبلا نسبة، وهو الصدق)
+for (const w of (rows.weekly_records ?? []).slice(0, 8)) {
+  const amirUser = amirUserOf.get(w.mosque_id) ?? null;
+  add("attachments", {
+    id: uid("zat"), scope: "daily_record", ref_id: w.id, r2_key: IMG(imgN++),
+    caption: pick(["توزيعُ سلالٍ على الأسر", "درسُ الفجر الأسبوعيّ", "نظافةُ المسجد", "لقاءُ أسرة المسجد"]),
+    content_type: "image/jpeg", uploaded_by: amirUser, client_uuid: uid("cu"), created_at: NOW - rint(1, 20) * DAY,
+  });
+}
+// صورُ دروس الحلقات — نسبتُها لمعلّمها تُحلّ من الجلسة نفسها
+for (const ls of (rows.lesson_sessions ?? []).slice(0, 6)) {
+  add("lesson_attachments", {
+    id: uid("zla2"), lesson_session_id: ls.id, r2_key: IMG(imgN++),
+    caption: ls.lesson_title ?? "درسُ الحلقة", content_type: "image/jpeg",
+    client_uuid: uid("cu"), created_at: NOW - rint(1, 20) * DAY,
+  });
+}
 
 // ===== الإخراج =====
 const out = [];
