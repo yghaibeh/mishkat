@@ -335,7 +335,7 @@ export function FinancePage({ data }: { data?: FinanceData }) {
           {listBusy && tree.leaves.length === 0 ? (
             <div className="grid place-items-center px-6 py-16 text-ink-faint"><Loader2 className="size-5 animate-spin" /></div>
           ) : (
-            <UnitTree
+            <UnitTree leafKind="person"
               units={tree.units}
               leaves={tree.leaves}
               filter={rq.trim() ? (l) => l.name.includes(rq.trim()) : undefined}
