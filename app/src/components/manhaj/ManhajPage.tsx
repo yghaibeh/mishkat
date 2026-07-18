@@ -122,7 +122,10 @@ export function ManhajPage() {
             </div>
           ) : current ? (
             <article className="mx-auto max-w-3xl text-[19px] leading-[2.05]">
-              <div className="text-sm text-ink-faint">{current.unitTitle}</div>
+              <div className="flex items-center justify-between text-sm text-ink-faint">
+                <span>{current.unitTitle}</span>
+                <span className="font-mono-nums text-[12px]">الدرس {toAr(currentIdx + 1)} من {toAr(flat.length)}</span>
+              </div>
               <h1 className="mt-1 border-b-2 border-gold-500 pb-2 font-display text-3xl font-bold text-emerald-900">{current.title}</h1>
               {current.subject && (
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -131,12 +134,36 @@ export function ManhajPage() {
               )}
               <div className="mt-6"><Blocks blocks={current.blocks} /></div>
               <div className="mt-12 flex justify-between gap-3 border-t border-line pt-6">
-                <button disabled={currentIdx <= 0} onClick={() => go(currentIdx - 1)} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-surface px-4 py-3 text-sm font-semibold text-emerald-800 ring-1 ring-line transition hover:bg-surface-2 disabled:opacity-40"><ArrowRight className="size-4" strokeWidth={2} /> الدرس السابق</button>
-                <button disabled={currentIdx >= flat.length - 1} onClick={() => go(currentIdx + 1)} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-surface px-4 py-3 text-sm font-semibold text-emerald-800 ring-1 ring-line transition hover:bg-surface-2 disabled:opacity-40">الدرس التالي <ArrowLeft className="size-4" strokeWidth={2} /></button>
+                <button disabled={currentIdx <= 0} onClick={() => go(currentIdx - 1)} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-surface px-4 py-3 text-sm font-semibold text-emerald-800 ring-1 ring-line transition hover:bg-surface-2 disabled:opacity-40"><ArrowRight className="size-4 shrink-0" strokeWidth={2} /><span className="min-w-0 truncate">{currentIdx > 0 ? flat[currentIdx - 1].title : "الدرس السابق"}</span></button>
+                <button disabled={currentIdx >= flat.length - 1} onClick={() => go(currentIdx + 1)} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-surface px-4 py-3 text-sm font-semibold text-emerald-800 ring-1 ring-line transition hover:bg-surface-2 disabled:opacity-40"><span className="min-w-0 truncate">{currentIdx < flat.length - 1 ? flat[currentIdx + 1].title : "الدرس التالي"}</span><ArrowLeft className="size-4 shrink-0" strokeWidth={2} /></button>
               </div>
             </article>
           ) : (
-            <div className="grid place-items-center py-32 text-ink-soft">اختر درساً من الفهرس.</div>
+            <div className="mx-auto max-w-2xl space-y-6 py-10">
+              <div className="rounded-2xl bg-surface p-6 text-center ring-1 ring-line">
+                <h1 className="font-display text-2xl font-bold text-emerald-900">منهاج «على بصيرة»</h1>
+                <p className="mt-2 text-sm leading-relaxed text-ink-soft">مجالسُ تربويّةٌ للشباب والأسرة — في كل مجلسٍ سورةٌ وعقيدةٌ وفقهٌ وتربية. ابدأ من الأول أو اختر مجلسك.</p>
+                {flat.length > 0 && (
+                  <button onClick={() => go(0)} className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl bg-emerald-800 px-5 text-sm font-semibold text-emerald-50 hover:bg-emerald-900">
+                    <BookOpen className="size-4" strokeWidth={1.75} /> ابدأ من أول درس
+                  </button>
+                )}
+              </div>
+              {/* بطاقات المجالس — تصفّحٌ مباشرٌ خاصةً على الجوال حيث الفهرس الجانبي مخفيّ */}
+              <div className="grid gap-2 sm:grid-cols-2">
+                {(tree ?? []).map((u, ui) => u.lessons.length > 0 && (
+                  <button key={u.id} onClick={() => { const i = flat.findIndex((f) => f.id === u.lessons[0].id); if (i >= 0) go(i); }}
+                    className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-3.5 text-start ring-1 ring-line transition hover:ring-emerald-800/40">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-50 font-mono-nums text-sm font-bold text-emerald-800 ring-1 ring-emerald-100">{toAr(ui + 1)}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-ink">{u.title}</span>
+                      <span className="text-[11px] text-ink-faint">{toAr(u.lessons.length)} دروس</span>
+                    </span>
+                    <ChevronLeft className="size-4 shrink-0 text-ink-faint" />
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </main>
       </div>
@@ -161,7 +188,7 @@ function Tree({ units, q, currentId, onPick }: { units: TreeUnit[]; q: string; c
         if (!lessons.length) return null;
         const hasCurrent = lessons.some((l) => l.id === currentId);
         return (
-          <details key={u.id} open={!!term || hasCurrent} className="group">
+          <details key={u.id} open className="group">{/* قاعدة التوسيع الافتراضي (٣٤): الفهرس مفتوح كله */}
             <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-ink transition hover:bg-surface-2 [&::-webkit-details-marker]:hidden">
               <span className="min-w-0 truncate">{u.title}</span>
               <span className="flex shrink-0 items-center gap-1 text-[11px] font-normal text-ink-faint">{toAr(u.lessons.length)}<ChevronLeft className="size-3.5 transition group-open:-rotate-90" strokeWidth={2} /></span>
