@@ -136,8 +136,8 @@ export function AlaBaseeraPage({ data }: { data?: AB }) {
             <BookOpen className="size-5" strokeWidth={1.5} />
           </div>
           <div className="min-w-0">
-            <h1 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">على بصيرة</h1>
-            <p className="mt-1 text-sm text-ink-soft">{isAdmin ? "التعليم الشبابي الأسري — محاسبة المعلّم بالساعة" : "حلقات التعليم في نطاقك — اطّلاعٌ وزيارات"}</p>
+            <h1 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">التعليم</h1>
+            <p className="mt-1 text-sm text-ink-soft">{isAdmin ? "كل حلقات الشبكة بأنواعها (على بصيرة، تحفيظ، رشيدي، علمية) ومعاهدها وبيوتها" : "حلقات نطاقك بكل أنواعها — اطّلاعٌ وزيارات"}</p>
           </div>
           {isAdmin && (
             <div className="ms-auto w-56">

@@ -11,9 +11,8 @@ export function mosqueTabs(caps: string[] = [], features: Record<string, boolean
     { k: "overview", l: "نظرة", g: "التقرير", show: true },
     { k: "daily", l: "سجل اليوم", g: "التقرير", show: hasCap(caps, "dailyLog.view") },
     { k: "report", l: "التقرير الشهري", g: "التقرير", show: hasCap(caps, "report.view") },
-    { k: "circles", l: "الحلقات", g: "التعليم", show: on("circles") && hasCap(caps, "circles.view") },
-    { k: "halaqat", l: "على بصيرة", g: "التعليم", show: on("alaBaseera") && hasCap(caps, "alaBaseera.view") },
-    { k: "tahfeez", l: "التحفيظ", g: "التعليم", show: on("tahfeez") && hasCap(caps, "tahfeez.view") },
+    // قرار المالك ٢٠٢٦-٠٧-١٨: «على بصيرة» نوعُ حلقةٍ لا تبويب — مساحةُ «التعليم» الواحدة تجمع الأنواع كلها
+    { k: "education", l: "التعليم", g: "التعليم", show: (on("circles") && hasCap(caps, "circles.view")) || (on("alaBaseera") && hasCap(caps, "alaBaseera.view")) || (on("tahfeez") && hasCap(caps, "tahfeez.view")) },
     { k: "lessons", l: "الدروس", g: "التعليم", show: on("lessons") && hasCap(caps, "dailyLog.view") },
     { k: "meetings", l: "الاجتماعات", g: "الأسرة", show: on("meetings") && hasCap(caps, "meetings.view") },
     { k: "committees", l: "اللجان", g: "الأسرة", show: on("committees") && hasCap(caps, "committees.view") },

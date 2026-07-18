@@ -12,7 +12,7 @@ export const Route = createFileRoute("/ala-baseera")({
   },
   head: () => ({
     meta: [
-      { title: "على بصيرة — مشكاة" },
+      { title: "التعليم — مشكاة" },
       { name: "description", content: "إدارة حلقات «على بصيرة»: المعلّمون والأماكن والطلاب وجلسات الدرس والمحاسبة بالساعة." },
     ],
   }),

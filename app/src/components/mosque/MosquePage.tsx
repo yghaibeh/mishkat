@@ -8,6 +8,7 @@ import { mosqueTabs } from "@/lib/mosque-tabs";
 import { fmtNum, fmtHijriShort, hijriMonthLabel, hijriMonthOptions } from "@/lib/format";
 import { MishkatShell } from "@/components/nav/MishkatShell";
 import { BoxPanel } from "@/components/finance/BoxPanel";
+import { MTabs } from "@/components/ui/m-tabs";
 import { SegmentedControl, TextArea } from "@/components/ui/field";
 import { KpiAmountCard, KpiPercentCard, KpiProgressCard } from "@/components/report/KpiCard";
 import { WeeklyTable } from "@/components/report/WeeklyTable";
@@ -84,7 +85,12 @@ export function MosquePage({ mosqueId, overview, report, daily, weekPoints }: { 
   const search = useSearch({ strict: false }) as { t?: string };
   // طاقم المسجد يهبط على «سجل اليوم» (واجهة عمله اليومية)؛ المشرف الزائر على «نظرة».
   const defaultTab = isOwn && tabs.some((t) => t.k === "daily") ? "daily" : tabs[0]?.k ?? "overview";
-  const tab = tabs.find((t) => t.k === search.t)?.k ?? defaultTab;
+  // إحالة القيم القديمة (circles/halaqat/tahfeez) إلى مساحة «التعليم» بفرعها المطلوب
+  const LEGACY_EDU: Record<string, string> = { circles: "circles", halaqat: "halaqat", tahfeez: "tahfeez" };
+  const eduSubInit = search.t && LEGACY_EDU[search.t] ? LEGACY_EDU[search.t] : "circles";
+  const rawT = search.t && LEGACY_EDU[search.t] ? "education" : search.t;
+  const tab = tabs.find((t) => t.k === rawT)?.k ?? defaultTab;
+  const [eduSub, setEduSub] = useState(eduSubInit);
   const setTab = (k: string) => navigate({ to: "/mosque/$mosqueId", params: { mosqueId }, search: { t: k }, replace: true });
 
   const mosque = overview?.mosque;
@@ -146,14 +152,22 @@ export function MosquePage({ mosqueId, overview, report, daily, weekPoints }: { 
         {tab === "overview" && <Overview overview={overview} onGo={setTab} tabs={tabs.map((t) => t.k)} canEdit={isOwn && hasCap(caps, "dailyLog.edit")} />}
         {tab === "report" && <ReportTab report={report} mosqueId={mosqueId} />}
         {tab === "daily" && <DailyLogPage data={(daily ?? undefined) as never} embedded mosqueId={mosqueId} genderTrack={mosque?.genderTrack} priorWeekPoints={weekPoints ?? 0} readOnly={!(isOwn && hasCap(caps, "dailyLog.edit"))} />}
-        {tab === "circles" && <CirclesTab mosqueId={mosqueId} canManage={canManageCircles} defaultGender={(mosque?.genderTrack as GenderTrack) ?? "male"} />}
+        {tab === "education" && (
+          <div className="space-y-4">
+            {/* أنواع الحلقات فروعٌ داخل مساحة التعليم الواحدة — «على بصيرة» نوعٌ لا تبويب (قرار المالك) */}
+            <MTabs value={eduSub} onValueChange={setEduSub} options={[
+              { value: "circles", label: "الحلقات" }, { value: "halaqat", label: "على بصيرة" }, { value: "tahfeez", label: "التحفيظ" },
+            ]} />
+            {eduSub === "circles" && <CirclesTab mosqueId={mosqueId} canManage={canManageCircles} defaultGender={(mosque?.genderTrack as GenderTrack) ?? "male"} />}
+            {eduSub === "halaqat" && <HalaqatTab mosqueId={mosqueId} canManage={canManageBaseera} />}
+            {eduSub === "tahfeez" && <TahfeezTab mosqueId={mosqueId} canManage={canManageTahfeez} mosqueName={mosque?.name ?? ""} />}
+          </div>
+        )}
         {tab === "finance" && (<>
           {/* «صندوق مسجدي» (ق-د٢): الأميرُ أمينُ صندوقه — يقبض بنفسه ويقرّ عُهدةَ ما يصله من السلسلة */}
           <BoxPanel unitId={mosqueId} />
           <FinanceTab mosqueId={mosqueId} />
         </>)}
-        {tab === "halaqat" && <HalaqatTab mosqueId={mosqueId} canManage={canManageBaseera} />}
-        {tab === "tahfeez" && <TahfeezTab mosqueId={mosqueId} canManage={canManageTahfeez} mosqueName={mosque?.name ?? ""} />}
         {tab === "lessons" && <LessonsTab mosqueId={mosqueId} canManage={isOwn ? hasCap(caps, "dailyLog.edit") : hasCap(caps, "*")} />}
         {tab === "meetings" && <MeetingsTab mosqueId={mosqueId} canManage={canManageMeetings} />}
         {tab === "committees" && <CommitteesTab mosqueId={mosqueId} canManage={canManageCommittees} />}

@@ -1,5 +1,6 @@
 ---
 id: education-supervise
+# التسمية (ق-د٣): التبويب «التعليم» — «على بصيرة» نوعُ حلقةٍ ومنهجٌ لا تبويب
 route: /ala-baseera
 roles: [admin, section_head, rabita, square, amir]
 lens: ع١–ع٥ (اطلاع وزيارات)
