@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>سجل اليوم — المسجد المؤثر (نموذج أولي)</title>
+<style>
+:root{
+  --bg:#f4f3ee;--card:#fff;--ink:#1c1c1a;--muted:#5f5e5a;--hint:#888780;
+  --line:rgba(0,0,0,.12);--line2:rgba(0,0,0,.22);
+  --info-bg:#e6f1fb;--info:#185fa5;--ok:#3b6d11;--warn-bg:#faeeda;--warn:#854f0b;
+  --r:8px;--rl:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;padding:16px}
+.frame{max-width:392px;margin:0 auto;background:var(--card);border:.5px solid var(--line);border-radius:var(--rl);overflow:hidden}
+.hd{padding:14px 16px;border-bottom:.5px solid var(--line)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.chip{font-size:12px;color:var(--warn);background:var(--warn-bg);padding:3px 9px;border-radius:var(--r)}
+.sub{margin-top:8px;font-size:13px;color:var(--muted)}
+.body{padding:14px 16px}
+.seg{display:flex;border-radius:var(--r);overflow:hidden;margin-bottom:6px}
+.seg-btn{flex:1;padding:9px 0;border:.5px solid var(--line2);background:transparent;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer}
+.seg-btn.on{background:var(--info-bg);color:var(--info);border-color:var(--info)}
+.note0{font-size:12px;color:var(--hint);margin:0 0 6px}
+.act{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--line)}
+.cbtn{width:30px;height:30px;border-radius:var(--r);border:.5px solid var(--line2);background:transparent;font-size:17px;cursor:pointer;color:var(--ink);flex:none}
+.sum{margin-top:14px;padding:12px;background:var(--bg);border-radius:var(--r)}
+.sline{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;color:var(--muted)}
+.sline b{color:var(--ink);font-weight:500}
+.barbg{height:7px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar{height:100%;background:var(--info)}
+.money{color:var(--ok);font-weight:500}
+.fine{font-size:11px;color:var(--hint);margin:6px 0 0}
+.chk{display:flex;align-items:flex-start;gap:8px;margin-top:14px;font-size:13px;cursor:pointer}
+textarea{width:100%;margin-top:12px;min-height:54px;resize:vertical;border:.5px solid var(--line2);border-radius:var(--r);padding:8px;font:inherit}
+.save{width:100%;margin-top:12px;padding:11px;font-size:15px;font-weight:500;border-radius:var(--r);border:.5px solid var(--line2);background:transparent;cursor:pointer}
+.hint{font-size:12px;color:var(--hint);text-align:center;margin:8px 0 0}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="hd">
+    <div class="row">
+      <span style="font-size:16px;font-weight:500">🕌 مسجد الفاروق</span>
+      <span class="chip">يعمل دون اتصال</span>
+    </div>
+    <div class="sub">سجل اليوم · الثلاثاء 27 ذو الحجة 1447هـ (13 يونيو)</div>
+  </div>
+  <div class="body">
+    <div class="seg">
+      <button class="seg-btn on" id="seg-m" onclick="setTrack('m')">مسجد رجال</button>
+      <button class="seg-btn" id="seg-w" onclick="setTrack('w')">مسجد نساء</button>
+    </div>
+    <p class="note0">الأنشطة تختلف بحسب المسار — الهدف 70 نقطة أسبوعياً في الحالتين.</p>
+    <div id="acts"></div>
+    <div class="sum">
+      <div class="sline"><span>نقاط اليوم</span><b id="today-pts">0</b></div>
+      <div class="sline"><span>مجموع الأسبوع</span><b><span id="week-pts">41</span> / 70</b></div>
+      <div class="barbg"><div class="bar" id="bar" style="width:59%"></div></div>
+      <div class="sline" style="margin-top:10px;margin-bottom:0"><span>القيمة التقديرية للأسبوع</span><b class="money" id="money">$7.3</b></div>
+      <p class="fine">المعدّل الحالي: 280 نقطة شهرياً = 50$ · يُنسب الاستحقاق لأمير المسجد.</p>
+    </div>
+    <label class="chk"><input type="checkbox" id="shura" onchange="render()" style="margin-top:2px"/><span>أُقرّ أن هذه الأنشطة تمّت بإشراك أسرة المسجد وبالشورى.</span></label>
+    <textarea id="note" placeholder="ملاحظات اليوم (اختياري)…"></textarea>
+    <button class="save" id="save" onclick="onSave()">حفظ السجل</button>
+    <p class="hint" id="hint">دون الإقرار يُحفظ كمسودة ولا تُحتسب النقاط.</p>
+  </div>
+</div>
+<script>
+const SETS={
+  m:[["اجتماع الأسرة اليومي",1],["تدريس «على بصيرة»",2],["دروس شرعية وتربوية",2],["عمل اجتماعي وعلاقات عامة",1],["استقطاب شاب جديد",1],["نشاط ترفيهي ورياضي",1],["عمل إعلامي",1],["أنشطة أخرى",1]],
+  w:[["تدريس «على بصيرة»",2],["زيارة دعوية",1],["جولات دعوية",1],["توزيع حجابات",1],["إقناع امرأة بالحجاب",1],["حضور دروس (بيوت/مساجد)",1],["إلقاء وملتقيات دعوية",1],["أنشطة أخرى",1]]
+};
+const PRIOR=41, RATE=50/280;
+let track='m', counts=[];
+function setTrack(t){track=t;counts=SETS[t].map(()=>0);
+  document.getElementById('seg-m').classList.toggle('on',t==='m');
+  document.getElementById('seg-w').classList.toggle('on',t==='w');
+  buildRows();render();}
+function buildRows(){
+  const box=document.getElementById('acts');box.innerHTML='';
+  SETS[track].forEach((a,i)=>{
+    const row=document.createElement('div');row.className='act';
+    row.innerHTML='<div style="flex:1;min-width:0"><div style="font-size:14px">'+a[0]+'</div><div style="font-size:11px;color:#888780">'+a[1]+' نقطة للمرة</div></div>'+
+      '<button class="cbtn" aria-label="إنقاص" onclick="bump('+i+',-1)">−</button>'+
+      '<span style="min-width:20px;text-align:center;font-weight:500" id="c'+i+'">0</span>'+
+      '<button class="cbtn" aria-label="زيادة" onclick="bump('+i+',1)">+</button>';
+    box.appendChild(row);
+  });
+}
+function bump(i,d){counts[i]=Math.max(0,counts[i]+d);document.getElementById('c'+i).textContent=counts[i];render();}
+function render(){
+  let today=0;SETS[track].forEach((a,i)=>today+=a[1]*counts[i]);
+  const week=PRIOR+today, pct=Math.min(100,Math.round(week/70*100));
+  document.getElementById('today-pts').textContent=today;
+  document.getElementById('week-pts').textContent=week;
+  document.getElementById('bar').style.width=pct+'%';
+  document.getElementById('money').textContent='$'+(week*RATE).toFixed(1);
+  const ok=document.getElementById('shura').checked;
+  document.getElementById('save').textContent=ok?'حفظ واعتماد السجل':'حفظ كمسودة';
+  document.getElementById('hint').style.visibility=ok?'hidden':'visible';
+}
+function onSave(){
+  const ok=document.getElementById('shura').checked;
+  let today=0;SETS[track].forEach((a,i)=>today+=a[1]*counts[i]);
+  alert(ok?('حُفظ سجل اليوم معتمداً بـ '+today+' نقطة (مسار '+(track==='m'?'الرجال':'النساء')+').'):'حُفظ سجل اليوم كمسودة دون إقرار الشورى.');
+}
+setTrack('m');
+</script>
+</body>
+</html>

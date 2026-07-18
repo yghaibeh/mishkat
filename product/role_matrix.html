@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مصفوفة الأدوار والصلاحيات — مشكاة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --emerald:#0b5c47; --emerald-d:#073d2f; --gold:#9a7209;
+    --exec:#0f6e56; --appr:#c08a16; --view:#a8d3c4; --none:#eef1ef;
+    --ink:#1f2a26; --ink-soft:#5b6b64; --ink-faint:#8a978f;
+    --line:#e3e8e5; --surface:#ffffff; --bg:#f5f7f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased}
+  .sheet{max-width:1000px;margin:0 auto;padding:28px 20px 56px}
+  .head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .logo{width:46px;height:46px;border-radius:12px;background:var(--emerald);color:#dff3ec;
+    display:grid;place-items:center;font-family:"Reem Kufi",sans-serif;font-weight:700;font-size:24px;flex:0 0 auto}
+  h1{font-family:"Reem Kufi",sans-serif;font-weight:600;font-size:24px;margin:0;letter-spacing:-.2px}
+  .sub{color:var(--ink-soft);font-size:14px;margin:2px 0 0}
+  .meta{color:var(--ink-faint);font-size:12.5px;margin:10px 0 22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin:0 0 18px;font-size:13px;color:var(--ink-soft)}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .sw{width:14px;height:14px;border-radius:4px;flex:0 0 auto}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;overflow-x:auto}
+  .grid{display:grid;grid-template-columns:128px repeat(11,minmax(40px,1fr));gap:3px;align-items:stretch;min-width:720px}
+  .rh{font-size:11.5px;font-weight:600;color:var(--ink-soft);text-align:center;padding:0 0 7px}
+  .mod{grid-column:1 / -1;font-family:"Reem Kufi",sans-serif;font-size:13px;font-weight:600;color:var(--emerald);
+    padding:11px 2px 4px;margin-top:2px;border-bottom:1px solid var(--line)}
+  .cl{font-size:12px;color:var(--ink);display:flex;align-items:center;padding:0 4px;min-height:24px}
+  .cell{display:flex;align-items:center;justify-content:center;min-height:24px}
+  .dot{width:16px;height:16px;border-radius:4px}
+  .note{margin:22px 0 0;font-size:13px;color:var(--ink-soft);background:#eef5f2;border:1px solid #d8e7e0;
+    border-radius:12px;padding:14px 16px;line-height:1.85}
+  .note b{color:var(--emerald-d);font-weight:600}
+  .foot{margin-top:26px;font-size:12px;color:var(--ink-faint);text-align:center}
+  @media print{body{background:#fff}.card{overflow:visible}.sheet{max-width:none}}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="head">
+    <div class="logo">م</div>
+    <div>
+      <h1>مصفوفة الأدوار والصلاحيات</h1>
+      <p class="sub">منظومة مشكاة لإدارة المساجد — مؤسسة بصائر · مشروع المسجد المؤثر</p>
+    </div>
+  </div>
+  <p class="meta">مرجع معتمَد · مبنيّ على «دليل عمل مشروع المسجد المؤثر» (المواد 3، 20–33، الباب الخامس)</p>
+
+  <div class="legend">
+    <span><span class="sw" style="background:var(--exec)"></span> تنفيذ / إدارة</span>
+    <span><span class="sw" style="background:var(--appr)"></span> اعتماد</span>
+    <span><span class="sw" style="background:var(--view)"></span> اطّلاع (قراءة)</span>
+    <span><span class="sw" style="background:var(--none);border:1px solid var(--line)"></span> لا صلاحية</span>
+  </div>
+
+  <div class="card"><div id="grid" class="grid"></div></div>
+
+  <div class="note">
+    <b>مبدأ التصاعد (جوهر النظام):</b> كل ما تفعله الفئة الأدنى تراه الفئة الأعلى — نصّ الدليل: «يحقّ لمسؤول المنطقة الاطّلاع على كافة التقارير والمحاضر والمكاتبات والتقارير المالية». فالاطّلاع يتصاعد كاملًا في الهرم، والتنفيذ عند الطبقة المختصّة، والاعتماد متدرّج.<br>
+    <b>عزل النطاق (آليّ):</b> كل صلاحية مقيّدة بشجرة المستخدم — «الإدارة العليا» ترى الكلّ، ومسؤول الرابطة كتلَه، والكتلة مربعاتها، والمربع مساجده، وأدوار المسجد مسجدَهم.
+  </div>
+
+  <p class="foot">مشكاة — وثيقة داخلية للمراجعة والاعتماد</p>
+</div>
+
+<script>
+(function(){
+  var roles=["عليا","رابطة","كتلة","مربع","أمير","نائب","سرّ","صندوق","لجنة","عضو","مشترك"];
+  var C={x:"#0f6e56",a:"#c08a16",v:"#a8d3c4"};
+  var NONE="#eef1ef", NONE_BD="#e3e8e5";
+  var data=[
+    ["الشبكة والإشراف",[
+      ["تصفّح الشبكة","x,v,v,v,,,,,,,"]]],
+    ["التقرير الشهري",[
+      ["عرض التقرير","v,v,v,v,v,v,v,v,v,v,"],
+      ["اعتماد التقرير","a,a,a,a,a,a,,,,,"]]],
+    ["سجل اليوم",[
+      ["عرض السجل","v,v,v,v,v,v,v,,v,,"],
+      ["إدخال السجل",",,,,x,x,x,,x,,"]]],
+    ["المالية المركزية",[
+      ["عرض الملف المالي","v,v,v,v,v,,,v,,,"],
+      ["اعتماد المستحقات","a,,,,,,,,,,"],
+      ["تسجيل الصرف","x,,,,,,,,,,"]]],
+    ["مالية المسجد الداخلية",[
+      ["عرض المالية","v,v,v,v,v,v,,v,,,"],
+      ["تسجيل تبرعات/مصروفات",",,,,x,,,x,,,"]]],
+    ["على بصيرة",[
+      ["عرض الشبكة (بصيرة)","v,v,v,v,,,,,,,"],
+      ["عرض حلقات المسجد","v,v,v,v,v,v,,,v,,"],
+      ["إدارة الحلقات والجلسات",",,,,x,,,,x,,"]]],
+    ["التحفيظ",[
+      ["عرض التحفيظ","v,v,v,v,v,v,v,,v,,"],
+      ["إدارة التحفيظ",",,,,x,x,,,x,,"]]],
+    ["الاجتماعات والقرارات",[
+      ["عرض الاجتماعات","v,v,v,v,v,v,v,v,v,,"],
+      ["تسجيل الاجتماعات",",,,,x,,x,,,,"]]],
+    ["اللجان وخططها",[
+      ["عرض اللجان","v,v,v,v,v,v,v,,v,v,"],
+      ["تشكيل وإدارة اللجان",",,,,x,x,,,x,,"]]],
+    ["المسابقة",[
+      ["عرض المسابقة","v,v,v,v,v,v,,,v,v,v"],
+      ["إدارة المسابقة","x,,,,x,,,,x,,"]]],
+    ["التهيئة والإدارة",[
+      ["عرض التهيئة","x,v,v,v,,,,,,,"],
+      ["إدارة المستخدمين","x,x,x,x,x,,,,,,"],
+      ["إدارة الوحدات التنظيمية","x,x,x,,,,,,,,"],
+      ["إدارة الصلاحيات","x,,,,,,,,,,"],
+      ["الإعدادات والمعدّلات","x,,,,,,,,,,"]]]
+  ];
+  var g=document.getElementById("grid");
+  var h='<div></div>';
+  roles.forEach(function(r){ h+='<div class="rh">'+r+'</div>'; });
+  data.forEach(function(grp){
+    h+='<div class="mod">'+grp[0]+'</div>';
+    grp[1].forEach(function(row){
+      h+='<div class="cl">'+row[0]+'</div>';
+      row[1].split(",").forEach(function(v){
+        var st = C[v] ? 'background:'+C[v] : 'background:'+NONE+';border:1px solid '+NONE_BD;
+        h+='<div class="cell"><span class="dot" style="'+st+'"></span></div>';
+      });
+    });
+  });
+  g.innerHTML=h;
+})();
+</script>
+</body>
+</html>

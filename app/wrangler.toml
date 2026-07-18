@@ -1,0 +1,30 @@
+name = "mishkat"
+main = "dist/server/server.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# مهامّ مجدولة (F2): تذكيرات الإدخال + تصعيد الاعتماد المتأخّر — كل ساعة (idempotent).
+[triggers]
+crons = ["0 * * * *"]
+
+# الأصول الساكنة الناتجة من البناء (dist/client)
+[assets]
+directory = "dist/client"
+binding = "ASSETS"
+
+# سرّ توقيع JWT:
+#   - محليًا: في ملف .dev.vars (يقرؤه wrangler dev تلقائيًا) — غير مرفوع إلى git.
+#   - إنتاجيًا: wrangler secret put JWT_SECRET — لا تضعه هنا أبدًا (يُشحن كنصّ ظاهر فتصبح الجلسات قابلة للتزوير).
+# [vars] متروك فارغًا عمدًا لئلّا يُشحن سرّ معروف مع الإنتاج.
+
+# قاعدة بيانات D1 — أنشئها بـ: wrangler d1 create influential-masjid، وضع database_id الحقيقي للنشر
+[[d1_databases]]
+binding = "DB"
+database_name = "influential-masjid"
+database_id = "5c5b886c-b9a1-4940-a99d-a5e63a2473af"
+migrations_dir = "src/server/database/migrations"
+
+# تخزين الكائنات (R2) لمرفقات الدروس (صور توثيقية) — أنشئ السلة بـ: wrangler r2 bucket create mishkat-media
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "mishkat-media"

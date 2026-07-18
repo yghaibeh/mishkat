@@ -1,0 +1,26 @@
+name = "influential-masjid"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".output/public"
+
+# قاعدة بيانات D1 — أنشئها أولاً بـ:  wrangler d1 create influential-masjid
+# ثم ضع database_id الناتج هنا. الاسم في الكود معروف بالربط (binding) DB.
+[[d1_databases]]
+binding = "DB"
+database_name = "influential-masjid"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "server/database/migrations"
+
+# تخزين R2 (لمرفقات/صور لاحقاً) — اختياري في S1
+# [[r2_buckets]]
+# binding = "FILES"
+# bucket_name = "influential-masjid-files"
+
+# Browser Rendering لتوليد PDF (باقة مدفوعة) — يفعّل /api/reports/monthly-pdf
+# [browser]
+# binding = "BROWSER"
+
+# Cron Trigger لتذكيرات الإدخال (يعمل على نشر Workers، لا Pages).
+# على Pages: استخدم مجدولاً خارجياً (GitHub Action / cron-job.org) يستدعي POST /api/notifications/run
+# [triggers]
+# crontab = ["0 6 * * 6"]  # كل سبت 6 صباحاً (بداية الأسبوع)

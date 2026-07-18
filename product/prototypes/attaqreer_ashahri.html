@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>التقرير الشهري — المسجد المؤثر (نموذج أولي)</title>
+<style>
+:root{
+  --bg:#f4f3ee;--card:#fff;--ink:#1c1c1a;--muted:#5f5e5a;--hint:#888780;
+  --line:rgba(0,0,0,.12);--line2:rgba(0,0,0,.22);
+  --info-bg:#e6f1fb;--info:#185fa5;--ok:#3b6d11;--warn-bg:#faeeda;--warn:#854f0b;
+  --r:8px;--rl:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;padding:16px}
+.frame{max-width:560px;margin:0 auto;background:var(--card);border:.5px solid var(--line);border-radius:var(--rl);overflow:hidden}
+.hd{padding:16px;border-bottom:.5px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.tag{font-size:12px;color:var(--warn);background:var(--warn-bg);padding:4px 10px;border-radius:var(--r);white-space:nowrap}
+.body{padding:16px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.mc{background:var(--bg);border-radius:var(--r);padding:12px}
+.mc .lab{font-size:12px;color:var(--muted)}
+.mc .val{font-size:22px;font-weight:500}
+.h{font-size:14px;font-weight:500;margin:16px 0 4px}
+.wk{display:grid;grid-template-columns:1fr 70px 70px;gap:8px;align-items:center;font-size:13px;padding:8px 0;border-bottom:.5px solid var(--line)}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:.5px solid var(--line)}
+.kv span:first-child{color:var(--muted)}
+.info{background:var(--bg);border-radius:var(--r);padding:12px;margin-top:14px;font-size:12px;color:var(--muted)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.abtn{padding:10px;font-size:14px;font-weight:500;border-radius:var(--r);border:.5px solid var(--line2);background:transparent;cursor:pointer;color:var(--ink)}
+.abtn.pri{background:var(--info-bg);color:var(--info);border-color:var(--info)}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="hd">
+    <div>
+      <div style="font-size:17px;font-weight:500">التقرير الشهري — مسجد الفاروق</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px">ذو القعدة 1447هـ · مربع 1 · محافظة إدلب</div>
+    </div>
+    <span class="tag">بانتظار اعتماد الأمير</span>
+  </div>
+  <div class="body">
+    <div class="cards">
+      <div class="mc"><div class="lab">مجموع الشهر</div><div class="val">243<span style="font-size:13px;color:var(--hint)">/280</span></div></div>
+      <div class="mc"><div class="lab">تحقيق الهدف</div><div class="val" style="color:var(--ok)">87%</div></div>
+      <div class="mc"><div class="lab">القيمة المستحقة</div><div class="val" style="color:var(--ok)">$43.4</div></div>
+    </div>
+
+    <div class="h">النقاط الأسبوعية</div>
+    <div class="wk" style="color:var(--muted);font-weight:500"><span>الأسبوع</span><span style="text-align:center">النقاط</span><span style="text-align:left">الحالة</span></div>
+    <div class="wk"><span>الأول</span><span style="text-align:center">70</span><span style="text-align:left;color:var(--ok)">مكتمل</span></div>
+    <div class="wk"><span>الثاني</span><span style="text-align:center">68</span><span style="text-align:left;color:var(--ok)">مكتمل</span></div>
+    <div class="wk"><span>الثالث</span><span style="text-align:center">52</span><span style="text-align:left;color:var(--warn)">دون الهدف</span></div>
+    <div class="wk"><span>الرابع</span><span style="text-align:center">53</span><span style="text-align:left;color:var(--warn)">دون الهدف</span></div>
+
+    <div class="h">تفصيل الأنشطة</div>
+    <div class="kv"><span>اجتماع الأسرة اليومي</span><span>22 مرة · 22 نقطة</span></div>
+    <div class="kv"><span>تدريس «على بصيرة» (×2)</span><span>18 مرة · 36 نقطة</span></div>
+    <div class="kv"><span>دروس شرعية وتربوية (×2)</span><span>20 مرة · 40 نقطة</span></div>
+    <div class="kv"><span>عمل اجتماعي وعلاقات</span><span>31 مرة · 31 نقطة</span></div>
+    <div class="kv"><span>استقطاب شاب جديد</span><span>14 مرة · 14 نقطة</span></div>
+    <div class="kv"><span>نشاط ترفيهي ورياضي</span><span>19 مرة · 19 نقطة</span></div>
+    <div class="kv"><span>عمل إعلامي</span><span>26 مرة · 26 نقطة</span></div>
+    <div class="kv"><span>أنشطة أخرى</span><span>55 مرة · 55 نقطة</span></div>
+
+    <div class="info">ℹ️ وُلّد هذا التقرير تلقائياً من السجلات اليومية المعتمدة. المعدّل: 280 نقطة=50$ · المستحق لأمير المسجد · لا خصومات.</div>
+
+    <div class="acts">
+      <button class="abtn pri" onclick="alert('اعتُمد التقرير وأُرسل لأعلى طبقة مفعّلة.')">✓ اعتماد التقرير</button>
+      <button class="abtn" onclick="window.print()">⬇ تصدير PDF</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>المسجد المؤثر — التقرير الشهري · نظام التصميم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════════
+   نظام تصميم «المسجد المؤثر» — Design Tokens
+   نقطة واحدة للحقيقة، تُعمَّم على كل شاشات النظام.
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  /* ── الهوية / Brand (Emerald) ── */
+  --emerald-900:#08382C;
+  --emerald-800:#0C4A39;
+  --emerald-700:#0E6B53;
+  --emerald-600:#138A69;
+  --emerald-100:#D2E7DF;
+  --emerald-50:#E7F1ED;
+
+  /* ── التمييز / Accent (Gold) ── */
+  --gold:#C9A24B;
+  --gold-300:#E3C98B;
+  --gold-50:#F6EFDD;
+
+  /* ── الدلالات / Semantic ── */
+  --success:#0E7C5B;   --success-50:#E2F2EC;
+  --warn:#B5701A;      --warn-bar:#E0982E;   --warn-50:#FBEFD9;
+  --danger:#C0432F;    --danger-50:#F8E5E0;
+
+  /* ── المحايدة / Neutrals ── */
+  --canvas:#E9EFEB;
+  --surface:#FFFFFF;
+  --surface-2:#F4F7F4;
+  --inset:#EEF3F0;
+  --border:#DBE5E0;
+  --border-strong:#C4D2CB;
+
+  /* ── النصوص / Text ── */
+  --ink:#14201C;
+  --ink-soft:#46564F;
+  --ink-faint:#8A9A91;
+
+  /* ── المسافات / Spacing (4pt) ── */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+
+  /* ── الزوايا / Radius ── */
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-pill:999px;
+
+  /* ── الظلال / Elevation ── */
+  --sh-1:0 1px 2px rgba(16,40,32,.06);
+  --sh-2:0 6px 18px -8px rgba(16,40,32,.16);
+  --sh-card:0 1px 0 rgba(16,40,32,.03), 0 18px 38px -22px rgba(16,40,32,.28);
+
+  /* ── الخطوط / Type ── */
+  --font-display:'Reem Kufi', system-ui, sans-serif;
+  --font-body:'IBM Plex Sans Arabic', system-ui, sans-serif;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{
+  background:
+    radial-gradient(1200px 420px at 50% -160px, #F2F6F2 0%, rgba(242,246,242,0) 70%),
+    var(--canvas);
+  color:var(--ink);
+  font-family:var(--font-body);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding:var(--s6) var(--s4) var(--s8);
+}
+.num{direction:ltr; unicode-bidi:isolate; font-feature-settings:"tnum" 1; font-variant-numeric:tabular-nums;}
+
+/* ════════════════════ App shell ════════════════════ */
+.shell{max-width:760px; margin:0 auto;}
+
+.appbar{
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:var(--s4);
+  margin-bottom:var(--s6);
+}
+.brand{display:flex; align-items:center; gap:var(--s3);}
+.emblem{width:26px; height:26px; color:var(--gold); flex:none;}
+.brand-name{font-family:var(--font-display); font-weight:700; font-size:19px; letter-spacing:.2px;}
+.brand-tag{font-size:12px; color:var(--ink-faint); font-weight:500; margin-top:-2px;}
+
+/* Segmented tabs */
+.segmented{
+  display:inline-flex; background:var(--inset); border:1px solid var(--border);
+  padding:4px; border-radius:var(--r-pill); gap:2px;
+}
+.seg-btn{
+  appearance:none; border:none; cursor:pointer; font-family:var(--font-body);
+  font-weight:600; font-size:13.5px; color:var(--ink-soft);
+  padding:8px 16px; border-radius:var(--r-pill); background:transparent;
+  transition:color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+}
+.seg-btn[aria-selected="true"]{ background:var(--surface); color:var(--emerald-700); box-shadow:var(--sh-1); }
+.seg-btn:focus-visible{ outline:2px solid var(--emerald-600); outline-offset:2px; }
+
+.view[hidden]{display:none;}
+
+/* ════════════════════ Frame ════════════════════ */
+.frame{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  box-shadow:var(--sh-card);
+  overflow:hidden;
+}
+
+/* ──────────── Signature: illuminated header ──────────── */
+.illum{
+  position:relative;
+  background:linear-gradient(160deg, var(--emerald-800) 0%, var(--emerald-900) 78%);
+  color:#F3EFE3;
+  padding:var(--s6) var(--s6) var(--s7);
+  isolation:isolate;
+}
+.illum::before{ /* soft light from the upper-leading corner */
+  content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(520px 220px at 88% -40%, rgba(227,201,139,.18), rgba(227,201,139,0) 60%);
+}
+.illum-pattern{position:absolute; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none;}
+
+.illum-top{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:var(--s4);
+}
+.eyebrow{
+  font-family:var(--font-body); font-size:12px; font-weight:600;
+  letter-spacing:1.5px; color:var(--gold-300); text-transform:uppercase;
+  margin-bottom:var(--s2);
+}
+.report-name{
+  font-family:var(--font-display); font-weight:700;
+  font-size:30px; line-height:1.2; color:#FFFFFF; margin:0;
+}
+.report-meta{
+  margin-top:var(--s3); font-size:13.5px; color:#CFE0D7; font-weight:500;
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+}
+.report-meta .dot{ width:3px; height:3px; border-radius:50%; background:var(--gold); opacity:.7; }
+
+/* status pill on the dark header */
+.pill{
+  display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+  font-size:12.5px; font-weight:600; padding:7px 13px; border-radius:var(--r-pill);
+  background:rgba(255,255,255,.10); color:#F4E9CD;
+  border:1px solid rgba(227,201,139,.30); backdrop-filter:blur(2px);
+}
+.pill .blip{ width:7px; height:7px; border-radius:50%; background:var(--gold-300);
+  box-shadow:0 0 0 0 rgba(227,201,139,.6); animation:blip 2.4s var(--ease) infinite; }
+@keyframes blip{ 0%{box-shadow:0 0 0 0 rgba(227,201,139,.55)} 70%{box-shadow:0 0 0 7px rgba(227,201,139,0)} 100%{box-shadow:0 0 0 0 rgba(227,201,139,0)} }
+
+/* the illumination line */
+.gold-rule{ height:2px; background:linear-gradient(90deg, transparent, var(--gold) 22%, var(--gold-300) 50%, var(--gold) 78%, transparent); }
+
+/* ──────────── Report body ──────────── */
+.body{ padding:var(--s6); }
+
+/* Scorecard: performance ring + payout */
+.scorecard{
+  display:grid; grid-template-columns:auto 1px 1fr; align-items:center; gap:var(--s6);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border:1px solid var(--border); border-radius:var(--r-md);
+  padding:var(--s5) var(--s6);
+}
+.gauge{ position:relative; width:128px; height:128px; flex:none; }
+.gauge svg{ width:100%; height:100%; transform:rotate(-90deg); }
+.gauge-track{ stroke:var(--emerald-50); }
+.gauge-prog{ stroke:url(#gaugeGrad); stroke-linecap:round; transition:stroke-dashoffset 1.15s var(--ease); }
+.gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:1px; }
+.gauge-pct{ font-size:30px; font-weight:700; color:var(--emerald-700); line-height:1; }
+.gauge-cap{ font-size:11.5px; font-weight:600; color:var(--ink-faint); }
+
+.score-div{ width:1px; align-self:stretch; background:var(--border); }
+.score-right{ display:flex; flex-direction:column; gap:var(--s4); }
+.score-block .k{ font-size:12.5px; color:var(--ink-soft); font-weight:600; margin-bottom:3px; }
+.score-points{ font-size:21px; font-weight:700; color:var(--ink); }
+.score-points .of{ font-size:14px; color:var(--ink-faint); font-weight:500; }
+.payout{ display:flex; align-items:baseline; gap:8px; }
+.payout .amt{ font-size:30px; font-weight:700; color:var(--success); line-height:1; }
+.payout .amt::after{ content:""; display:block; }
+.payout-tag{ font-size:11px; font-weight:700; color:var(--success); background:var(--success-50);
+  padding:3px 9px; border-radius:var(--r-pill); }
+.payout-rate{ font-size:12px; color:var(--ink-faint); margin-top:3px; }
+
+/* Section headers */
+.sec-title{
+  font-family:var(--font-display); font-weight:600; font-size:16px; color:var(--ink);
+  display:flex; align-items:center; gap:10px; margin:var(--s7) 0 var(--s4);
+}
+.sec-title::before{ content:""; width:4px; height:17px; border-radius:3px;
+  background:linear-gradient(180deg, var(--gold-300), var(--gold)); flex:none; }
+.sec-meta{ margin-inline-start:auto; font-family:var(--font-body); font-size:12px;
+  font-weight:500; color:var(--ink-faint); }
+
+/* Weekly bars */
+.weekbars{ display:flex; align-items:flex-end; gap:var(--s4);
+  height:148px; padding:0 var(--s2); position:relative; }
+.wb-target{ position:absolute; inset-inline:0; border-top:1px dashed var(--gold);
+  opacity:.85; }
+.wb-target span{ position:absolute; inset-inline-start:0; top:-9px; font-size:10.5px;
+  font-weight:700; color:var(--warn); background:var(--surface); padding:0 6px;
+  border-radius:var(--r-pill); }
+.wb-col{ flex:1; display:flex; flex-direction:column; align-items:center;
+  gap:8px; height:100%; justify-content:flex-end; }
+.wb-track{ width:100%; max-width:54px; flex:1; display:flex; align-items:flex-end;
+  background:var(--inset); border-radius:8px 8px 4px 4px; overflow:hidden; }
+.bar-fill{ width:100%; height:0; border-radius:7px 7px 3px 3px;
+  transition:height .9s var(--ease); }
+.bar-fill.ok{ background:linear-gradient(180deg, var(--emerald-600), var(--emerald-700)); }
+.bar-fill.warn{ background:linear-gradient(180deg, var(--warn-bar), var(--warn)); }
+.wb-val{ font-size:13px; font-weight:700; color:var(--ink); }
+.wb-lab{ font-size:11.5px; font-weight:600; color:var(--ink-faint); }
+.legend{ display:flex; flex-wrap:wrap; gap:var(--s4); margin-top:var(--s4);
+  font-size:12px; color:var(--ink-soft); font-weight:500; }
+.legend i{ display:inline-block; width:10px; height:10px; border-radius:3px;
+  margin-inline-end:6px; vertical-align:-1px; }
+.legend .li-ok{ background:var(--emerald-700); }
+.legend .li-warn{ background:var(--warn-bar); }
+.legend .li-target{ width:14px; height:0; border-top:2px dashed var(--gold);
+  border-radius:0; vertical-align:3px; }
+
+/* Activity rows */
+.acts{ display:flex; flex-direction:column; }
+.act-row{ padding:var(--s3) 0; border-bottom:1px solid var(--border); }
+.act-row:last-child{ border-bottom:none; }
+.act-line{ display:flex; align-items:center; gap:var(--s3); }
+.act-name{ font-size:14px; font-weight:600; color:var(--ink); }
+.act-right{ margin-inline-start:auto; display:flex; align-items:center; gap:var(--s3); }
+.act-count{ font-size:12.5px; color:var(--ink-faint); font-weight:500; white-space:nowrap; }
+.chip{ font-size:12px; font-weight:700; color:var(--emerald-700);
+  background:var(--emerald-50); padding:4px 10px; border-radius:var(--r-pill);
+  min-width:64px; text-align:center; white-space:nowrap; }
+.act-track{ height:3px; margin-top:9px; background:var(--inset);
+  border-radius:var(--r-pill); overflow:hidden; }
+.act-fill{ height:100%; width:0; border-radius:var(--r-pill);
+  background:linear-gradient(90deg, var(--emerald-100), var(--emerald-600));
+  transition:width .9s var(--ease); }
+
+/* Info callout */
+.callout{
+  display:flex; gap:var(--s3); align-items:flex-start;
+  background:var(--gold-50); border:1px solid rgba(201,162,75,.28);
+  border-inline-start:3px solid var(--gold);
+  border-radius:var(--r-sm); padding:var(--s3) var(--s4);
+  margin-top:var(--s6); font-size:12.5px; color:#6B5A2C; font-weight:500;
+  line-height:1.6;
+}
+.callout svg{ width:17px; height:17px; flex:none; color:var(--gold); margin-top:1px; }
+
+/* Actions */
+.actions{ display:grid; grid-template-columns:1.4fr 1fr; gap:var(--s3); margin-top:var(--s6); }
+.btn{
+  appearance:none; cursor:pointer; font-family:var(--font-body); font-weight:700;
+  font-size:14.5px; padding:13px 16px; border-radius:var(--r-sm);
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .12s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease), border-color .2s var(--ease);
+}
+.btn:active{ transform:translateY(1px); }
+.btn:focus-visible{ outline:2px solid var(--emerald-600); outline-offset:2px; }
+.btn svg{ width:17px; height:17px; }
+.btn-primary{ background:var(--emerald-700); color:#fff; border:1px solid var(--emerald-700);
+  box-shadow:var(--sh-1); }
+.btn-primary:hover{ background:var(--emerald-800); box-shadow:var(--sh-2); }
+.btn-secondary{ background:var(--surface); color:var(--ink); border:1px solid var(--border-strong); }
+.btn-secondary:hover{ background:var(--surface-2); border-color:var(--ink-faint); }
+.btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid transparent; }
+.btn-ghost:hover{ background:var(--inset); }
+
+/* Toast */
+.toast{
+  position:fixed; inset-block-end:24px; inset-inline:0; margin-inline:auto;
+  width:max-content; max-width:90vw;
+  display:flex; align-items:center; gap:10px;
+  background:var(--emerald-900); color:#F3EFE3; font-size:13.5px; font-weight:600;
+  padding:12px 18px; border-radius:var(--r-pill);
+  border:1px solid rgba(227,201,139,.35); box-shadow:0 14px 40px -10px rgba(8,56,44,.5);
+  opacity:0; transform:translateY(14px); pointer-events:none;
+  transition:opacity .3s var(--ease), transform .3s var(--ease); z-index:50;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+.toast svg{ width:18px; height:18px; color:var(--gold-300); }
+
+/* ════════════════════ Design-system view ════════════════════ */
+.ds-head{ padding:var(--s6); border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg, var(--surface), var(--surface-2)); }
+.ds-title{ font-family:var(--font-display); font-weight:700; font-size:24px; margin:0; }
+.ds-sub{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; font-weight:500; }
+.ds-body{ padding:var(--s6); }
+.ds-block{ margin-bottom:var(--s7); }
+.ds-block:last-child{ margin-bottom:0; }
+.ds-label{ font-family:var(--font-body); font-size:11.5px; font-weight:700; letter-spacing:1px;
+  color:var(--ink-faint); text-transform:uppercase; margin:0 0 var(--s4); }
+
+/* swatches */
+.swatch-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(124px,1fr)); gap:var(--s3); }
+.swatch{ border:1px solid var(--border); border-radius:var(--r-md); overflow:hidden; background:var(--surface); }
+.swatch .chip-color{ height:54px; }
+.swatch .chip-meta{ padding:9px 11px; }
+.swatch .cn{ font-size:12px; font-weight:600; color:var(--ink); }
+.swatch .ch{ font-size:11px; color:var(--ink-faint); font-weight:500; direction:ltr; text-align:right; margin-top:1px; }
+
+/* type specimens */
+.spec{ border:1px solid var(--border); border-radius:var(--r-md); padding:var(--s5); background:var(--surface); margin-bottom:var(--s3); }
+.spec .sp-tag{ font-size:11px; font-weight:700; color:var(--emerald-700); letter-spacing:.5px;
+  margin-bottom:10px; direction:ltr; text-align:right; }
+.spec .sp-display{ font-family:var(--font-display); font-weight:700; font-size:30px; color:var(--ink); }
+.spec .sp-body{ font-family:var(--font-body); font-size:15px; color:var(--ink-soft); line-height:1.7; }
+.spec .sp-nums{ font-family:var(--font-body); font-size:20px; font-weight:600; color:var(--ink);
+  direction:ltr; text-align:right; margin-top:8px; letter-spacing:2px; }
+.scale-row{ display:flex; align-items:baseline; gap:var(--s4); padding:10px 0; border-bottom:1px dashed var(--border); }
+.scale-row:last-child{ border-bottom:none; }
+.scale-row .sr-name{ width:96px; font-size:12px; color:var(--ink-faint); font-weight:600; }
+.scale-row .sr-size{ font-size:11px; color:var(--ink-faint); direction:ltr; }
+.scale-row .sr-sample{ font-family:var(--font-display); font-weight:600; color:var(--ink); margin-inline-start:auto; }
+
+/* component gallery */
+.gallery{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:var(--s3); }
+.cell{ border:1px solid var(--border); border-radius:var(--r-md); padding:var(--s4);
+  background:var(--surface); display:flex; flex-direction:column; gap:var(--s3); }
+.cell .cell-cap{ font-size:11px; font-weight:700; letter-spacing:.5px; color:var(--ink-faint);
+  text-transform:uppercase; direction:ltr; text-align:right; }
+.cell .cell-stage{ display:flex; flex-wrap:wrap; gap:var(--s2); align-items:center; }
+
+/* badge variants (reused by report status concept) */
+.badge{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+  padding:5px 11px; border-radius:var(--r-pill); }
+.badge i{ width:6px; height:6px; border-radius:50%; }
+.badge-pending{ color:var(--warn); background:var(--warn-50); } .badge-pending i{ background:var(--warn-bar); }
+.badge-ok{ color:var(--success); background:var(--success-50); } .badge-ok i{ background:var(--success); }
+.badge-warn{ color:var(--warn); background:var(--warn-50); } .badge-warn i{ background:var(--warn); }
+.badge-danger{ color:var(--danger); background:var(--danger-50); } .badge-danger i{ background:var(--danger); }
+
+/* mini stat card for gallery */
+.mini-stat{ background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r-md);
+  padding:var(--s4); text-align:center; }
+.mini-stat .ms-v{ font-size:24px; font-weight:700; color:var(--ink); }
+.mini-stat .ms-v .of{ font-size:13px; color:var(--ink-faint); font-weight:500; }
+.mini-stat .ms-k{ font-size:12px; font-weight:600; color:var(--ink-soft); margin-top:4px; }
+
+.mini-gauge{ width:86px; height:86px; }
+.mini-gauge .gauge-pct{ font-size:20px; }
+.mini-gauge .gauge-cap{ font-size:10px; }
+
+/* radius + spacing scale */
+.tile-row{ display:flex; gap:var(--s4); flex-wrap:wrap; }
+.r-demo{ width:72px; height:56px; background:var(--emerald-50); border:1px solid var(--emerald-100);
+  display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--emerald-700);
+  font-weight:700; direction:ltr; }
+.sp-demo{ display:flex; align-items:flex-end; gap:var(--s3); }
+.sp-bar{ width:14px; background:linear-gradient(180deg,var(--gold-300),var(--gold)); border-radius:4px 4px 0 0; }
+.sp-bar span{ display:block; text-align:center; font-size:10px; color:var(--ink-faint); margin-top:6px; direction:ltr; }
+
+/* ════════════════════ Responsive ════════════════════ */
+@media (max-width:560px){
+  .report-name{ font-size:25px; }
+  .illum-top{ flex-direction:column; gap:var(--s4); }
+  .scorecard{ grid-template-columns:1fr; text-align:center; gap:var(--s4); justify-items:center; }
+  .score-div{ width:80%; height:1px; align-self:center; }
+  .score-right{ align-items:center; }
+  .payout{ justify-content:center; }
+  .actions{ grid-template-columns:1fr; }
+  .weekbars{ gap:var(--s2); }
+}
+
+/* ════════════════════ Reduced motion ════════════════════ */
+@media (prefers-reduced-motion:reduce){
+  *{ transition:none !important; animation:none !important; }
+}
+
+/* ════════════════════ Print ════════════════════ */
+@media print{
+  body{ background:#fff; padding:0; }
+  .appbar, .actions, .toast, #view-system{ display:none !important; }
+  .frame{ box-shadow:none; border:none; }
+  .scorecard, .cell, .frame{ break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Global paint servers (always in the DOM so every gauge can reference them,
+       even while its own view is display:none) -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="var(--emerald-700)"/>
+        <stop offset="100%" stop-color="var(--gold)"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- App bar: brand + view switcher -->
+  <div class="appbar">
+    <div class="brand">
+      <svg class="emblem" viewBox="0 0 64 64" aria-hidden="true">
+        <g fill="currentColor"><path d="M18 18H46V46H18Z"/><path d="M32 12 52 32 32 52 12 32Z"/></g>
+      </svg>
+      <div>
+        <div class="brand-name">المسجد المؤثر</div>
+        <div class="brand-tag">منصّة متابعة وتقارير</div>
+      </div>
+    </div>
+    <div class="segmented" role="tablist" aria-label="التنقل بين الشاشات">
+      <button class="seg-btn" role="tab" aria-selected="true" data-view="report">التقرير الشهري</button>
+      <button class="seg-btn" role="tab" aria-selected="false" data-view="system">نظام التصميم</button>
+    </div>
+  </div>
+
+  <!-- ════════════ VIEW 1: Monthly report ════════════ -->
+  <section class="view" id="view-report" role="tabpanel">
+    <article class="frame report" id="report">
+
+      <!-- Signature illuminated header -->
+      <header class="illum">
+        <svg class="illum-pattern" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <pattern id="stars" width="64" height="64" patternUnits="userSpaceOnUse">
+              <g fill="none" stroke="rgba(201,162,75,.16)" stroke-width="1">
+                <path d="M18 18H46V46H18Z"/>
+                <path d="M32 12 52 32 32 52 12 32Z"/>
+              </g>
+              <circle cx="32" cy="32" r="1.2" fill="rgba(201,162,75,.20)"/>
+              <circle cx="0" cy="0" r="1" fill="rgba(201,162,75,.12)"/>
+              <circle cx="64" cy="0" r="1" fill="rgba(201,162,75,.12)"/>
+              <circle cx="0" cy="64" r="1" fill="rgba(201,162,75,.12)"/>
+              <circle cx="64" cy="64" r="1" fill="rgba(201,162,75,.12)"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#stars)"/>
+        </svg>
+
+        <div class="illum-top">
+          <div>
+            <div class="eyebrow">التقرير الشهري</div>
+            <h1 class="report-name">مسجد الفاروق</h1>
+            <div class="report-meta">
+              <span>ذو القعدة <span class="num">1447</span>هـ</span>
+              <span class="dot"></span><span>مربع <span class="num">1</span></span>
+              <span class="dot"></span><span>محافظة إدلب</span>
+            </div>
+          </div>
+          <span class="pill"><span class="blip"></span>بانتظار اعتماد الأمير</span>
+        </div>
+      </header>
+
+      <div class="gold-rule"></div>
+
+      <div class="body">
+
+        <!-- Scorecard: performance ring + payout outcome -->
+        <div class="scorecard">
+          <div class="gauge" data-pct="87">
+            <svg viewBox="0 0 140 140" aria-hidden="true">
+              <circle class="gauge-track" cx="70" cy="70" r="58" fill="none" stroke-width="12"/>
+              <circle class="gauge-prog" cx="70" cy="70" r="58" fill="none" stroke-width="12"/>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-pct num">87%</div>
+              <div class="gauge-cap">من الهدف</div>
+            </div>
+          </div>
+
+          <div class="score-div" aria-hidden="true"></div>
+
+          <div class="score-right">
+            <div class="score-block">
+              <div class="k">مجموع نقاط الشهر</div>
+              <div class="score-points"><span class="num">243</span> <span class="of num">/ 280</span></div>
+            </div>
+            <div class="score-block">
+              <div class="k">القيمة المستحقة</div>
+              <div class="payout">
+                <span class="amt num">$43.4</span>
+                <span class="payout-tag">مستحقة</span>
+              </div>
+              <div class="payout-rate"><span class="num">280</span> نقطة = <span class="num">$50</span> · لا توجد خصومات</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly performance -->
+        <div class="sec-title">الأداء الأسبوعي <span class="sec-meta">الهدف: <span class="num">70</span> نقطة / أسبوع</span></div>
+        <div class="weekbars">
+          <div class="wb-target" style="bottom:87.5%"><span class="num">70</span></div>
+          <div class="wb-col">
+            <div class="wb-track"><div class="bar-fill ok" data-h="87.5%"></div></div>
+            <div class="wb-val num">70</div><div class="wb-lab">الأول</div>
+          </div>
+          <div class="wb-col">
+            <div class="wb-track"><div class="bar-fill ok" data-h="85%"></div></div>
+            <div class="wb-val num">68</div><div class="wb-lab">الثاني</div>
+          </div>
+          <div class="wb-col">
+            <div class="wb-track"><div class="bar-fill warn" data-h="65%"></div></div>
+            <div class="wb-val num">52</div><div class="wb-lab">الثالث</div>
+          </div>
+          <div class="wb-col">
+            <div class="wb-track"><div class="bar-fill warn" data-h="66.25%"></div></div>
+            <div class="wb-val num">53</div><div class="wb-lab">الرابع</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span><i class="li-ok"></i>بلغ الهدف</span>
+          <span><i class="li-warn"></i>دون الهدف</span>
+          <span><i class="li-target"></i>خط الهدف الأسبوعي</span>
+        </div>
+
+        <!-- Activity breakdown -->
+        <div class="sec-title">تفصيل الأنشطة <span class="sec-meta"><span class="num">8</span> أنشطة</span></div>
+        <div class="acts">
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">اجتماع الأسرة اليومي</span>
+              <span class="act-right"><span class="act-count"><span class="num">22</span> مرة</span><span class="chip"><span class="num">22</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="40%"></div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">تدريس «على بصيرة» (×<span class="num">2</span>)</span>
+              <span class="act-right"><span class="act-count"><span class="num">18</span> مرة</span><span class="chip"><span class="num">36</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="65.5%"></div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">دروس شرعية وتربوية (×<span class="num">2</span>)</span>
+              <span class="act-right"><span class="act-count"><span class="num">20</span> مرة</span><span class="chip"><span class="num">40</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="72.7%"></div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">عمل اجتماعي وعلاقات</span>
+              <span class="act-right"><span class="act-count"><span class="num">31</span> مرة</span><span class="chip"><span class="num">31</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="56.4%"></div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">استقطاب شاب جديد</span>
+              <span class="act-right"><span class="act-count"><span class="num">14</span> مرة</span><span class="chip"><span class="num">14</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="25.5%"></div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">نشاط ترفيهي ورياضي</span>
+              <span class="act-right"><span class="act-count"><span class="num">19</span> مرة</span><span class="chip"><span class="num">19</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="34.5%"></div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">عمل إعلامي</span>
+              <span class="act-right"><span class="act-count"><span class="num">26</span> مرة</span><span class="chip"><span class="num">26</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="47.3%"></div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-line"><span class="act-name">أنشطة أخرى</span>
+              <span class="act-right"><span class="act-count"><span class="num">55</span> مرة</span><span class="chip"><span class="num">55</span> نقطة</span></span></div>
+            <div class="act-track"><div class="act-fill" data-w="100%"></div></div>
+          </div>
+        </div>
+
+        <!-- Info callout -->
+        <div class="callout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <div>وُلّد هذا التقرير تلقائياً من السجلات اليومية المعتمدة. المعدّل الحالي: <span class="num">280</span> نقطة = <span class="num">$50</span>، مستحقة لأمير المسجد، ولا توجد أي خصومات.</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button class="btn btn-primary" id="approveBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            اعتماد التقرير
+          </button>
+          <button class="btn btn-secondary" id="exportBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تصدير PDF
+          </button>
+        </div>
+
+      </div>
+    </article>
+  </section>
+
+  <!-- ════════════ VIEW 2: Design system ════════════ -->
+  <section class="view" id="view-system" role="tabpanel" hidden>
+    <article class="frame">
+      <div class="ds-head">
+        <h2 class="ds-title">نظام التصميم</h2>
+        <p class="ds-sub">الرموز (Tokens) والمكوّنات المشتركة. كل شاشة في «المسجد المؤثر» تُبنى من هذه القطعة نفسها — الألوان والخطوط والمكوّنات أدناه هي ذاتها المستخدمة في التقرير.</p>
+      </div>
+      <div class="ds-body">
+
+        <!-- Colors -->
+        <section class="ds-block">
+          <p class="ds-label">الألوان · Color tokens</p>
+          <div class="swatch-grid" id="swatches"></div>
+        </section>
+
+        <!-- Typography -->
+        <section class="ds-block">
+          <p class="ds-label">الخطوط · Typography</p>
+          <div class="spec">
+            <div class="sp-tag">Reem Kufi · العناوين</div>
+            <div class="sp-display">المسجد المؤثر — عنوانٌ ذو حضور</div>
+          </div>
+          <div class="spec">
+            <div class="sp-tag">IBM Plex Sans Arabic · النصوص والبيانات</div>
+            <div class="sp-body">نصٌّ أساسيٌّ واضح ومريح للقراءة في الجداول والتقارير والتنبيهات، مع أرقام جدوليّة منتظمة.</div>
+            <div class="sp-nums">0123456789  ·  $43.4  ·  87%</div>
+          </div>
+          <div class="spec">
+            <div class="sp-tag">المقياس · Type scale</div>
+            <div class="scale-row"><span class="sr-name">العنوان الرئيسي</span><span class="sr-size">30 / 700</span><span class="sr-sample" style="font-size:30px">عنوان</span></div>
+            <div class="scale-row"><span class="sr-name">عنوان فرعي</span><span class="sr-size">18 / 600</span><span class="sr-sample" style="font-size:18px">عنوان</span></div>
+            <div class="scale-row"><span class="sr-name">عنوان قسم</span><span class="sr-size">16 / 600</span><span class="sr-sample" style="font-size:16px">عنوان</span></div>
+            <div class="scale-row"><span class="sr-name">نص أساسي</span><span class="sr-size">14 / 500</span><span class="sr-sample" style="font-size:14px;font-family:var(--font-body)">نص أساسي</span></div>
+            <div class="scale-row"><span class="sr-name">تسمية صغيرة</span><span class="sr-size">12 / 600</span><span class="sr-sample" style="font-size:12px;font-family:var(--font-body)">تسمية</span></div>
+          </div>
+        </section>
+
+        <!-- Components -->
+        <section class="ds-block">
+          <p class="ds-label">المكوّنات · Components</p>
+          <div class="gallery">
+
+            <div class="cell">
+              <span class="cell-cap">Status badges</span>
+              <div class="cell-stage">
+                <span class="badge badge-pending"><i></i>بانتظار الاعتماد</span>
+                <span class="badge badge-ok"><i></i>معتمد</span>
+                <span class="badge badge-warn"><i></i>دون الهدف</span>
+                <span class="badge badge-danger"><i></i>مرفوض</span>
+              </div>
+            </div>
+
+            <div class="cell">
+              <span class="cell-cap">Buttons</span>
+              <div class="cell-stage">
+                <button class="btn btn-primary" style="padding:9px 14px;font-size:13px">اعتماد</button>
+                <button class="btn btn-secondary" style="padding:9px 14px;font-size:13px">تصدير</button>
+                <button class="btn btn-ghost" style="padding:9px 14px;font-size:13px">إلغاء</button>
+              </div>
+            </div>
+
+            <div class="cell">
+              <span class="cell-cap">Stat card</span>
+              <div class="mini-stat">
+                <div class="ms-v"><span class="num">243</span><span class="of num"> / 280</span></div>
+                <div class="ms-k">مجموع نقاط الشهر</div>
+              </div>
+            </div>
+
+            <div class="cell">
+              <span class="cell-cap">Performance ring</span>
+              <div class="cell-stage" style="justify-content:center">
+                <div class="gauge mini-gauge" data-pct="87">
+                  <svg viewBox="0 0 140 140" aria-hidden="true">
+                    <circle class="gauge-track" cx="70" cy="70" r="58" fill="none" stroke-width="14"/>
+                    <circle class="gauge-prog" cx="70" cy="70" r="58" fill="none" stroke-width="14"/>
+                  </svg>
+                  <div class="gauge-center"><div class="gauge-pct num">87%</div><div class="gauge-cap">الهدف</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cell">
+              <span class="cell-cap">Weekly bars</span>
+              <div class="weekbars" style="height:96px">
+                <div class="wb-col"><div class="wb-track"><div class="bar-fill ok" data-h="88%"></div></div></div>
+                <div class="wb-col"><div class="wb-track"><div class="bar-fill ok" data-h="85%"></div></div></div>
+                <div class="wb-col"><div class="wb-track"><div class="bar-fill warn" data-h="65%"></div></div></div>
+                <div class="wb-col"><div class="wb-track"><div class="bar-fill warn" data-h="66%"></div></div></div>
+              </div>
+            </div>
+
+            <div class="cell">
+              <span class="cell-cap">Activity row</span>
+              <div class="act-row" style="border:none">
+                <div class="act-line"><span class="act-name">عمل إعلامي</span>
+                  <span class="act-right"><span class="act-count"><span class="num">26</span> مرة</span><span class="chip"><span class="num">26</span> نقطة</span></span></div>
+                <div class="act-track"><div class="act-fill" data-w="47.3%"></div></div>
+              </div>
+            </div>
+
+            <div class="cell" style="grid-column:1/-1">
+              <span class="cell-cap">Info callout</span>
+              <div class="callout" style="margin:0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <div>التنبيهات تُكتب بصوت النظام: تشرح ما حدث وما الخطوة التالية، دون اعتذار أو غموض.</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Radius & spacing -->
+        <section class="ds-block">
+          <p class="ds-label">الزوايا والمسافات · Radius & spacing</p>
+          <div class="tile-row" style="margin-bottom:var(--s5)">
+            <div class="r-demo" style="border-radius:var(--r-sm)">10</div>
+            <div class="r-demo" style="border-radius:var(--r-md)">14</div>
+            <div class="r-demo" style="border-radius:var(--r-lg)">20</div>
+            <div class="r-demo" style="border-radius:var(--r-pill)">pill</div>
+          </div>
+          <div class="sp-demo">
+            <div><div class="sp-bar" style="height:4px"></div><span>4</span></div>
+            <div><div class="sp-bar" style="height:8px"></div><span>8</span></div>
+            <div><div class="sp-bar" style="height:12px"></div><span>12</span></div>
+            <div><div class="sp-bar" style="height:16px"></div><span>16</span></div>
+            <div><div class="sp-bar" style="height:24px"></div><span>24</span></div>
+            <div><div class="sp-bar" style="height:32px"></div><span>32</span></div>
+            <div><div class="sp-bar" style="height:40px"></div><span>40</span></div>
+          </div>
+        </section>
+
+      </div>
+    </article>
+  </section>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+  <span>اعتُمد التقرير وأُرسل لأعلى طبقة مفعّلة</span>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Prepare every gauge: compute circumference + target offset, start empty.
+  document.querySelectorAll('.gauge').forEach(function(g){
+    var prog = g.querySelector('.gauge-prog');
+    var r = parseFloat(prog.getAttribute('r'));
+    var pct = parseFloat(g.getAttribute('data-pct')) || 0;
+    var C = 2 * Math.PI * r;
+    prog.style.strokeDasharray = C.toFixed(2);
+    prog.setAttribute('data-off', (C * (1 - pct/100)).toFixed(2));
+    prog.style.strokeDashoffset = C.toFixed(2);
+  });
+
+  // Reveal data-driven visuals within a scope (run once per scope).
+  function reveal(scope){
+    if(scope.__revealed) return;
+    scope.__revealed = true;
+    var go = function(){
+      scope.querySelectorAll('.gauge-prog').forEach(function(p){ p.style.strokeDashoffset = p.getAttribute('data-off'); });
+      scope.querySelectorAll('.bar-fill').forEach(function(b){ b.style.height = b.getAttribute('data-h'); });
+      scope.querySelectorAll('.act-fill').forEach(function(a){ a.style.width = a.getAttribute('data-w'); });
+    };
+    if(reduce){ go(); } else { requestAnimationFrame(function(){ requestAnimationFrame(go); }); }
+  }
+
+  // Reveal report on load (also guarantees correct state for printing).
+  reveal(document.getElementById('view-report'));
+
+  // Tab switching.
+  var views = { report: document.getElementById('view-report'), system: document.getElementById('view-system') };
+  document.querySelectorAll('.seg-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = btn.getAttribute('data-view');
+      document.querySelectorAll('.seg-btn').forEach(function(b){ b.setAttribute('aria-selected', b===btn ? 'true':'false'); });
+      Object.keys(views).forEach(function(k){ views[k].hidden = (k !== target); });
+      reveal(views[target]);
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+
+  // Build color swatches from tokens (single source of truth in the gallery).
+  var tokens = [
+    ['الهوية 900','--emerald-900'],['الهوية 800','--emerald-800'],['الهوية 700','--emerald-700'],
+    ['الهوية 600','--emerald-600'],['الهوية 50','--emerald-50'],
+    ['الذهبي','--gold'],['ذهبي فاتح','--gold-300'],['ذهبي 50','--gold-50'],
+    ['نجاح','--success'],['تحذير','--warn'],['خطر','--danger'],
+    ['الخلفية','--canvas'],['السطح','--surface'],['الحدود','--border'],
+    ['نص أساسي','--ink'],['نص ثانوي','--ink-soft'],['نص خافت','--ink-faint']
+  ];
+  var cs = getComputedStyle(document.documentElement);
+  var grid = document.getElementById('swatches');
+  tokens.forEach(function(t){
+    var hex = cs.getPropertyValue(t[1]).trim();
+    var el = document.createElement('div');
+    el.className = 'swatch';
+    el.innerHTML = '<div class="chip-color" style="background:'+hex+'"></div>'+
+                   '<div class="chip-meta"><div class="cn">'+t[0]+'</div><div class="ch">'+hex+'</div></div>';
+    grid.appendChild(el);
+  });
+
+  // Approve -> toast (preserves the original "approve & escalate" action).
+  var toast = document.getElementById('toast'), tHide;
+  document.getElementById('approveBtn').addEventListener('click', function(){
+    toast.classList.add('show');
+    clearTimeout(tHide);
+    tHide = setTimeout(function(){ toast.classList.remove('show'); }, 3200);
+  });
+
+  // Export -> print (preserves original behavior; print stylesheet handles layout).
+  document.getElementById('exportBtn').addEventListener('click', function(){ window.print(); });
+})();
+</script>
+
+</body>
+</html>

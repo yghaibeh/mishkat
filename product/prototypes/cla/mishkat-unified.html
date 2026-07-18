@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مشكاة · التقرير الشهري — النظام الموحّد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   نظام التصميم الموحّد — Design Tokens
+   هوية v1 (أخضر/ذهبي) · عقل v2 (مسار/فرق) · راحة v3 (لمس/تجاوب)
+   ===================================================================== */
+:root{
+  /* Surfaces */
+  --canvas:#E9EFEA;
+  --surface:#FFFFFF;
+  --inset:#F1F5F2;
+  --line:#DDE6E0;
+  --line-strong:#C6D3CB;
+
+  /* Ink */
+  --ink:#12211B;
+  --ink-soft:#48584F;
+  --ink-faint:#83948B;
+
+  /* Brand */
+  --green:#0E6E50;          /* primary */
+  --green-deep:#0A4E39;
+  --green-tint:#E2EFE9;
+  --gold:#B98F36;           /* accent — للحدود واللمسات والخَتْم، لا للنصوص الطويلة */
+  --gold-soft:#F3E9CF;
+
+  /* States */
+  --ok:#0E7C5B;     --ok-bg:#DCF0E7;
+  --warn:#B06C16;   --warn-bg:#F8ECD3;
+  --danger:#B23A2A; --danger-bg:#F6E0DB;
+
+  /* Spacing scale */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+
+  /* Radius */
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-pill:999px;
+
+  /* Elevation */
+  --sh-card:0 1px 0 rgba(12,40,28,.03), 0 20px 40px -26px rgba(12,40,28,.30);
+  --sh-raise:0 8px 18px -10px rgba(12,40,28,.35);
+  --sh-seal:0 10px 26px -10px rgba(185,143,54,.55);
+
+  /* Type */
+  --font-display:'Reem Kufi', system-ui, sans-serif;
+  --font-body:'IBM Plex Sans Arabic', system-ui, sans-serif;
+
+  --tap:48px;                 /* هدف لمس مريح من v3 */
+  --ease:cubic-bezier(.2,.7,.3,1);
+}
+
+[data-theme="dark"]{
+  --canvas:#0E1714;
+  --surface:#14211C;
+  --inset:#182721;
+  --line:#243A31;
+  --line-strong:#2F4A3E;
+  --ink:#EAF2EC;
+  --ink-soft:#A9BCB1;
+  --ink-faint:#728179;
+  --green:#34A57E;
+  --green-deep:#1E6E51;
+  --green-tint:#163128;
+  --gold:#D8B25A;
+  --gold-soft:#2A2516;
+  --ok:#3FB489; --ok-bg:#10301F;
+  --warn:#D89B3E; --warn-bg:#33240F;
+  --danger:#D9695A; --danger-bg:#331915;
+  --sh-card:0 1px 0 rgba(0,0,0,.2), 0 24px 44px -28px rgba(0,0,0,.7);
+  --sh-raise:0 10px 22px -12px rgba(0,0,0,.6);
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(185,143,54,.06), transparent 60%),
+    var(--canvas);
+  color:var(--ink);
+  font-family:var(--font-body);
+  line-height:1.55;
+  padding:var(--s5) var(--s4) var(--s7);
+  display:flex; flex-direction:column; align-items:center;
+  min-height:100vh;
+  transition:background .3s var(--ease), color .3s var(--ease);
+}
+
+/* ===================== Top bar ===================== */
+.topbar{
+  width:100%; max-width:720px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:var(--s3); margin-bottom:var(--s5);
+}
+.brand{ display:flex; align-items:center; gap:var(--s3); }
+.brand-mark{
+  width:42px; height:42px; flex:none; border-radius:12px;
+  display:grid; place-items:center;
+  background:linear-gradient(160deg, var(--green) 0%, var(--green-deep) 100%);
+  box-shadow:var(--sh-raise);
+}
+.brand-mark svg{ width:24px; height:24px; }
+.brand-name{ font-family:var(--font-display); font-weight:700; font-size:19px; line-height:1; }
+.brand-tag{ font-size:12px; color:var(--ink-faint); font-weight:500; margin-top:3px; }
+
+.top-tools{ display:flex; gap:var(--s2); }
+.icon-btn{
+  width:var(--tap); height:var(--tap); border-radius:12px;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink-soft);
+  display:grid; place-items:center; cursor:pointer; transition:var(--ease) .18s;
+}
+.icon-btn:hover{ border-color:var(--line-strong); color:var(--ink); }
+.icon-btn:focus-visible{ outline:2px solid var(--green); outline-offset:2px; }
+.icon-btn svg{ width:20px; height:20px; }
+
+/* ===================== Tabs ===================== */
+.tabs{
+  width:100%; max-width:720px; display:flex; gap:var(--s1);
+  background:var(--surface); border:1px solid var(--line);
+  padding:var(--s1); border-radius:var(--r-pill); margin-bottom:var(--s5);
+}
+.tab{
+  flex:1; min-height:44px; border:none; cursor:pointer;
+  font-family:var(--font-body); font-size:14px; font-weight:600;
+  color:var(--ink-soft); background:transparent; border-radius:var(--r-pill);
+  transition:var(--ease) .2s;
+}
+.tab[aria-selected="true"]{ background:var(--green); color:#fff; box-shadow:var(--sh-raise); }
+.tab:focus-visible{ outline:2px solid var(--green); outline-offset:2px; }
+
+/* ===================== Document frame ===================== */
+.doc{
+  width:100%; max-width:720px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  box-shadow:var(--sh-card);
+  overflow:hidden;
+}
+.view[hidden]{ display:none; }
+
+/* gold rule under header */
+.doc-head{
+  padding:var(--s5) var(--s5) var(--s4);
+  border-bottom:1px solid var(--line);
+  position:relative;
+}
+.doc-head::after{
+  content:""; position:absolute; inset-inline:var(--s5); bottom:-1px; height:2px;
+  background:linear-gradient(90deg, var(--gold), transparent 70%);
+}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:var(--s2);
+  font-size:11.5px; font-weight:700; letter-spacing:.04em;
+  color:var(--gold); text-transform:uppercase; margin-bottom:var(--s3);
+}
+.eyebrow .ref{
+  color:var(--ink-faint); font-weight:600; letter-spacing:0;
+  font-variant-numeric:tabular-nums;
+}
+.doc-head-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s4); }
+.doc-title{ font-family:var(--font-display); font-size:26px; font-weight:700; line-height:1.2; }
+.doc-meta{ margin-top:var(--s2); font-size:13.5px; color:var(--ink-soft); }
+.doc-meta b{ color:var(--ink); font-weight:600; }
+
+/* ===================== Status seal ===================== */
+.seal{
+  flex:none; text-align:center; transform-origin:center;
+}
+.seal-badge{
+  display:inline-flex; flex-direction:column; align-items:center; gap:2px;
+  padding:var(--s2) var(--s3); border-radius:var(--r-md);
+  border:1.5px dashed var(--gold); background:var(--gold-soft);
+  color:var(--warn); min-width:118px;
+}
+.seal-badge .lbl{ font-size:11px; font-weight:600; color:var(--ink-faint); }
+.seal-badge .state{ font-size:13px; font-weight:700; }
+.seal-badge.is-approved{ border-style:solid; border-color:var(--ok); background:var(--ok-bg); color:var(--ok); }
+@keyframes stamp{ 0%{ transform:scale(1.4) rotate(-6deg); opacity:0; } 60%{ transform:scale(.96) rotate(1deg); opacity:1; } 100%{ transform:scale(1) rotate(0); } }
+.seal.stamped{ animation:stamp .5s var(--ease); }
+
+/* ===================== Pipeline (from v2) ===================== */
+.body{ padding:var(--s5); }
+.pipeline{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:var(--s2); margin-bottom:var(--s6);
+}
+.pl-step{ position:relative; text-align:center; }
+.pl-step::before{ /* connecting rail */
+  content:""; position:absolute; top:18px; right:50%; left:-50%; height:2px;
+  background:var(--line-strong); z-index:0;
+}
+.pl-step:first-child::before{ display:none; }
+.pl-step.done::before{ background:var(--green); }
+.pl-node{
+  position:relative; z-index:1; width:38px; height:38px; margin:0 auto var(--s2);
+  display:grid; place-items:center; border-radius:11px;
+  background:var(--inset); border:1.5px solid var(--line-strong); color:var(--ink-faint);
+}
+.pl-node svg{ width:18px; height:18px; }
+.pl-step.done .pl-node{ background:var(--green); border-color:var(--green); color:#fff; }
+.pl-step.current .pl-node{
+  background:var(--surface); border-color:var(--gold); color:var(--gold);
+  box-shadow:0 0 0 4px var(--gold-soft);
+}
+.pl-label{ font-size:11.5px; font-weight:600; color:var(--ink-soft); line-height:1.35; }
+.pl-step.current .pl-label{ color:var(--ink); font-weight:700; }
+
+/* ===================== Hero: seal + stats ===================== */
+.hero{
+  display:grid; grid-template-columns:auto 1fr; gap:var(--s5);
+  align-items:center;
+  background:linear-gradient(180deg, var(--green-tint), transparent);
+  border:1px solid var(--line); border-radius:var(--r-md);
+  padding:var(--s5); margin-bottom:var(--s5);
+}
+.perf-seal{ width:120px; height:120px; flex:none; }
+.hero-stats{ display:grid; gap:var(--s3); }
+.kv .k{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+.kv .v{
+  font-family:var(--font-display); font-size:30px; font-weight:700; line-height:1.05;
+  font-variant-numeric:tabular-nums; letter-spacing:-.01em;
+}
+.kv .v .sub{ font-family:var(--font-body); font-size:15px; color:var(--ink-faint); font-weight:500; }
+.kv .v.money{ color:var(--green); }
+.rate-pill{
+  display:inline-block; margin-top:var(--s1); font-size:11.5px; font-weight:600;
+  color:var(--ink-soft); background:var(--inset); border:1px solid var(--line);
+  padding:3px var(--s2); border-radius:var(--r-pill);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ===================== Section heading ===================== */
+.sec{ margin-top:var(--s6); }
+.sec-head{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--s3); margin-bottom:var(--s4); }
+.sec-title{
+  font-family:var(--font-display); font-size:16.5px; font-weight:700;
+  display:flex; align-items:center; gap:var(--s2);
+}
+.sec-title::before{ content:""; width:4px; height:17px; border-radius:4px; background:var(--gold); }
+.sec-note{ font-size:12.5px; color:var(--ink-faint); font-weight:500; font-variant-numeric:tabular-nums; }
+
+/* ===================== Weekly bars + diff (v1 bars × v2 diff) ===================== */
+.weeks{ --track:150px; }
+.track-row{
+  position:relative; height:var(--track);
+  display:grid; grid-template-columns:repeat(4,1fr); gap:var(--s3); align-items:end;
+}
+.target-line{
+  position:absolute; inset-inline:0; z-index:2; border-top:2px dashed var(--gold);
+  /* bottom set inline = target/max */
+}
+.target-tag{
+  position:absolute; inset-inline-start:0; top:-9px;
+  font-size:10.5px; font-weight:700; color:var(--gold);
+  background:var(--surface); padding:0 4px; font-variant-numeric:tabular-nums;
+}
+.bar-track{ height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:6px; position:relative; z-index:1; }
+.bar-track .val{ font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; }
+.bar-track .col{
+  width:100%; max-width:48px; height:0; border-radius:8px 8px 4px 4px;
+  background:var(--ok); transition:height .8s var(--ease);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.07);
+}
+.bar-track.under .col{ background:var(--warn); }
+.week-labels{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:var(--s3);
+  margin-top:var(--s3); padding-top:var(--s3); border-top:1px solid var(--line);
+}
+.wk-cell{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+.wk-cell .wk{ font-size:12.5px; color:var(--ink-soft); font-weight:600; }
+.wk-cell .diff{
+  font-size:11px; font-weight:700; font-variant-numeric:tabular-nums;
+  padding:2px var(--s2); border-radius:var(--r-pill); color:var(--ok); background:var(--ok-bg);
+}
+.wk-cell.under .diff{ color:var(--warn); background:var(--warn-bg); }
+
+/* ===================== Activities ===================== */
+.act{
+  display:flex; align-items:center; justify-content:space-between; gap:var(--s4);
+  padding:var(--s3) 0; border-bottom:1px dashed var(--line);
+}
+.act:last-child{ border-bottom:none; }
+.act .name{ font-size:14px; font-weight:600; }
+.act .nums{ font-size:13px; color:var(--ink-soft); font-weight:500; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.act .nums b{ color:var(--green); font-weight:700; }
+
+/* ===================== Note ===================== */
+.note{
+  display:flex; gap:var(--s3); margin-top:var(--s5);
+  background:var(--inset); border:1px solid var(--line);
+  border-inline-start:3px solid var(--gold);
+  border-radius:var(--r-sm); padding:var(--s3) var(--s4);
+  font-size:12.5px; color:var(--ink-soft); line-height:1.6;
+}
+.note svg{ width:18px; height:18px; flex:none; color:var(--gold); margin-top:1px; }
+
+/* ===================== Actions ===================== */
+.actions{ display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); margin-top:var(--s5); }
+.btn{
+  min-height:var(--tap); border-radius:var(--r-sm); cursor:pointer;
+  font-family:var(--font-body); font-size:15px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; gap:var(--s2);
+  transition:var(--ease) .18s; border:1px solid transparent;
+}
+.btn svg{ width:19px; height:19px; }
+.btn:focus-visible{ outline:2px solid var(--green); outline-offset:2px; }
+.btn-primary{ background:var(--green); color:#fff; box-shadow:var(--sh-raise); }
+.btn-primary:hover{ background:var(--green-deep); }
+.btn-primary:active{ transform:translateY(1px); }
+.btn-primary:disabled{ background:var(--ok); cursor:default; box-shadow:none; opacity:1; }
+.btn-secondary{ background:var(--surface); color:var(--ink); border-color:var(--line-strong); }
+.btn-secondary:hover{ background:var(--inset); }
+
+/* ===================== Toast ===================== */
+.toast{
+  position:fixed; inset-block-end:24px; inset-inline:0; margin-inline:auto; width:max-content; max-width:90vw;
+  background:var(--ink); color:#fff; padding:var(--s3) var(--s5); border-radius:var(--r-pill);
+  font-size:13.5px; font-weight:600; box-shadow:var(--sh-raise);
+  display:flex; align-items:center; gap:var(--s2);
+  opacity:0; transform:translateY(12px); pointer-events:none; transition:var(--ease) .3s; z-index:50;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+.toast svg{ width:18px; height:18px; color:#7ee0b6; }
+
+/* =====================================================================
+   نظام التصميم — Design System view
+   ===================================================================== */
+.ds-intro{ padding:var(--s5); border-bottom:1px solid var(--line); }
+.ds-intro h2{ font-family:var(--font-display); font-size:20px; margin:0 0 var(--s2); }
+.ds-intro p{ margin:0; font-size:13.5px; color:var(--ink-soft); }
+.ds-block{ padding:var(--s5); border-bottom:1px solid var(--line); }
+.ds-block:last-child{ border-bottom:none; }
+.ds-label{
+  font-size:11.5px; font-weight:700; letter-spacing:.03em; color:var(--ink-faint);
+  text-transform:uppercase; margin-bottom:var(--s4);
+}
+.swatches{ display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:var(--s3); }
+.sw{ border:1px solid var(--line); border-radius:var(--r-sm); overflow:hidden; }
+.sw .chip{ height:54px; }
+.sw .meta{ padding:var(--s2); }
+.sw .nm{ font-size:11.5px; font-weight:700; }
+.sw .hx{ font-size:10.5px; color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+
+.type-row{ display:flex; align-items:baseline; gap:var(--s3); padding:var(--s2) 0; border-bottom:1px dashed var(--line); }
+.type-row:last-child{ border-bottom:none; }
+.type-row .spec{ font-size:11px; color:var(--ink-faint); width:88px; flex:none; font-variant-numeric:tabular-nums; }
+.t-display{ font-family:var(--font-display); }
+.t-30{ font-size:30px; font-weight:700; } .t-18{ font-size:18px; font-weight:600; }
+.t-16{ font-size:16px; font-weight:600; } .t-14{ font-size:14px; font-weight:500; } .t-12{ font-size:12px; font-weight:600; }
+
+.comp-grid{ display:flex; flex-wrap:wrap; gap:var(--s3); align-items:center; }
+.badge{ font-size:12px; font-weight:700; padding:5px var(--s3); border-radius:var(--r-pill); }
+.badge.wait{ color:var(--warn); background:var(--warn-bg); }
+.badge.ok{ color:var(--ok); background:var(--ok-bg); }
+.badge.under{ color:var(--warn); background:var(--warn-bg); }
+.badge.rej{ color:var(--danger); background:var(--danger-bg); }
+.scale-row{ display:flex; flex-wrap:wrap; gap:var(--s3); }
+.scale-chip{ text-align:center; }
+.scale-chip .box{ background:var(--green-tint); border:1px solid var(--line); }
+.scale-chip .cap{ font-size:11px; color:var(--ink-faint); margin-top:4px; }
+
+@media print{
+  body{ padding:0; background:#fff; }
+  .topbar,.tabs,.top-tools,.actions,.toast{ display:none !important; }
+  .doc{ box-shadow:none; border:none; max-width:100%; }
+}
+@media (max-width:560px){
+  .doc-head-row{ flex-direction:column; }
+  .hero{ grid-template-columns:1fr; text-align:center; justify-items:center; }
+  .pl-label{ font-size:10.5px; }
+  .actions{ grid-template-columns:1fr; }
+}
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+</style>
+</head>
+<body data-theme="light">
+
+  <!-- ============ Top bar ============ -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <!-- مشكاة: مصباح في كوّة -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v2"/><path d="M8 7h8l-1 5a3 3 0 0 1-6 0z"/><path d="M9 19h6"/><path d="M12 17v2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">مشكاة</div>
+        <div class="brand-tag">منصّة المسجد المؤثر · متابعة وتقارير</div>
+      </div>
+    </div>
+    <div class="top-tools">
+      <button class="icon-btn" id="themeBtn" aria-label="تبديل المظهر">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ Tabs ============ -->
+  <div class="tabs" role="tablist" aria-label="العرض">
+    <button class="tab" role="tab" aria-selected="true" data-view="report">التقرير الشهري</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="system">النظام التصميمي</button>
+  </div>
+
+  <!-- ============ Document ============ -->
+  <div class="doc">
+
+    <!-- ====== REPORT VIEW ====== -->
+    <div class="view" id="view-report">
+      <div class="doc-head">
+        <div class="eyebrow">تقرير شهري · سجلّ معتمد <span class="ref">FRQ-1447-11</span></div>
+        <div class="doc-head-row">
+          <div>
+            <div class="doc-title">مسجد الفاروق</div>
+            <div class="doc-meta">الفترة: <b>ذو القعدة 1447هـ</b> · مربع 1 — محافظة إدلب</div>
+          </div>
+          <div class="seal" id="seal">
+            <div class="seal-badge" id="sealBadge">
+              <span class="lbl">الحالة</span>
+              <span class="state" id="sealState">بانتظار اعتماد الأمير</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="body">
+
+        <!-- Pipeline -->
+        <div class="pipeline" aria-label="مسار الاعتماد">
+          <div class="pl-step done">
+            <div class="pl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="pl-label">السجلّات اليومية</div>
+          </div>
+          <div class="pl-step done">
+            <div class="pl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="pl-label">توليد تقرير الشهر</div>
+          </div>
+          <div class="pl-step current" id="plApprove">
+            <div class="pl-node">
+              <!-- نجمة ثمانية (خَتْم) -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="1"/><rect x="5" y="5" width="14" height="14" rx="1" transform="rotate(45 12 12)"/></svg>
+            </div>
+            <div class="pl-label">اعتماد الأمير</div>
+          </div>
+          <div class="pl-step">
+            <div class="pl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></div>
+            <div class="pl-label">الطبقة الأعلى</div>
+          </div>
+        </div>
+
+        <!-- Hero: performance seal + stats -->
+        <div class="hero">
+          <svg class="perf-seal" id="perfSeal" viewBox="0 0 120 120" role="img" aria-label="تحقيق الهدف 87 بالمئة">
+            <!-- خَتْم: نجمتان مربعتان متراكبتان -->
+            <g fill="none" stroke="var(--gold)" stroke-width="1.2" opacity=".55">
+              <rect x="22" y="22" width="76" height="76" rx="6"/>
+              <rect x="22" y="22" width="76" height="76" rx="6" transform="rotate(45 60 60)"/>
+            </g>
+            <circle cx="60" cy="60" r="40" fill="none" stroke="var(--line)" stroke-width="8"/>
+            <circle id="ring" cx="60" cy="60" r="40" fill="none" stroke="var(--green)" stroke-width="8"
+                    stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"
+                    transform="rotate(-90 60 60)"/>
+            <text x="60" y="58" text-anchor="middle" font-family="Reem Kufi" font-size="26" font-weight="700" fill="var(--ink)">87%</text>
+            <text x="60" y="76" text-anchor="middle" font-family="IBM Plex Sans Arabic" font-size="11" fill="var(--ink-faint)">من الهدف</text>
+          </svg>
+          <div class="hero-stats">
+            <div class="kv">
+              <div class="k">مجموع نقاط الشهر</div>
+              <div class="v">243 <span class="sub">/ 280</span></div>
+            </div>
+            <div class="kv">
+              <div class="k">القيمة المستحقة لأمير المسجد</div>
+              <div class="v money">$43.4</div>
+              <span class="rate-pill">المعدّل: 280 نقطة = $50 · لا خصومات</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly performance -->
+        <div class="sec">
+          <div class="sec-head">
+            <div class="sec-title">الأداء الأسبوعي</div>
+            <div class="sec-note">الهدف: 70 نقطة / أسبوع</div>
+          </div>
+          <div class="weeks" id="weeks">
+            <div class="track-row">
+              <div class="target-line" style="bottom:87.5%"><span class="target-tag">الهدف 70</span></div>
+              <div class="bar-track">       <span class="val">70</span><div class="col" data-h="87.5"></div></div>
+              <div class="bar-track">       <span class="val">68</span><div class="col" data-h="85"></div></div>
+              <div class="bar-track under"> <span class="val">52</span><div class="col" data-h="65"></div></div>
+              <div class="bar-track under"> <span class="val">53</span><div class="col" data-h="66.25"></div></div>
+            </div>
+            <div class="week-labels">
+              <div class="wk-cell">      <span class="wk">الأول</span><span class="diff">±0</span></div>
+              <div class="wk-cell">      <span class="wk">الثاني</span><span class="diff">−2</span></div>
+              <div class="wk-cell under"><span class="wk">الثالث</span><span class="diff">−18</span></div>
+              <div class="wk-cell under"><span class="wk">الرابع</span><span class="diff">−17</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activities -->
+        <div class="sec">
+          <div class="sec-head">
+            <div class="sec-title">تفصيل الأنشطة</div>
+            <div class="sec-note">8 أنشطة · 243 نقطة</div>
+          </div>
+          <div class="act"><span class="name">اجتماع الأسرة اليومي</span><span class="nums">22 مرة · <b>22 نقطة</b></span></div>
+          <div class="act"><span class="name">تدريس «على بصيرة» (×2)</span><span class="nums">18 مرة · <b>36 نقطة</b></span></div>
+          <div class="act"><span class="name">دروس شرعية وتربوية (×2)</span><span class="nums">20 مرة · <b>40 نقطة</b></span></div>
+          <div class="act"><span class="name">عمل اجتماعي وعلاقات</span><span class="nums">31 مرة · <b>31 نقطة</b></span></div>
+          <div class="act"><span class="name">استقطاب شاب جديد</span><span class="nums">14 مرة · <b>14 نقطة</b></span></div>
+          <div class="act"><span class="name">نشاط ترفيهي ورياضي</span><span class="nums">19 مرة · <b>19 نقطة</b></span></div>
+          <div class="act"><span class="name">عمل إعلامي</span><span class="nums">26 مرة · <b>26 نقطة</b></span></div>
+          <div class="act"><span class="name">أنشطة أخرى</span><span class="nums">55 مرة · <b>55 نقطة</b></span></div>
+        </div>
+
+        <!-- Note -->
+        <div class="note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <div>وُلّد هذا التقرير تلقائياً من السجلّات اليومية المعتمدة. المعدّل الحالي: 280 نقطة = $50، مستحقة لأمير المسجد، ولا توجد أي خصومات.</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button class="btn btn-primary" id="approveBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            اعتماد التقرير
+          </button>
+          <button class="btn btn-secondary" onclick="window.print()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
+            تصدير PDF
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ====== DESIGN SYSTEM VIEW ====== -->
+    <div class="view" id="view-system" hidden>
+      <div class="ds-intro">
+        <h2>النظام التصميمي الموحّد</h2>
+        <p>طبقة واحدة من الرموز (Tokens) والمكوّنات تُبنى منها كل شاشات «مشكاة» — الكونسول الإداري والتطبيق الميداني معاً. الهوية والدلالات موحّدة، وتبقى الكثافة وأنماط التفاعل حرّة بحسب السطح.</p>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-label">الألوان · Color tokens</div>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:var(--green)"></div><div class="meta"><div class="nm">primary</div><div class="hx">#0E6E50</div></div></div>
+          <div class="sw"><div class="chip" style="background:var(--green-deep)"></div><div class="meta"><div class="nm">green-deep</div><div class="hx">#0A4E39</div></div></div>
+          <div class="sw"><div class="chip" style="background:var(--gold)"></div><div class="meta"><div class="nm">gold</div><div class="hx">#B98F36</div></div></div>
+          <div class="sw"><div class="chip" style="background:var(--ok)"></div><div class="meta"><div class="nm">success</div><div class="hx">#0E7C5B</div></div></div>
+          <div class="sw"><div class="chip" style="background:var(--warn)"></div><div class="meta"><div class="nm">warning</div><div class="hx">#B06C16</div></div></div>
+          <div class="sw"><div class="chip" style="background:var(--danger)"></div><div class="meta"><div class="nm">danger</div><div class="hx">#B23A2A</div></div></div>
+          <div class="sw"><div class="chip" style="background:var(--ink)"></div><div class="meta"><div class="nm">ink</div><div class="hx">#12211B</div></div></div>
+          <div class="sw"><div class="chip" style="background:var(--canvas);border-bottom:1px solid var(--line)"></div><div class="meta"><div class="nm">canvas</div><div class="hx">#E9EFEA</div></div></div>
+        </div>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-label">الخطوط · Typography</div>
+        <div class="type-row"><span class="spec">Reem Kufi</span><span class="t-display t-30">المسجد المؤثر — عنوان ذو حضور</span></div>
+        <div class="type-row"><span class="spec">Plex · 14/500</span><span class="t-14">نصٌّ أساسيٌّ واضح للجداول والتقارير والتنبيهات، مع أرقام جدوليّة منتظمة.</span></div>
+        <div class="type-row"><span class="spec">tabular</span><span class="t-16" style="font-variant-numeric:tabular-nums">0123456789 · 243 / 280 · $43.4 · 87%</span></div>
+        <div style="margin-top:var(--s4)" class="ds-label">المقياس · Type scale</div>
+        <div class="type-row"><span class="spec">30 / 700</span><span class="t-display t-30">عنوان رئيسي</span></div>
+        <div class="type-row"><span class="spec">18 / 600</span><span class="t-display t-18">عنوان فرعي</span></div>
+        <div class="type-row"><span class="spec">16 / 600</span><span class="t-display t-16">عنوان قسم</span></div>
+        <div class="type-row"><span class="spec">14 / 500</span><span class="t-14">نص أساسي</span></div>
+        <div class="type-row"><span class="spec">12 / 600</span><span class="t-12">تسمية صغيرة</span></div>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-label">المكوّنات · Components</div>
+        <div style="margin-bottom:var(--s4)">
+          <div class="sec-note" style="margin-bottom:var(--s2)">Status badges</div>
+          <div class="comp-grid">
+            <span class="badge wait">بانتظار الاعتماد</span>
+            <span class="badge ok">معتمد</span>
+            <span class="badge under">دون الهدف</span>
+            <span class="badge rej">مرفوض</span>
+          </div>
+        </div>
+        <div style="margin-bottom:var(--s4)">
+          <div class="sec-note" style="margin-bottom:var(--s2)">Buttons</div>
+          <div class="comp-grid">
+            <button class="btn btn-primary" style="min-width:120px">اعتماد</button>
+            <button class="btn btn-secondary" style="min-width:120px">تصدير</button>
+          </div>
+        </div>
+        <div>
+          <div class="sec-note" style="margin-bottom:var(--s2)">عُقد المسار · Pipeline nodes</div>
+          <div class="comp-grid">
+            <div class="pl-step done" style="width:64px"><div class="pl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+            <div class="pl-step current" style="width:64px"><div class="pl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="1"/><rect x="5" y="5" width="14" height="14" rx="1" transform="rotate(45 12 12)"/></svg></div></div>
+            <div class="pl-step" style="width:64px"><div class="pl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-block">
+        <div class="ds-label">الزوايا والمسافات · Radius &amp; spacing</div>
+        <div class="scale-row">
+          <div class="scale-chip"><div class="box" style="width:56px;height:42px;border-radius:10px"></div><div class="cap">sm · 10</div></div>
+          <div class="scale-chip"><div class="box" style="width:56px;height:42px;border-radius:14px"></div><div class="cap">md · 14</div></div>
+          <div class="scale-chip"><div class="box" style="width:56px;height:42px;border-radius:20px"></div><div class="cap">lg · 20</div></div>
+          <div class="scale-chip"><div class="box" style="width:56px;height:42px;border-radius:999px"></div><div class="cap">pill</div></div>
+        </div>
+        <div class="scale-row" style="margin-top:var(--s4)">
+          <div class="scale-chip"><div class="box" style="width:4px;height:28px"></div><div class="cap">4</div></div>
+          <div class="scale-chip"><div class="box" style="width:8px;height:28px"></div><div class="cap">8</div></div>
+          <div class="scale-chip"><div class="box" style="width:12px;height:28px"></div><div class="cap">12</div></div>
+          <div class="scale-chip"><div class="box" style="width:16px;height:28px"></div><div class="cap">16</div></div>
+          <div class="scale-chip"><div class="box" style="width:24px;height:28px"></div><div class="cap">24</div></div>
+          <div class="scale-chip"><div class="box" style="width:32px;height:28px"></div><div class="cap">32</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="toastMsg">تم اعتماد التقرير وإحالته للطبقة الأعلى.</span>
+  </div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* Tabs */
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(x){ x.setAttribute('aria-selected','false'); });
+      t.setAttribute('aria-selected','true');
+      var v = t.dataset.view;
+      document.getElementById('view-report').hidden = (v!=='report');
+      document.getElementById('view-system').hidden = (v!=='system');
+    });
+  });
+
+  /* Theme toggle */
+  var themeBtn = document.getElementById('themeBtn');
+  var icon = document.getElementById('themeIcon');
+  themeBtn.addEventListener('click', function(){
+    var dark = document.body.getAttribute('data-theme')==='dark';
+    document.body.setAttribute('data-theme', dark ? 'light' : 'dark');
+    icon.innerHTML = dark
+      ? '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>'
+      : '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>';
+  });
+
+  /* Animate ring + bars on load */
+  function animate(){
+    var ring = document.getElementById('ring');
+    var pct = 0.87, circ = 251.2;
+    ring.style.transition = reduce ? 'none' : 'stroke-dashoffset 1s var(--ease)';
+    requestAnimationFrame(function(){ ring.style.strokeDashoffset = (circ*(1-pct)).toFixed(1); });
+    document.querySelectorAll('.col').forEach(function(c){
+      var h = c.getAttribute('data-h');
+      requestAnimationFrame(function(){ c.style.height = h+'%'; });
+    });
+    var seal = document.getElementById('seal');
+    if(!reduce){ seal.classList.add('stamped'); }
+  }
+  if('requestIdleCallback' in window){ requestIdleCallback(animate); } else { setTimeout(animate, 60); }
+
+  /* Approve flow — copy stays consistent: زر «اعتماد» → حالة «معتمد» */
+  var approveBtn = document.getElementById('approveBtn');
+  var toast = document.getElementById('toast');
+  approveBtn.addEventListener('click', function(){
+    var badge = document.getElementById('sealBadge');
+    var state = document.getElementById('sealState');
+    var pl = document.getElementById('plApprove');
+    badge.classList.add('is-approved');
+    state.textContent = 'معتمد من الأمير';
+    pl.classList.remove('current'); pl.classList.add('done');
+    pl.querySelector('.pl-node').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    approveBtn.disabled = true;
+    approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> تم الاعتماد';
+    if(!reduce){ var s=document.getElementById('seal'); s.classList.remove('stamped'); void s.offsetWidth; s.classList.add('stamped'); }
+    toast.classList.add('show');
+    setTimeout(function(){ toast.classList.remove('show'); }, 3200);
+  });
+})();
+</script>
+</body>
+</html>

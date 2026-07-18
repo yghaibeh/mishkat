@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>التقرير الشهري — المسجد المؤثر</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+  نظام التصميم (Design System Variables)
+  ========================================
+*/
+:root {
+  --bg-body: #f8fafc;
+  --bg-surface: #ffffff;
+  --primary: #0ea5e9;
+  --primary-light: #e0f2fe;
+  
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-hint: #94a3b8;
+  
+  --success: #10b981;
+  --success-bg: #d1fae5;
+  --warning: #f59e0b;
+  --warning-bg: #fef3c7;
+  --danger: #ef4444;
+  
+  --border: #e2e8f0;
+  --border-dark: #cbd5e1;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  --transition: all 0.2s ease;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  font-family: 'Cairo', sans-serif;
+  padding: 24px 16px;
+  line-height: 1.5;
+  display: flex;
+  justify-content: center;
+}
+
+/* ================= Container ================= */
+.frame {
+  width: 100%;
+  max-width: 600px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* ================= Header ================= */
+.header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.header-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.status-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--warning);
+  background: var(--warning-bg);
+  padding: 6px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* ================= Body Content ================= */
+.body-content {
+  padding: 24px;
+}
+
+/* ================= Stats Cards ================= */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.stat-value .max {
+  font-size: 14px;
+  color: var(--text-hint);
+  font-weight: 500;
+}
+
+/* ================= Sections ================= */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 24px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 16px;
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+/* ================= Weekly Table ================= */
+.week-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px;
+  gap: 12px;
+  align-items: center;
+  font-size: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.week-row.header-row {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 13px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 8px;
+  padding-top: 0;
+}
+
+.week-row span:nth-child(2) { text-align: center; font-weight: 600; }
+.week-row span:nth-child(3) { text-align: left; font-weight: 700; }
+
+.status-ok { color: var(--success); }
+.status-warn { color: var(--warning); }
+
+/* ================= Activities List ================= */
+.activity-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.activity-row:last-child {
+  border-bottom: none;
+}
+
+.activity-row span:first-child {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.activity-row span:last-child {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ================= Info Note ================= */
+.info-box {
+  background: var(--primary-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+/* ================= Action Buttons ================= */
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--success);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: #059669;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-dark);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-body);
+}
+
+/* Print Styles */
+@media print {
+  body { padding: 0; background: white; }
+  .frame { box-shadow: none; border: none; max-width: 100%; }
+  .actions-grid { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="header">
+    <div class="header-info">
+      <div class="header-title">التقرير الشهري — مسجد الفاروق</div>
+      <div class="header-sub">ذو القعدة 1447هـ · مربع 1 · محافظة إدلب</div>
+    </div>
+    <span class="status-badge">بانتظار اعتماد الأمير</span>
+  </div>
+
+  <div class="body-content">
+    
+    <div class="cards-grid">
+      <div class="stat-card">
+        <div class="stat-label">مجموع الشهر</div>
+        <div class="stat-value">243<span class="max"> / 280</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">تحقيق الهدف</div>
+        <div class="stat-value" style="color: var(--success);">87%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">القيمة المستحقة</div>
+        <div class="stat-value" style="color: var(--success);">$43.4</div>
+      </div>
+    </div>
+
+    <div class="section-title">النقاط الأسبوعية</div>
+    <div class="week-row header-row">
+      <span>الأسبوع</span>
+      <span>النقاط</span>
+      <span>الحالة</span>
+    </div>
+    <div class="week-row">
+      <span>الأول</span>
+      <span>70</span>
+      <span class="status-ok">مكتمل</span>
+    </div>
+    <div class="week-row">
+      <span>الثاني</span>
+      <span>68</span>
+      <span class="status-ok">مكتمل</span>
+    </div>
+    <div class="week-row">
+      <span>الثالث</span>
+      <span>52</span>
+      <span class="status-warn">دون الهدف</span>
+    </div>
+    <div class="week-row">
+      <span>الرابع</span>
+      <span>53</span>
+      <span class="status-warn">دون الهدف</span>
+    </div>
+
+    <div class="section-title">تفصيل الأنشطة</div>
+    <div class="activity-row"><span>اجتماع الأسرة اليومي</span><span>22 مرة · 22 نقطة</span></div>
+    <div class="activity-row"><span>تدريس «على بصيرة» (×2)</span><span>18 مرة · 36 نقطة</span></div>
+    <div class="activity-row"><span>دروس شرعية وتربوية (×2)</span><span>20 مرة · 40 نقطة</span></div>
+    <div class="activity-row"><span>عمل اجتماعي وعلاقات</span><span>31 مرة · 31 نقطة</span></div>
+    <div class="activity-row"><span>استقطاب شاب جديد</span><span>14 مرة · 14 نقطة</span></div>
+    <div class="activity-row"><span>نشاط ترفيهي ورياضي</span><span>19 مرة · 19 نقطة</span></div>
+    <div class="activity-row"><span>عمل إعلامي</span><span>26 مرة · 26 نقطة</span></div>
+    <div class="activity-row"><span>أنشطة أخرى</span><span>55 مرة · 55 نقطة</span></div>
+
+    <div class="info-box">
+      <span>ℹ️</span>
+      <div>وُلّد هذا التقرير تلقائياً من السجلات اليومية المعتمدة. المعدّل الحالي: 280 نقطة = 50$ · المستحق لأمير المسجد · لا توجد خصومات.</div>
+    </div>
+
+    <div class="actions-grid">
+      <button class="btn btn-primary" onclick="alert('اعتُمد التقرير وأُرسل لأعلى طبقة مفعّلة.')">✓ اعتماد التقرير</button>
+      <button class="btn btn-secondary" onclick="window.print()">⬇ تصدير PDF</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

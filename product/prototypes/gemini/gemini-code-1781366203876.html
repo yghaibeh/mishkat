@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>لوحة متابعة المحافظة — المسجد المؤثر</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+  نظام التصميم (Design System Variables)
+  ========================================
+*/
+:root {
+  /* الألوان الأساسية */
+  --bg-body: #f8fafc;
+  --bg-surface: #ffffff;
+  --primary: #0ea5e9;
+  --primary-light: #e0f2fe;
+  
+  /* ألوان النصوص */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-hint: #94a3b8;
+  
+  /* ألوان الحالة (Status Colors) */
+  --success: #10b981;
+  --success-bg: #d1fae5;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --danger-bg: #fee2e2;
+  
+  /* الحدود والظلال */
+  --border: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  
+  /* الحواف */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  /* الحركات */
+  --transition: all 0.3s ease;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  font-family: 'Cairo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 24px 16px;
+  line-height: 1.5;
+}
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ================= Header ================= */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  background: var(--bg-surface);
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.header-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-pin {
+  font-size: 24px;
+  background: var(--primary-light);
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ================= Stats Cards ================= */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.stat-value span.max {
+  font-size: 14px;
+  color: var(--text-hint);
+  font-weight: 500;
+}
+
+/* ================= Filters ================= */
+.filters-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  background: var(--bg-surface);
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.fbtn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.fbtn:hover {
+  background: var(--bg-body);
+  color: var(--text-main);
+}
+
+.fbtn.on {
+  background: var(--primary-light);
+  color: var(--primary);
+  box-shadow: 0 1px 2px rgba(14, 165, 233, 0.1);
+}
+
+/* ================= List Items ================= */
+.list-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.list-item {
+  display: grid;
+  grid-template-columns: 32px 1fr 100px 70px;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:hover {
+  background-color: var(--bg-body);
+}
+
+.item-rank {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-hint);
+  background: var(--bg-body);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.item-info {
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.item-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.progress-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease-in-out;
+}
+
+.item-score {
+  text-align: right;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.item-score .max {
+  font-size: 12px;
+  color: var(--text-hint);
+  font-weight: 500;
+}
+
+/* ================= Footer Note ================= */
+.info-note {
+  margin-top: 24px;
+  background: var(--bg-surface);
+  border-right: 4px solid var(--primary);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  
+  <div class="header">
+    <div class="header-title-wrapper">
+      <div class="icon-pin">📍</div>
+      <h1 class="title">محافظة إدلب</h1>
+    </div>
+    <div class="subtitle">الأسبوع 27 ذو الحجة 1447هـ</div>
+  </div>
+
+  <div class="cards-grid">
+    <div class="stat-card">
+      <div class="stat-label">المساجد</div>
+      <div class="stat-value">24</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">أُدخلت اليوم</div>
+      <div class="stat-value" style="color: var(--success);">19</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">متأخرة</div>
+      <div class="stat-value" style="color: var(--danger);">5</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">متوسط النقاط</div>
+      <div class="stat-value" style="color: var(--primary);">58<span class="max"> / 70</span></div>
+    </div>
+  </div>
+
+  <div class="filters-container">
+    <button class="fbtn on" id="f-all" onclick="setF('all')">الكل (24)</button>
+    <button class="fbtn" id="f-late" onclick="setF('late')">المتأخرون (5)</button>
+    <button class="fbtn" id="f-top" onclick="setF('top')">الأعلى نقاطاً</button>
+  </div>
+
+  <div class="list-wrapper" id="list"></div>
+
+  <div class="info-note">
+    💡 <strong>ملاحظة:</strong> «متأخر» تعني أنه لم يُدخل سجله منذ يومين. يرى مسؤول المحافظة مساجده فقط (نطاقه)، ويمكنك النقر على المسجد للغوص في تفاصيله.
+  </div>
+
+</div>
+
+<script>
+// البيانات الأساسية
+const M = [
+ {n:"مسجد الفاروق",mrb:"مربع 1",p:67,d:0}, {n:"مسجد النور",mrb:"مربع 1",p:64,d:0},
+ {n:"مسجد التقوى (نساء)",mrb:"مربع 1",p:61,d:1}, {n:"مسجد بلال",mrb:"مربع 2",p:59,d:0},
+ {n:"مسجد القدس",mrb:"مربع 2",p:55,d:0}, {n:"مسجد الرحمة",mrb:"مربع 2",p:52,d:1},
+ {n:"مسجد الصحابة",mrb:"مربع 3",p:48,d:0}, {n:"مسجد عثمان",mrb:"مربع 3",p:44,d:3},
+ {n:"مسجد الإيمان (نساء)",mrb:"مربع 3",p:39,d:2}, {n:"مسجد حمزة",mrb:"مربع 1",p:31,d:4},
+ {n:"مسجد الهدى",mrb:"مربع 2",p:22,d:5}
+];
+
+let currentFilter = 'all';
+
+// دالة تغيير الفلتر
+function setF(filterType) {
+  currentFilter = filterType;
+  // تحديث حالة الأزرار
+  ['all', 'late', 'top'].forEach(k => {
+    document.getElementById('f-' + k).classList.toggle('on', k === filterType);
+  });
+  render();
+}
+
+// دالة تحديد الألوان بناءً على النقاط
+function getColor(p) {
+  if (p >= 56) return 'var(--success)';
+  if (p >= 40) return 'var(--warning)';
+  return 'var(--danger)';
+}
+
+// دالة التصيير (Render)
+function render() {
+  let rows = [...M]; // نسخة من المصفوفة
+  
+  if (currentFilter === 'late') {
+    rows = rows.filter(m => m.d >= 2);
+  }
+  if (currentFilter === 'top') {
+    rows.sort((a, b) => b.p - a.p);
+  }
+  
+  const box = document.getElementById('list');
+  box.innerHTML = '';
+  
+  rows.forEach((m, i) => {
+    const isLate = m.d >= 2;
+    const progressPercent = Math.min(100, Math.round((m.p / 70) * 100));
+    const pColor = getColor(m.p);
+    
+    // بناء العنصر باستخدام Template Literals لسهولة القراءة والصيانة
+    const row = document.createElement('div');
+    row.className = 'list-item';
+    row.onclick = () => alert(`فتح تفاصيل ${m.n} (مساجد، أعضاء، سجلات الأسبوع).`);
+    
+    row.innerHTML = `
+      <div class="item-rank">${i + 1}</div>
+      <div class="item-info">
+        <div class="item-name">${m.n}</div>
+        <div class="item-meta">
+          ${m.mrb} ${isLate ? `<span style="color:var(--danger)"> · متأخر (${m.d} أيام)</span>` : ' · مُحدَّث مؤخراً'}
+        </div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-track">
+          <div class="progress-fill" style="width: ${progressPercent}%; background-color: ${pColor};"></div>
+        </div>
+      </div>
+      <div class="item-score" style="color: ${pColor};">
+        ${m.p}<span class="max"> / 70</span>
+      </div>
+    `;
+    
+    box.appendChild(row);
+  });
+}
+
+// التصيير الأولي عند تحميل الصفحة
+render();
+</script>
+</body>
+</html>

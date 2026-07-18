@@ -1,0 +1,244 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * مشكاة — نظام التصميم الموحّد
+ * Emerald Manuscript Executive
+ * نقطة حقيقة واحدة لكل توكنز التصميم.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* الهوية — Emerald */
+  --color-emerald-50: var(--emerald-50);
+  --color-emerald-100: var(--emerald-100);
+  --color-emerald-200: var(--emerald-200);
+  --color-emerald-500: var(--emerald-500);
+  --color-emerald-600: var(--emerald-600);
+  --color-emerald-700: var(--emerald-700);
+  --color-emerald-800: var(--emerald-800);
+  --color-emerald-900: var(--emerald-900);
+
+  /* التمييز — Gold/Amber */
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+
+  /* الدلالات */
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+
+  /* الأسطح المحايدة */
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+
+  --font-display: "Reem Kufi", system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --shadow-soft: 0 1px 2px oklch(0.2 0.03 160 / 0.04), 0 8px 24px -12px oklch(0.2 0.03 160 / 0.12);
+  --shadow-ring: 0 0 0 1px oklch(0.92 0.01 160);
+}
+
+:root {
+  --radius: 0.875rem;
+
+  /* قاعدة عامة — رمادي دافئ بظل زمردي خفيف */
+  --background: oklch(0.985 0.005 150);
+  --foreground: oklch(0.18 0.02 165);
+
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.975 0.008 155);
+  --line: oklch(0.92 0.012 160);
+  --line-strong: oklch(0.86 0.018 160);
+  --ink: oklch(0.18 0.02 165);
+  --ink-soft: oklch(0.45 0.02 165);
+  --ink-faint: oklch(0.62 0.018 165);
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+
+  /* Brand — زمردي */
+  --emerald-50: oklch(0.97 0.022 160);
+  --emerald-100: oklch(0.93 0.04 160);
+  --emerald-200: oklch(0.86 0.06 162);
+  --emerald-500: oklch(0.56 0.11 162);
+  --emerald-600: oklch(0.48 0.105 163);
+  --emerald-700: oklch(0.40 0.09 164);
+  --emerald-800: oklch(0.33 0.075 165);
+  --emerald-900: oklch(0.26 0.055 165);
+
+  --primary: var(--emerald-800);
+  --primary-foreground: oklch(0.98 0.01 155);
+
+  /* Accent — كهرماني/ذهبي */
+  --gold-50: oklch(0.97 0.04 85);
+  --gold-100: oklch(0.93 0.07 82);
+  --gold-500: oklch(0.74 0.14 75);
+  --gold-600: oklch(0.62 0.14 60);
+  --gold-700: oklch(0.52 0.13 55);
+
+  --accent: var(--gold-50);
+  --accent-foreground: var(--gold-700);
+
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-soft);
+
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--emerald-600);
+
+  /* Semantic */
+  --success: oklch(0.50 0.11 162);
+  --success-bg: oklch(0.95 0.04 160);
+  --warn: oklch(0.55 0.13 60);
+  --warn-bg: oklch(0.96 0.05 85);
+  --danger: oklch(0.55 0.18 25);
+  --danger-bg: oklch(0.95 0.04 25);
+
+  --destructive: var(--danger);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* shadcn extras (charts/sidebar — kept neutral) */
+  --chart-1: var(--emerald-700);
+  --chart-2: var(--gold-600);
+  --chart-3: var(--emerald-500);
+  --chart-4: var(--ink-soft);
+  --chart-5: var(--gold-500);
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--emerald-800);
+  --sidebar-primary-foreground: oklch(0.98 0.01 155);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--emerald-600);
+}
+
+.dark {
+  --background: oklch(0.16 0.018 165);
+  --foreground: oklch(0.96 0.008 150);
+  --surface: oklch(0.20 0.022 165);
+  --surface-2: oklch(0.24 0.024 165);
+  --line: oklch(1 0 0 / 8%);
+  --line-strong: oklch(1 0 0 / 16%);
+  --ink: oklch(0.96 0.008 150);
+  --ink-soft: oklch(0.78 0.012 155);
+  --ink-faint: oklch(0.6 0.012 160);
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+
+  --primary: var(--emerald-200);
+  --primary-foreground: oklch(0.22 0.04 165);
+
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--emerald-500);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "ss01", "cv01";
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+@utility font-mono-nums {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== حركات الصفحة التعريفية (Hero) — بلا تبعيات ===== */
+@keyframes mishkat-fade-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes mishkat-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes mishkat-shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+@keyframes mishkat-pulse-ring { 0% { transform: scale(0.9); opacity: .5; } 70% { transform: scale(1.25); opacity: 0; } 100% { opacity: 0; } }
+
+/* عنصر يُكشَف عند التمرير (يضيف JS صنف is-in) */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.is-in { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: .08s; }
+.reveal-d2 { transition-delay: .16s; }
+.reveal-d3 { transition-delay: .24s; }
+.animate-float { animation: mishkat-float 6s ease-in-out infinite; }
+.hero-gradient {
+  background: linear-gradient(110deg, var(--color-emerald-50), var(--color-surface) 40%, var(--color-gold-50));
+  background-size: 200% 200%; animation: mishkat-shimmer 14s linear infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .animate-float, .hero-gradient { animation: none !important; }
+}
+
+/* علامة نهاية الآية المخصّصة (رقم الآية داخل دائرة) — مستقلّة عن دعم الخطّ لـU+06DD */
+.ayah-end {
+  display: inline-grid; place-items: center;
+  inline-size: 1.55em; block-size: 1.55em; margin-inline: .18em;
+  border: 1.5px solid var(--color-gold-500); border-radius: 9999px;
+  font-size: .6em; line-height: 1; color: var(--color-gold-700);
+  vertical-align: .2em; font-variant-numeric: normal; font-family: var(--font-mono);
+}
+
+/* خطوط المنهاج: القرآن بخطّ عثماني (Amiri Quran)، وعبارات التعظيم بخطّ Amiri المميّز */
+@utility font-quran { font-family: "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif; }
+@utility font-honorific { font-family: "Amiri", "Noto Naskh Arabic", serif; }

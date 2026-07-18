@@ -1,0 +1,21 @@
+# التبعيات والبناء
+node_modules/
+dist/
+.output/
+.nitro/
+.vite/
+
+# أسرار محلية وحالة wrangler — لا تُرفع أبدًا
+.dev.vars
+.wrangler-state/
+.wrangler/
+
+# سجلّات ومتنوّعات
+*.log
+.DS_Store
+
+# توكن نشر Cloudflare (لا يُرفع)
+.cloudflare.env
+
+# ملفات العميل الكبيرة (APK) — تبقى محليًا خارج git
+from_client/
