@@ -1,11 +1,16 @@
--- تنظيف بذرة الإنتاج التجريبية قبل التجربة الميدانية (قرار المالك ٢٠٢٦-٠٧-١٨)
--- يبقي: المرجعيات (المنهاج/الأنشطة/المعدلات/العملات/شجرة الحسابات/المواد) + حساب admin وحده.
--- نسخة احتياطية كاملة تُؤخذ قبل التنفيذ (wrangler d1 export).
+-- تنظيف بذرة الإنتاج التجريبية قبل التجربة الميدانية (قرار المالك ٢٠٢٦-٠٧-١٨، وأعاده بلاغ
+-- الميدان: «المدخلات الحالية تسبب خربطة في العمل — خلّنا نضيف مدخلات فعلية واقعية»).
+-- يبقي: المرجعيات (المنهاج/الأنشطة/المعدلات/العملات/شجرة الحسابات/المواد) + حساب admin
+-- + **جذرَي القسمين** (men/women) فتبقى الشبكة ذات هيكلٍ صالحٍ تُبنى عليه الوحدات الحقيقية.
+-- ⚠ حذفٌ لا رجعة فيه: نسخةٌ احتياطية كاملة تُؤخذ قبل التنفيذ (wrangler d1 export) — إلزاماً.
+-- ⚠ يمسح المرفقات كلَّها بما فيها ما رفعه كادرٌ حقيقيّ — لا يُشغَّل بعد بدء الإدخال الحقيقيّ.
 DELETE FROM activities;
 DELETE FROM activity_responses;
 DELETE FROM announcements;
 DELETE FROM asset_expenses;
 DELETE FROM assets;
+DELETE FROM asset_custody;          -- سلسلة الحيازة (0076)
+DELETE FROM media_coverages;        -- التغطيات الإعلامية (0075)
 DELETE FROM attachments;
 DELETE FROM audit_log;
 DELETE FROM auth_attempts;
@@ -51,7 +56,7 @@ DELETE FROM monthly_programs;
 DELETE FROM mosque_lesson_attendance;
 DELETE FROM mosque_lessons;
 DELETE FROM notifications;
-DELETE FROM org_units;
+DELETE FROM org_units WHERE id NOT IN ('men','women');  -- يبقى جذرا القسمين
 DELETE FROM participant_scores;
 DELETE FROM participants;
 DELETE FROM payment_batch_items;
