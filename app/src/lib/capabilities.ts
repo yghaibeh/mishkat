@@ -135,6 +135,9 @@ const SUPERVISOR_VIEW = [
   "competition.view",
   "library.view",
   "duties.view",
+  // «الأعلى يطّلع على كلّ ما يخصّه في الأسفل» (بلاغ الميدان ٢٠٢٦-٠٧-١٨): معرضُ نطاقه — يرى
+  // تغطياتِ منطقته وصورَ سجلّاتها ودروسِها. اطّلاعٌ لا نشر؛ فـ media.post قدرةٌ شخصيّةٌ لصاحب الدور.
+  "media.hub",
 ];
 
 export const ROLE_DEFAULTS: Record<string, string[]> = {

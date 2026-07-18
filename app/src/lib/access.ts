@@ -20,20 +20,29 @@ export const NAV = [
   { to: "/manhaj", label: "المنهاج", cap: "library.view" },
   // الإعلام: معرضُ صور الشبكة (سجلّات اليوم + دروس الحلقات) + العُهدُ في العمل — للإدارة ومسؤول الإعلام
   { to: "/media-hub", label: "الإعلام", cap: "media.hub" },
-  { to: "/admin", label: "الإدارة", cap: "admin.view" },
+  // «الإدارة» بابٌ لكلّ من يملك قدرةَ إدارةٍ ولو واحدة — لا للمدير وحدَه (بلاغ الميدان ٢٠٢٦-٠٧-١٨:
+  // مسؤولُ منطقةٍ يملك orgUnit.manage وuser.manage في الخادم ولا يجد البابَ فلا يستطيع إضافةَ مسجد).
+  // الصفحةُ نفسُها تُبوَّب بالقدرات، والخادمُ يعزل بالنطاق — فالبابُ الواحد يفتح لكلٍّ ما يخصّه.
+  { to: "/admin", label: "الإدارة", cap: "admin.view", anyOf: ["admin.view", "orgUnit.manage", "user.manage", "audit.view"] },
   // تبويبان «شخصيّان»: قدرتُهما في PERSONAL_CAPS، فـ hasCap وحدَه يمنع «*» منهما
   // (كان المديرُ يرى «حلقاتي» و«لجنتي» ولا حلقةَ له ولا لجنة — قاعدة المرآة ٣٤)
   { to: "/my-circles", label: "حلقاتي", cap: "circle.teach" },
   { to: "/my-committee", label: "لجنتي", cap: "committee.own" },
 ] as const;
 
+// بابٌ يُفتح بأيّ قدرةٍ من قدراته (anyOf) وإلّا فبقدرته الواحدة
+function opens(n: (typeof NAV)[number], caps: string[]): boolean {
+  const list = ("anyOf" in n && n.anyOf ? n.anyOf : [n.cap]) as readonly string[];
+  return list.some((c) => hasCap(caps, c));
+}
+
 export function allowedNav(caps: string[] = []) {
-  return NAV.filter((n) => !("hidden" in n && n.hidden) && hasCap(caps, n.cap));
+  return NAV.filter((n) => !("hidden" in n && n.hidden) && opens(n, caps));
 }
 
 export function canAccess(path: string, caps: string[] = []): boolean {
   const n = NAV.find((x) => x.to === path);
-  return !!n && hasCap(caps, n.cap);
+  return !!n && opens(n, caps);
 }
 
 // الوجهة الطرفيّة للمُصادَقين بلا صلاحيات — صفحةٌ محايدة لا تُعيد القذف (ثابت: التوجيه دالّةٌ كليّة لا تُحلّق أبدًا)
@@ -49,9 +58,11 @@ export function firstAllowed(caps: string[] = []): string {
 const ROLE_PRECEDENCE = ["admin", "section_head", "rabita", "square", "finance_officer", "amir", "teacher", "committee_head", "media", "student"];
 const ROLE_NAV_ORDER: Record<string, string[]> = {
   admin: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
-  section_head: ["/home", "/network", "/finance", "/ala-baseera", "/competition", "/library", "/manhaj"],
-  rabita: ["/home", "/network", "/finance", "/ala-baseera", "/competition", "/library", "/manhaj"],
-  square: ["/home", "/network", "/finance", "/ala-baseera", "/competition", "/library", "/manhaj"],
+  // الطبقاتُ المشرفة: «الإدارة» ثانيةً — أهمُّ واجبٍ لمسؤول المنطقة تفعيلُ دور مسجدٍ جديد
+  // (بلاغ الميدان ٢٠٢٦-٠٧-١٨)؛ ثمّ شبكتُه فصندوقُه فتعليمُه فإعلامُ نطاقه.
+  section_head: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
+  rabita: ["/home", "/admin", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
+  square: ["/home", "/network", "/finance", "/ala-baseera", "/media-hub", "/competition", "/library", "/manhaj"],
   finance_officer: ["/home", "/finance", "/library", "/manhaj"],
   amir: ["/home", "/finance", "/competition", "/library", "/manhaj"],
   teacher: ["/home", "/my-circles", "/manhaj", "/library"],

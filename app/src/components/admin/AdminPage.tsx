@@ -176,11 +176,13 @@ export function AdminPage({ orgUnits = [] }: { orgUnits?: OrgUnit[] }) {
                   </Field>
                 </div>
               )}
-              <Field label="الوحدة الأب" hint="اتركها فارغة لإنشاء جذر (منطقة).">
+              {/* الجذرُ للإدارة العليا وحدَها: كان يُعرض لمسؤول المنطقة فيُنشئ ثمّ يُردّ «لا يمكنك
+                  إنشاء وحدة جذرية» — عرضُ فعلٍ لا يملكه (قاعدة المالك الواحد ٣٤). */}
+              <Field label="الوحدة الأب" hint={isAdmin ? "اتركها فارغة لإنشاء جذر (منطقة)." : "الوحدة الجديدة تُنشأ داخل نطاقك."}>
                 <MTreeSelect value={ouParent} valueLabel={ouParentLbl} onChange={(v, l) => { setOuParent(v); setOuParentLbl(l); }}
-                  loadTree={() => getOrgTree()} placeholder="— بلا أب (جذر) —" title="اختر الوحدة الأب من الهيكلية" />
+                  loadTree={() => getOrgTree()} placeholder={isAdmin ? "— بلا أب (جذر) —" : "اختر الوحدة الأب…"} title="اختر الوحدة الأب من الهيكلية" />
               </Field>
-              <button type="submit" disabled={ouBusy || ouName.length < 2} className={btnPrimary}>
+              <button type="submit" disabled={ouBusy || ouName.length < 2 || (!isAdmin && !ouParent)} className={btnPrimary}>
                 {ouBusy ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
                 إنشاء الوحدة
               </button>

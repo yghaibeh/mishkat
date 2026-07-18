@@ -8,16 +8,31 @@ import { createOrgUnit } from "./services/orgUnits";
 import { currentUser } from "./auth.server";
 import { isGlobalAdmin, type AuthUser } from "./utils/context";
 import { hasCap } from "../lib/capabilities";
+import { userCaps } from "./permissions.server";
 
-const SUPERVISOR_ROLES = ["rabita", "square"];
+// رؤوسُ الطبقات التي لها نطاقٌ إداريّ (رأسُ القسم كان ناقصاً فيخرج نطاقه فارغاً فلا يدير شيئاً)
+const SUPERVISOR_ROLES = ["section_head", "rabita", "square"];
 
 // حارس مُقيَّد بالنطاق: يتطلّب القدرة، ويُرجع المستخدم وبادئات نطاقه (null = عالمي/الإدارة العليا).
 async function requireScopedCap(cap: string): Promise<{ u: AuthUser; prefixes: string[] | null }> {
   const u = await currentUser();
   if (!u) throw new Error("يلزم تسجيل الدخول");
-  const { userCaps } = await import("./permissions.server");
   const c = await userCaps(useDb(), u.assignments.map((a) => a.role));
   if (!hasCap(c, cap)) throw new Error("لا تملك هذه الصلاحية");
+  const prefixes = isGlobalAdmin(u)
+    ? null
+    : [...new Set(u.assignments.filter((a) => SUPERVISOR_ROLES.includes(a.role)).map((a) => a.orgPath))];
+  return { u, prefixes };
+}
+
+// بوّابةُ القراءة الإداريّة: تكفي **أيُّ** قدرةِ إدارةٍ (لا admin.view وحدَها) — فمن يملك
+// إنشاءَ وحدةٍ أو مستخدمٍ يلزمه أن يقرأ هيكليّته ومستخدميه، وإلّا فقدرتُه ميّتة (بلاغ الميدان ٢٠٢٦-٠٧-١٨).
+const ADMIN_READ_CAPS = ["admin.view", "orgUnit.manage", "user.manage", "audit.view"];
+async function requireAdminRead(): Promise<{ u: AuthUser; prefixes: string[] | null }> {
+  const u = await currentUser();
+  if (!u) throw new Error("يلزم تسجيل الدخول");
+  const c = await userCaps(useDb(), u.assignments.map((a) => a.role));
+  if (!ADMIN_READ_CAPS.some((cap) => hasCap(c, cap))) throw new Error("لا تملك هذه الصلاحية");
   const prefixes = isGlobalAdmin(u)
     ? null
     : [...new Set(u.assignments.filter((a) => SUPERVISOR_ROLES.includes(a.role)).map((a) => a.orgPath))];
@@ -46,7 +61,7 @@ async function inChunks<T>(ids: string[], fn: (c: string[]) => Promise<T[]>, siz
 const USERS_PAGE = 25;
 
 export async function adminListOrgUnits() {
-  const { prefixes } = await requireScopedCap("admin.view");
+  const { prefixes } = await requireAdminRead();
   const db = useDb();
   const rows = await db.select().from(orgUnits).where(ne(orgUnits.status, "archived")).all();
   const scoped = prefixes === null ? rows : rows.filter((o) => prefixes.some((p) => o.path.startsWith(p)));
@@ -174,7 +189,7 @@ export async function adminCreateUserWithRole(input: {
 
 // قائمة المستخدمين مُصفّحة + بحث بالاسم/الدخول، مع أدوارهم ونطاقاتهم
 export async function adminListUsers(q?: string, offset = 0) {
-  const { prefixes } = await requireScopedCap("admin.view");
+  const { prefixes } = await requireAdminRead();
   const db = useDb();
   const term = (q ?? "").trim();
   const search = term ? or(like(persons.fullName, `%${term}%`), like(users.login, `%${term}%`)) : undefined;
@@ -211,7 +226,7 @@ export async function adminListUsers(q?: string, offset = 0) {
 
 // مستخدمو وحدةٍ بعينها (تحميل كسول لعقدة في شجرة المستخدمين) — معزول بالنطاق
 export async function adminUnitUsers(unitId: string) {
-  const { prefixes } = await requireScopedCap("admin.view");
+  const { prefixes } = await requireAdminRead();
   const db = useDb();
   const unit = (await db.select().from(orgUnits).where(eq(orgUnits.id, unitId)).all())[0];
   if (!unit) return [];

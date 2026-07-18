@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ROLE_DEFAULTS, ROLE_LABEL, ALL_ROLES, PERSONAL_CAPS, effectiveCaps, hasCap, roleDefaultHas } from "@/lib/capabilities";
+import { ROLE_DEFAULTS, ROLE_LABEL, ALL_ROLES, ALL_CAPS, PERSONAL_CAPS, effectiveCaps, hasCap, roleDefaultHas } from "@/lib/capabilities";
 import { allowedNav, firstAllowed, canAccess } from "@/lib/access";
 import { curriculumIsFinancial, curriculumLabel, CURRICULUM_OPTIONS } from "@/lib/curricula";
 
@@ -57,6 +57,87 @@ describe("RBAC policy — الأدوار", () => {
     expect(hasCap(revoked, "circle.teach")).toBe(false);
     const granted = effectiveCaps(["teacher"], [{ role: "teacher", capability: "report.view", effect: "grant" }]);
     expect(hasCap(granted, "report.view")).toBe(true);
+  });
+});
+
+// ===== حارسُ «لكلّ قدرةٍ باب» (بلاغ الميدان ٢٠٢٦-٠٧-١٨) =====
+// مسؤولُ منطقةٍ حقيقيٌّ لم يستطع إضافةَ مسجد: الخادمُ يمنحه orgUnit.manage ويعزله بنطاقه،
+// لكنّ البابَ الوحيدَ لتلك القدرة (/admin) كان مقفولاً بـ admin.view — قدرةٌ ميّتةٌ في يده.
+// المعجمُ أدناه يُعلن لكلّ قدرةٍ **من أيّ تبويبٍ تُمارَس**، والحارسُ يتحقّق أنّ كلّ دورٍ يجد
+// باباً لكلّ قدرةٍ يحملها. أيُّ قدرةٍ جديدةٍ بلا بابٍ مُعلَنٍ تُفشل البناء (بروتوكول ٣٧).
+const CAP_DOORS: Record<string, string[]> = {
+  "network.view": ["/network"],
+  "report.view": ["/network", "/home"],
+  "report.approve": ["/network", "/home"],
+  "report.approve.override": ["/network"],
+  "dailyLog.view": ["/network", "/home"],
+  "dailyLog.edit": ["/home"],                    // الأميرُ من صفحة مسجده (رئيسيّته تصلها)
+  "finance.view": ["/finance"],
+  "box.view": ["/finance"],
+  "finance.entry": ["/finance"],
+  "finance.approve": ["/finance"],
+  "finance.payout": ["/finance"],
+  "finance.supervise": ["/finance"],
+  "mosqueFinance.view": ["/home", "/network"],
+  "mosqueFinance.manage": ["/home"],
+  "circles.view": ["/home", "/network"],
+  "circles.manage": ["/home"],
+  "alaBaseera.viewAll": ["/ala-baseera"],
+  "alaBaseera.view": ["/home", "/ala-baseera"],
+  "alaBaseera.manage": ["/home", "/ala-baseera"],
+  "tahfeez.view": ["/home", "/network"],
+  "tahfeez.manage": ["/home"],
+  "meetings.view": ["/home", "/network"],
+  "meetings.manage": ["/home"],
+  "committees.view": ["/home", "/network"],
+  "committees.manage": ["/home"],
+  "committee.own": ["/my-committee"],
+  "circle.teach": ["/my-circles"],
+  "competition.view": ["/competition"],
+  "competition.manage": ["/competition"],
+  "media.hub": ["/media-hub"],
+  "media.post": ["/media-hub"],
+  "library.view": ["/library"],
+  "library.manage": ["/library"],
+  "duties.view": ["/home"],
+  "duties.manage": ["/home"],
+  "admin.view": ["/admin"],
+  "user.manage": ["/admin"],
+  "orgUnit.manage": ["/admin"],
+  "permissions.manage": ["/admin"],
+  "settings.view": ["/admin"],
+  "settings.manage": ["/admin"],
+  "audit.view": ["/admin"],
+};
+
+describe("ثابتُ «لكلّ قدرةٍ باب» — لا قدرةَ في يدِ دورٍ بلا شاشةٍ يمارسها منها", () => {
+  it("كلُّ قدرةٍ في المعجم لها بابٌ مُعلَن (قدرةٌ جديدةٌ بلا بابٍ تُفشل البناء)", () => {
+    for (const cap of ALL_CAPS) expect(CAP_DOORS[cap], `القدرة ${cap} بلا بابٍ مُعلَن`).toBeTruthy();
+  });
+
+  it("كلُّ دورٍ يجد باباً لكلّ قدرةٍ يحملها — الحارسُ الذي كان سيمنع عجزَ مسؤول المنطقة", () => {
+    for (const role of ALL_ROLES) {
+      const caps = effectiveCaps([role]);
+      if (caps.includes("*")) continue; // المديرُ يفتح كلَّ الأبواب
+      const nav = allowedNav(caps).map((n) => n.to);
+      for (const cap of caps) {
+        const doors = CAP_DOORS[cap] ?? [];
+        expect(doors.some((d) => nav.includes(d)),
+          `الدور «${role}» يملك ${cap} ولا يجد باباً (${doors.join("، ") || "بلا باب"}) — تبويباته: ${nav.join("، ")}`).toBe(true);
+      }
+    }
+  });
+
+  it("مسؤولُ المنطقة يصل «الإدارة» فيضيف مسجداً، ويرى «الإعلام» ضمن نطاقه (بلاغ الميدان)", () => {
+    const rabita = effectiveCaps(["rabita"]);
+    expect(canAccess("/admin", rabita)).toBe(true);
+    expect(canAccess("/media-hub", rabita)).toBe(true);
+    expect(hasCap(rabita, "orgUnit.manage")).toBe(true);
+    // ورأسُ القسم كذلك؛ والمربّعُ لا إدارةَ له (لا يملك القدرة أصلاً) فلا بابَ زائفاً
+    expect(canAccess("/admin", effectiveCaps(["section_head"]))).toBe(true);
+    expect(canAccess("/admin", effectiveCaps(["square"]))).toBe(false);
+    // ولا يمنح البابُ نشراً: الاطّلاع لا العمل
+    expect(hasCap(rabita, "media.post")).toBe(false);
   });
 });
 
