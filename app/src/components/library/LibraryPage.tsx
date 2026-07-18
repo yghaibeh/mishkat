@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { materialCategoryLabel, MATERIAL_CATEGORIES } from "@/lib/material-categories";
 import { useRouteContext } from "@tanstack/react-router";
 import { BookOpen, CheckCircle2, Loader2, FileText, Headphones, Link2, Upload, Plus, ClipboardList, Download, BadgeCheck, CircleDashed, Eye } from "lucide-react";
 import { toast } from "sonner";
@@ -12,18 +13,11 @@ import {
   listMaterialsAdmin, createMaterial, updateMaterial, getMaterialTracking,
 } from "@/lib/api/materials";
 
-const CATEGORIES = [
-  { key: "aqeedah", label: "عقيدة" }, { key: "fiqh", label: "فقه" }, { key: "seerah", label: "سيرة" },
-  { key: "tarbiya", label: "تربية" }, { key: "admin_training", label: "تدريب إداريّ" }, { key: "other", label: "أخرى" },
-  // بذرة المواد تستعمل هذه المفاتيح — كانت تظهر أكواداً إنجليزية خاماً فوق العناوين (تدقيق ٣٣ ب)
-  { key: "supervision", label: "مهارات الإشراف" }, { key: "education", label: "التعليم والتربية" },
-  { key: "tech", label: "تقنية وأمن معلومات" }, { key: "safety", label: "سلامة وإسعاف" }, { key: "media", label: "إعلام" },
-];
 const AUDIENCES = [
   { key: "amir", label: "مسؤولو المساجد" }, { key: "teacher", label: "المعلّمون" },
   { key: "supervisor", label: "المشرفون" }, { key: "all", label: "الجميع" },
 ];
-const catLabel = (k: string) => CATEGORIES.find((c) => c.key === k)?.label ?? k;
+const catLabel = materialCategoryLabel;
 const audLabel = (k: string) => AUDIENCES.find((a) => a.key === k)?.label ?? k;
 const KindIcon = ({ kind, className }: { kind: string; className?: string }) =>
   kind === "audio" ? <Headphones className={className} strokeWidth={1.75} /> : kind === "link" ? <Link2 className={className} strokeWidth={1.75} /> : <FileText className={className} strokeWidth={1.75} />;
@@ -231,7 +225,7 @@ function NewMaterialForm({ onDone }: { onDone: () => void }) {
     <div className="space-y-3 rounded-2xl bg-surface p-4 ring-1 ring-line">
       <Field label="العنوان"><TextField value={title} onChange={(e) => setTitle(e.target.value)} placeholder="كتاب فقه العبادات" /></Field>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Field label="التصنيف"><MSelect value={category} onValueChange={setCategory} options={CATEGORIES.map((c) => ({ value: c.key, label: c.label }))} /></Field>
+        <Field label="التصنيف"><MSelect value={category} onValueChange={setCategory} options={Object.entries(MATERIAL_CATEGORIES).map(([value, label]) => ({ value, label }))} /></Field>
         <Field label="النوع"><MSelect value={kind} onValueChange={(v) => setKind(v as never)} options={[{ value: "pdf", label: "PDF" }, { value: "audio", label: "صوت" }, { value: "link", label: "رابط" }]} /></Field>
         <Field label="الجمهور"><MSelect value={audience} onValueChange={setAudience} options={AUDIENCES.map((a) => ({ value: a.key, label: a.label }))} /></Field>
         <Field label="الإلزام"><MSelect value={mandatory ? "1" : "0"} onValueChange={(v) => setMandatory(v === "1")} options={[{ value: "1", label: "إلزاميّ (يُتابَع)" }, { value: "0", label: "اختياريّ" }]} /></Field>
