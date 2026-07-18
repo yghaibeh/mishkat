@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { BookOpen, Search, ChevronLeft, Loader2, Menu, X, LogIn, ArrowRight, ArrowLeft, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouteContext } from "@tanstack/react-router";
+import { TopTabs } from "@/components/nav/TopTabs";
 import { Blocks, toAr, type Block } from "./render";
 import { getManhajTree, getManhajLesson } from "@/lib/api/manhaj";
 
@@ -52,9 +54,22 @@ export function ManhajPage() {
     mainRef.current?.scrollTo({ top: 0 });
   };
   const current = currentId ? cache[currentId] : null;
+  // القشرة الواحدة (قاعدة معمّمة — بلاغ المالك ٢٠٢٦-٠٧-١٨): المسجَّلُ يحتفظ بشريط تطبيقه
+  // أينما ذهب (كان المنهاجُ يبدّل الترويسةَ كلها فيضيع طريقُ العودة)؛ الزائرُ له ترويسةٌ عامةٌ خفيفة.
+  const shellCtx = useRouteContext({ strict: false }) as { user?: unknown };
+  const isLogged = !!shellCtx.user;
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-ink">
+      {isLogged ? (
+        <>
+          <TopTabs />
+          {/* زرُّ الفهرس للجوال — كان داخل الترويسة الخاصة */}
+          <div className="border-b border-line bg-surface px-4 py-2 lg:hidden">
+            <button onClick={() => setNavOpen(true)} className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-ink ring-1 ring-line hover:bg-surface-2"><Menu className="size-4" strokeWidth={1.75} /> فهرس المنهاج</button>
+          </div>
+        </>
+      ) : (
       <header className="sticky top-0 z-40 border-b border-line bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-6">
           <div className="flex items-center gap-2.5">
@@ -73,6 +88,7 @@ export function ManhajPage() {
           </div>
         </div>
       </header>
+      )}
 
       <div className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 lg:grid-cols-[320px_1fr]">
         <aside className={cn("border-line bg-surface lg:block lg:border-e", navOpen ? "fixed inset-0 z-50 overflow-y-auto" : "hidden")}>
