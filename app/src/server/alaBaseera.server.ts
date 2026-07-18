@@ -1,7 +1,7 @@
 // منطق وحدة «على بصيرة» (خادم فقط) — المعلّم/الحلقة/المكان/الجلسة (ق8/ق9).
-import { and, eq, desc, like, inArray, or, sql } from "drizzle-orm";
+import { and, eq, desc, like, inArray, or, sql, isNull } from "drizzle-orm";
 import { useDb, getCloudflareEnv } from "./utils/db";
-import { venues, teachers, halaqat, enrollments, lessonSessions, persons, users, rateSchemes, weeklyHalaqaRecords, halaqaGroupActivities, studentEvaluations, orgUnits, lessonAttachments, lessonAttendance, curriculumProgress } from "./database/schema";
+import { venues, teachers, halaqat, enrollments, lessonSessions, persons, users, rateSchemes, weeklyHalaqaRecords, halaqaGroupActivities, studentEvaluations, orgUnits, lessonAttachments, lessonAttendance, curriculumProgress, roleAssignments } from "./database/schema";
 import { hijriMonthKey, hijriDateStr, weekStartSaturday, weekHijriRange } from "./utils/week";
 import { currentUser } from "./auth.server";
 import { isGlobalAdmin, type AuthUser } from "./utils/context";
@@ -678,11 +678,33 @@ export async function halaqaLessonsData(halaqaId: string) {
 
 // موافقة/رفض الدرس — مدير أو مشرف ضمن النطاق فقط (المعلّم لا يعتمد نفسه)
 // عند الاعتماد يُسجَّل مَن اعتمد (approvedBy) ليظهر اسمه في السجل.
+
+// اعتمادُ الدرس المفرد للأقرب لا لأيّ مغطٍّ (ق1-د معمَّمةً على الدروس — قرار المالك ٢٠٢٦-٠٧-١٨:
+// «اعتمده: المدير العام» على درسِ حلقةٍ خرقٌ للطبقة الأقرب): أميرُ المكان يُقرّ دروسَ حلقات
+// مسجده؛ وإلا فالطبقةُ الإشرافيّةُ الأقربُ للوحدة؛ والإدارةُ عند شغورِهما معًا فقط (كسر زجاج).
+async function halaqaLessonApprover(halaqaId: string) {
+  const r = await halaqaRoles(halaqaId);
+  if (r.isAmir) return r;
+  const db = useDb();
+  const amirExists = !!r.v?.orgUnitId && (await db.select({ id: roleAssignments.id }).from(roleAssignments)
+    .where(and(eq(roleAssignments.orgUnitId, r.v.orgUnitId), eq(roleAssignments.role, "amir"),
+      isNull(roleAssignments.endDate), eq(roleAssignments.approvalStatus, "approved"))).all()).length > 0;
+  if (r.unitPath) {
+    const { approverLayerFor } = await import("./services/approvalRouting");
+    const layer = await approverLayerFor(db, r.unitPath);
+    if (layer.kind === "layer" && r.u.assignments.some((a) => a.orgUnitId === layer.unitId)) return r;
+    if (layer.kind === "vacant" && !amirExists && r.isAdmin) return r; // كسرُ الزجاج عند شغور الجميع
+  } else if (r.isAdmin && !amirExists) {
+    return r; // حلقةٌ بلا وحدةٍ مرتبطة (مكانٌ حرّ) — الإدارةُ وليّةُ من لا وليَّ له
+  }
+  throw new Error("اعتمادُ الدرس لأمير المكان أو الطبقة الإشرافيّة الأقرب");
+}
+
 export async function setLessonStatusData(input: { lessonId: string; status: "approved" | "rejected"; reason?: string }) {
   const db = useDb();
   const l = (await db.select().from(lessonSessions).where(eq(lessonSessions.id, input.lessonId)).all())[0];
   if (!l) return { error: "الدرس غير موجود" as const };
-  await halaqaSupervise(l.halaqaId);
+  await halaqaLessonApprover(l.halaqaId);
   const u = await currentUser();
   await db.update(lessonSessions).set({
     status: input.status,
