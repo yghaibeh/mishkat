@@ -7,8 +7,9 @@ export const NAV = [
   { to: "/home", label: "الرئيسية", cap: "duties.view" },
   { to: "/network", label: "الشبكة", cap: "network.view" },
   { to: "/finance", label: "الملف المالي", cap: "finance.view" },
-  // على بصيرة: الأميرُ يراها بـalaBaseera.view (مسجده)، والمشرف/الإدارة بـviewAll (الشبكة) — كلاهما يملك view
-  { to: "/ala-baseera", label: "على بصيرة", cap: "alaBaseera.view" },
+  // على بصيرة الشبكية للمشرفين/الإدارة (viewAll) فقط — الأمير يصل حلقات مسجده من تبويب مسجده
+  // (كانت تظهر له مرتين: تبويب عام + تبويب مسجد — تدقيق ٣٣ هـ-١)
+  { to: "/ala-baseera", label: "على بصيرة", cap: "alaBaseera.viewAll" },
   { to: "/competition", label: "المسابقة", cap: "competition.view" },
   // «المطلوب اليوم» ذاب في «الرئيسية» (٣٦ §١) — لا تبويبَ له؛ يبقى وجهةَ عملٍ تصلها بطاقاتُ الرئيسية والجرس
   { to: "/duties", label: "المطلوب اليوم", cap: "duties.view", hidden: true },

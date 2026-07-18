@@ -57,13 +57,18 @@ export function TopTabs() {
         </Link>
 
         <div ref={tabsRef} className="flex h-14 items-center gap-0.5 overflow-x-auto">
-          {onMosque && mosqueId && mTabs.map((t) => {
+          {onMosque && mosqueId && mTabs.map((t, i) => {
             const isActive = activeMTab === t.k;
+            // فاصلٌ خفيف بين مساحات العمل الأربع (٣٦ §٢) — بدل ١١ تبويباً متراصّاً
+            const newGroup = i > 0 && mTabs[i - 1].g !== t.g;
             return (
-              <Link key={t.k} to="/mosque/$mosqueId" params={{ mosqueId }} search={{ t: t.k }} data-active={isActive} className={tabCls(isActive)}>
-                {t.l}
-                {isActive && underline}
-              </Link>
+              <span key={t.k} className="inline-flex items-center">
+                {newGroup && <span aria-hidden className="mx-1 h-5 w-px shrink-0 bg-line" />}
+                <Link to="/mosque/$mosqueId" params={{ mosqueId }} search={{ t: t.k }} data-active={isActive} className={tabCls(isActive)}>
+                  {t.l}
+                  {isActive && underline}
+                </Link>
+              </span>
             );
           })}
           {globalTabs.map((t) => {
