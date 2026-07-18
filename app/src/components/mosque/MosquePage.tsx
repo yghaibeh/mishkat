@@ -115,6 +115,17 @@ export function MosquePage({ mosqueId, overview, report, daily, weekPoints }: { 
           })}
         </nav>
         )}
+        {/* مساحاتُ المسجد شريطاً ثانوياً للزائر — قشرةُ التطبيق فوقه ثابتةٌ لدوره (القشرة الواحدة) */}
+        {!isOwn && tabs.length > 1 && (
+          <div className="flex flex-wrap gap-1 overflow-x-auto rounded-xl bg-surface p-1 ring-1 ring-line">
+            {tabs.map((t) => (
+              <button key={t.k} onClick={() => setTab(t.k)}
+                className={cn("shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition", tab === t.k ? "bg-emerald-800 text-emerald-50" : "text-ink-soft hover:bg-surface-2 hover:text-ink")}>
+                {t.l}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* ترويسة المسجد */}
         <header className="flex flex-wrap items-center gap-3">
@@ -131,7 +142,7 @@ export function MosquePage({ mosqueId, overview, report, daily, weekPoints }: { 
         </header>
 
         {/* تبويبات المسجد صارت في الشريط العلوي (TopTabs) — لا تكرار هنا */}
-        {tab === "overview" && <Overview overview={overview} onGo={setTab} tabs={tabs.map((t) => t.k)} />}
+        {tab === "overview" && <Overview overview={overview} onGo={setTab} tabs={tabs.map((t) => t.k)} canEdit={isOwn && hasCap(caps, "dailyLog.edit")} />}
         {tab === "report" && <ReportTab report={report} mosqueId={mosqueId} />}
         {tab === "daily" && <DailyLogPage data={(daily ?? undefined) as never} embedded mosqueId={mosqueId} genderTrack={mosque?.genderTrack} priorWeekPoints={weekPoints ?? 0} readOnly={!(isOwn && hasCap(caps, "dailyLog.edit"))} />}
         {tab === "circles" && <CirclesTab mosqueId={mosqueId} canManage={canManageCircles} defaultGender={(mosque?.genderTrack as GenderTrack) ?? "male"} />}
@@ -146,7 +157,7 @@ export function MosquePage({ mosqueId, overview, report, daily, weekPoints }: { 
   );
 }
 
-function Overview({ overview, onGo, tabs }: { overview?: Overview | null; onGo: (k: string) => void; tabs: string[] }) {
+function Overview({ overview, onGo, tabs, canEdit }: { overview?: Overview | null; onGo: (k: string) => void; tabs: string[]; canEdit?: boolean }) {
   const wk = overview?.week;
   const pct = wk ? Math.min(100, Math.round((wk.points / wk.target) * 100)) : 0;
   const tile = "grid size-9 shrink-0 place-items-center rounded-lg bg-surface-2 text-emerald-800 ring-1 ring-line";
@@ -174,7 +185,7 @@ function Overview({ overview, onGo, tabs }: { overview?: Overview | null; onGo: 
       </div>
       <div className="flex flex-wrap gap-2">
         {tabs.includes("report") && <QuickLink onClick={() => onGo("report")}>عرض التقرير الشهري</QuickLink>}
-        {tabs.includes("daily") && <QuickLink onClick={() => onGo("daily")}>إدخال سجل اليوم</QuickLink>}
+        {tabs.includes("daily") && <QuickLink onClick={() => onGo("daily")}>{canEdit ? "إدخال سجل اليوم" : "عرض سجل اليوم"}</QuickLink>}
         {tabs.includes("finance") && <QuickLink onClick={() => onGo("finance")}>المالية الداخلية</QuickLink>}
       </div>
     </section>

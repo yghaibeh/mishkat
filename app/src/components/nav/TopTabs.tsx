@@ -21,7 +21,10 @@ export function TopTabs() {
 
   const globalTabs = allowedNav(user?.caps ?? []);
 
-  // تبويبات المسجد تُعرض في الشريط العلوي عند وجودنا على صفحة مسجد
+  // الخلل المعماري (بلاغ المالك ٢٠٢٦-٠٧-١٨): تبويباتُ المسجد كانت تحلّ محلَّ قشرة التطبيق
+  // لكلِّ زائرٍ — فيفقد المديرُ/المشرفُ تنقّلَه العامَّ بمجرد النزول لمسجد. القاعدة:
+  // «قشرةُ التطبيق ثابتةٌ للدور» — تبويباتُ المسجد قشرةٌ لطاقمه (عالَمُهم) فقط؛
+  // وللزائرِ تُعرض شريطاً ثانوياً داخل الصفحة (MosquePage).
   const onMosque = pathname.startsWith("/mosque/");
   const mosqueId = onMosque ? decodeURIComponent(pathname.split("/")[2] ?? "") : null;
   const mTabs = onMosque ? mosqueTabs(user?.caps ?? [], user?.features ?? {}) : [];
@@ -57,7 +60,7 @@ export function TopTabs() {
         </Link>
 
         <div ref={tabsRef} className="flex h-14 items-center gap-0.5 overflow-x-auto">
-          {onMosque && mosqueId && mTabs.map((t, i) => {
+          {onMosque && isOwnMosque && mosqueId && mTabs.map((t, i) => {
             const isActive = activeMTab === t.k;
             // فاصلٌ خفيف بين مساحات العمل الأربع (٣٦ §٢) — بدل ١١ تبويباً متراصّاً
             const newGroup = i > 0 && mTabs[i - 1].g !== t.g;
@@ -71,7 +74,7 @@ export function TopTabs() {
               </span>
             );
           })}
-          {globalTabs.map((t) => {
+          {!(onMosque && isOwnMosque) && globalTabs.map((t) => {
             const isActive = pathname === t.to;
             return (
               <Link key={t.to} to={t.to} data-active={isActive} className={tabCls(isActive)}>

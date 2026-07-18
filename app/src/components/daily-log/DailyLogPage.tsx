@@ -366,6 +366,9 @@ export function DailyLogPage({ data, embedded, readOnly, mosqueId, genderTrack, 
                           +{earned}
                         </span>
 
+                        {readOnly ? (
+                          <span className="min-w-10 rounded-lg bg-surface-2 px-3 py-1.5 text-center font-mono-nums text-base font-bold text-ink ring-1 ring-line">{c}</span>
+                        ) : (
                         <div className="flex items-center gap-1 rounded-xl bg-surface-2 p-1 ring-1 ring-line">
                           <CounterBtn
                             onClick={() => bump(i, -1)}
@@ -388,6 +391,7 @@ export function DailyLogPage({ data, embedded, readOnly, mosqueId, genderTrack, 
                             <Plus className="size-4" strokeWidth={2} />
                           </CounterBtn>
                         </div>
+                        )}
                       </div>
 
                       {c > 0 && (
@@ -440,8 +444,8 @@ export function DailyLogPage({ data, embedded, readOnly, mosqueId, genderTrack, 
             </div>
           </div>
 
-          {/* Side: Shura + notes */}
-          <aside className="space-y-6 lg:col-span-2">
+          {/* Side: Shura + notes — جهازُ إقرارٍ لطاقم المسجد؛ المطّلعُ يرى الأنشطةَ لا أدواتِ الإقرار */}
+          {!readOnly && <aside className="space-y-6 lg:col-span-2">
             <section className="rounded-2xl bg-surface ring-1 ring-line">
               <div className="border-b border-line px-5 py-3.5">
                 <h3 className="font-display text-sm font-semibold text-ink">
@@ -558,7 +562,7 @@ export function DailyLogPage({ data, embedded, readOnly, mosqueId, genderTrack, 
                 </div>
               </section>
             )}
-          </aside>
+          </aside>}
         </div>
       </main>
   );
