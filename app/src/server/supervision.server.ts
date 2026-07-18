@@ -128,7 +128,10 @@ export async function supervisionVisitsData() {
   const u = await currentUser();
   if (!u) return { mine: [], pending: [] };
   const isAdmin = isGlobalAdmin(u);
-  const mineRows = await db.select().from(supervisionVisits).where(eq(supervisionVisits.visitedBy, u.userId)).orderBy(desc(supervisionVisits.updatedAt)).all();
+  // «المدير لا يزور» (ق1-د): لا سجلَّ زياراتٍ شخصيًّا له — حتى لو عَلِقت به زياراتُ بياناتٍ
+  // قديمة/تجريبية (بلاغ المالك: «كيف زياراتي وهو المدير العام؟»). زياراتُ الشبكة تظهر له
+  // مجمَّعةً في «تقييم الإشراف بحسب المنطقة».
+  const mineRows = isAdmin ? [] : await db.select().from(supervisionVisits).where(eq(supervisionVisits.visitedBy, u.userId)).orderBy(desc(supervisionVisits.updatedAt)).all();
   const submitted = await db.select().from(supervisionVisits).where(eq(supervisionVisits.status, "submitted")).orderBy(desc(supervisionVisits.updatedAt)).all();
   // ق1-د: يظهر «بانتظار اعتمادي» فقط لمن هو الطبقةُ الأقرب فوق المشرف (أو تدخّلٌ فوقيّ) — لا كلُّ الآباء ولا الإدارة.
   const { canApproveUnit } = await import("./services/approvalRouting");

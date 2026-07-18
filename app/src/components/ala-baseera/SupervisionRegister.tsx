@@ -123,10 +123,10 @@ export function SupervisionRegister() {
                     {c.mosqueId ? (
                       <Link to="/mosque/$mosqueId" params={{ mosqueId: c.mosqueId }} search={{ t: c.kind === "tahfeez" ? "tahfeez" : "halaqat" } as never} title="ادخل إلى الحلقة"
                         className="block truncate text-sm font-semibold text-ink underline-offset-4 hover:text-emerald-800 hover:underline">
-                        {c.name} <span className="text-[11px] font-normal text-ink-faint">· {c.kind === "tahfeez" ? "تحفيظ" : "على بصيرة"} · {c.mosqueName}</span>
+                        {c.name} <span className="text-[11px] font-normal text-ink-faint">· {c.kind === "tahfeez" ? "تحفيظ" : "على بصيرة"}{c.mosqueName && c.mosqueName !== c.name ? ` · ${c.mosqueName}` : ""}</span>
                       </Link>
                     ) : (
-                      <p className="truncate text-sm font-semibold text-ink">{c.name} <span className="text-[11px] font-normal text-ink-faint">· {c.kind === "tahfeez" ? "تحفيظ" : "على بصيرة"} · {c.mosqueName}</span></p>
+                      <p className="truncate text-sm font-semibold text-ink">{c.name} <span className="text-[11px] font-normal text-ink-faint">· {c.kind === "tahfeez" ? "تحفيظ" : "على بصيرة"}{c.mosqueName && c.mosqueName !== c.name ? ` · ${c.mosqueName}` : ""}</span></p>
                     )}
                     <p className="mt-0.5 flex items-center gap-1 text-[11px] text-ink-faint">
                       <CalendarClock className="size-3" strokeWidth={1.75} />
@@ -146,7 +146,7 @@ export function SupervisionRegister() {
       )}
 
       {/* تقييم الحلقات الدوريّ عبر نطاق المشرف (المربع/المنطقة) */}
-      <CircleRankings title="ترتيب الحلقات في نطاقك" />
+      {!overview && <CircleRankings title="ترتيب الحلقات في نطاقك" />}
 
       <div className="grid gap-6 lg:grid-cols-5">
       <section id="visit-form" className="space-y-3 scroll-mt-20 lg:col-span-2">
@@ -159,8 +159,8 @@ export function SupervisionRegister() {
         </div>
         {open && <VisitForm key={preset || "new"} circles={circles} busy={busy} initialCircleKey={preset} onCreate={(payload) => act("create", () => createSupervisionVisit({ data: payload as never }), "سُجّلت الزيارة", () => setOpen(false))} />}
 
-        <h3 className="pt-2 text-[11px] font-semibold uppercase tracking-widest text-ink-faint">زياراتي</h3>
-        {mine.length === 0 ? <p className="text-xs text-ink-soft">لا زيارات بعد.</p> : (
+        {mine.length > 0 && <h3 className="pt-2 text-[11px] font-semibold uppercase tracking-widest text-ink-faint">زياراتي</h3>}
+        {mine.length === 0 ? null : (
           <ul className="space-y-2">
             {mine.map((v) => (
               <li key={v.id} className="rounded-xl bg-surface p-3 ring-1 ring-line">

@@ -76,4 +76,13 @@ describe("ثابت: المدير العام لا تصله أي قناة تكلي
     const { pendingRegistrationsData } = await import("@/server/registration.server");
     expect((await pendingRegistrationsData()).items).toEqual([]);
   });
+
+  it("لا «زياراتي» للمدير حتى لو عَلِقت به زيارات بيانات قديمة", async () => {
+    await db.insert(schema.supervisionVisits).values({
+      id: "v-old", circleKind: "tahfeez", circleRefId: "tc9", circleName: "حلقة", mosqueId: "m1",
+      visitedBy: "u-admin", status: "approved", createdAt: 0, updatedAt: 0,
+    } as never).run();
+    const { supervisionVisitsData } = await import("@/server/supervision.server");
+    expect((await supervisionVisitsData()).mine).toEqual([]);
+  });
 });
