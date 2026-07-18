@@ -1,6 +1,7 @@
 // مركزُ الإعلام — للإدارة ومسؤول الإعلام: معرضُ كلّ صور الشبكة (سجلّات اليوم + دروس الحلقات)
 // مربوطةً بمسجدها ومنطقتها، + العُهدُ التي في العمل (عهدة/مركبة/معدّات) بحاملها ووحدتها.
 import { useEffect, useState } from "react";
+import { useRouteContext } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Images, Loader2, MapPin, Building2, Package, Car, Briefcase, Camera } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -10,7 +11,7 @@ import { MTabs } from "@/components/ui/m-tabs";
 import { fmtHijriShort } from "@/lib/format";
 import { getMediaGallery, getMediaAssets } from "@/lib/api/mediaHub";
 
-type GalleryItem = { id: string; url: string; caption: string | null; createdAt: number; source: "daily" | "lesson"; mosqueName: string; regionName: string };
+type GalleryItem = { id: string; url: string; caption: string | null; createdAt: number; source: "daily" | "lesson" | "post"; mosqueName: string; regionName: string };
 type Asset = { id: string; name: string; kind: string; details: string | null; holderName: string | null; unitName: string; createdAt: number };
 
 const SOURCE_LABEL: Record<string, string> = { daily: "سجلّ اليوم", lesson: "درس حلقة" };
@@ -22,6 +23,22 @@ const KIND_META: Record<string, { label: string; Icon: LucideIcon }> = {
 
 function GalleryGrid() {
   const [items, setItems] = useState<GalleryItem[]>([]);
+  const ctxU = useRouteContext({ strict: false }) as { user?: { roles?: string[] } };
+  const canPost = (ctxU.user?.roles ?? []).some((r) => r === "media" || r === "admin");
+  const [uploading, setUploading] = useState(false);
+  const [postCaption, setPostCaption] = useState("");
+  const filePick = async (f: File | null) => {
+    if (!f) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.set("file", f); fd.set("scope", "media_post"); fd.set("caption", postCaption); fd.set("clientUuid", crypto.randomUUID());
+      const res = await fetch("/api/media/upload", { method: "POST", body: fd });
+      const j = await res.json().catch(() => null) as { ok?: boolean; error?: string } | null;
+      if (!res.ok || !j?.ok) toast.error(j?.error ?? "تعذّر الرفع");
+      else { toast.success("نُشرت التغطية"); setPostCaption(""); load(0); }
+    } finally { setUploading(false); }
+  };
   const [total, setTotal] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const load = async (offset: number) => {
@@ -34,9 +51,20 @@ function GalleryGrid() {
   };
   useEffect(() => { void load(0); }, []);
   if (total === null && busy) return <div className="grid place-items-center rounded-2xl bg-surface py-16 text-ink-faint ring-1 ring-line"><Loader2 className="size-5 animate-spin" /></div>;
-  if (!items.length) return <div className="grid place-items-center gap-2 rounded-2xl bg-surface px-6 py-14 text-center ring-1 ring-line"><Camera className="size-7 text-ink-faint" strokeWidth={1.25} /><p className="text-sm text-ink-soft">لا صورَ مرفوعةً ضمن نطاقك بعد.</p><p className="text-[11px] text-ink-faint">تظهر هنا صورُ توثيق سجلّات اليوم ودروس الحلقات.</p></div>;
+  const uploaderBar = canPost && (
+    <div className="mb-4 flex flex-wrap items-center gap-2 rounded-2xl bg-surface p-3 ring-1 ring-line">
+      <input value={postCaption} onChange={(e) => setPostCaption(e.target.value)} placeholder="وصف التغطية (اختياري)…"
+        className="h-10 min-w-0 flex-1 rounded-xl bg-surface-2 px-3 text-sm text-ink ring-1 ring-line outline-none focus:ring-2 focus:ring-emerald-700/40" />
+      <label className={"inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl bg-emerald-800 px-4 text-sm font-semibold text-emerald-50 hover:bg-emerald-900 " + (uploading ? "opacity-60 pointer-events-none" : "")}>
+        <Camera className="size-4" strokeWidth={1.75} /> {uploading ? "يرفع…" : "تغطية جديدة"}
+        <input type="file" accept="image/*" className="hidden" onChange={(e) => { filePick(e.target.files?.[0] ?? null); e.target.value = ""; }} />
+      </label>
+    </div>
+  );
+  if (!items.length) return <div>{uploaderBar}<div className="grid place-items-center gap-2 rounded-2xl bg-surface px-6 py-14 text-center ring-1 ring-line"><Camera className="size-7 text-ink-faint" strokeWidth={1.25} /><p className="text-sm text-ink-soft">{canPost ? "لا صورَ بعد — ارفع أول تغطية إعلامية من الزر أعلاه." : "لا صورَ مرفوعةً ضمن نطاقك بعد."}</p><p className="text-[11px] text-ink-faint">تظهر هنا صورُ توثيق سجلّات اليوم ودروس الحلقات وتغطياتُ الإعلام.</p></div></div>;
   return (
     <div className="space-y-4">
+      {uploaderBar}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {items.map((it) => (
           <figure key={it.id} className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line transition hover:ring-line-strong">

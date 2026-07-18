@@ -101,6 +101,22 @@ export async function handleMediaRequest(request: Request, env: Env): Promise<Re
       return Response.json({ ok: true, r2Key: key, contentType: file.type, sizeBytes: file.size });
     }
 
+    // تغطيةٌ إعلامية (media_post) — أداةُ عمل دور الإعلام (كان المركزُ سلبيّاً بلا رفع — بلاغ المالك ٢٠٢٦-٠٧-١٨):
+    // يرفعها حاملُ media.hub (مسؤول الإعلام) أو المدير، وتظهر في معرض مركز الإعلام.
+    if (scope === "media_post") {
+      const isMedia = user.assignments.some((a) => a.role === "media" || a.role === "admin");
+      if (!isMedia) return bad(403, "التغطيات لمسؤول الإعلام");
+      const key = `media-posts/${crypto.randomUUID()}.${(file.type.split("/")[1] || "jpg").replace(/[^a-z0-9]/gi, "").slice(0, 6)}`;
+      await env.MEDIA.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: file.type } });
+      const id = crypto.randomUUID();
+      await db.insert(attachments).values({
+        id, scope: "media_post", refId: id, r2Key: key, caption: caption || null,
+        contentType: file.type, sizeBytes: file.size, uploadedBy: user.userId,
+        clientUuid: clientUuid || crypto.randomUUID(), createdAt: Date.now(),
+      } as never).run();
+      return Response.json({ ok: true, id, r2Key: key });
+    }
+
     // مرفق توثيق أنشطة اليوم (سجل الأسبوع) — صلاحية الرفع لأمير المسجد أو جهةٍ أعلى تغطّيه
     if (scope === "daily_record") {
       const rec = (await db.select().from(weeklyRecords).where(eq(weeklyRecords.id, refId)).all())[0];

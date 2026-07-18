@@ -341,7 +341,7 @@ for (const en of (rows.enrollments ?? []).slice(0, 200)) if (chance(0.5)) for (c
 
 // ===== مرفقات الإعلام (صور مربوطة بالسجلّ اليوميّ ودروس الحلقات) =====
 const weeklyIds = (rows.weekly_records ?? []).map((w) => w.id);
-for (let i = 0; i < 40; i++) add("attachments", { id: uid("zatt"), scope: pick(["daily_record", "daily_record", "lesson"]), ref_id: pick(weeklyIds.length ? weeklyIds : ["w0"]), caption: chance(0.6) ? pick(["نشاطٌ دعويّ", "توزيع مساعدات", "درسٌ في المسجد", "جولةُ إشراف"]) : null, content_type: "image/jpeg", uploaded_by: "u-admin", client_uuid: uid("cuatt"), created_at: NOW - rint(1, 60) * DAY });
+// لا بذرَ لمرفقات الصور: r2 لا يُبذر — صفوفٌ بلا ملفات كانت تسقط صامتةً على NOT NULL (خلل مكتشف ٢٠٢٦-٠٧-١٨)
 
 // ===== الإخراج =====
 const out = [];

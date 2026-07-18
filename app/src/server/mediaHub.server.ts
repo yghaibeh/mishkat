@@ -50,7 +50,7 @@ function unitOf(path: string, unitId: string | null, names: Map<string, { name: 
   return "—";
 }
 
-export type GalleryItem = { id: string; url: string; caption: string | null; createdAt: number; source: "daily" | "lesson"; mosqueName: string; regionName: string };
+export type GalleryItem = { id: string; url: string; caption: string | null; createdAt: number; source: "daily" | "lesson" | "post"; mosqueName: string; regionName: string };
 
 // معرضُ الصور: يجمع مرفقاتِ سجلّ اليوم ومرفقاتِ الدروس، الأحدثُ أوّلًا، بترقيمٍ تدريجيّ.
 export async function mediaGalleryData(offset = 0) {
@@ -58,6 +58,10 @@ export async function mediaGalleryData(offset = 0) {
   const db = useDb();
   const prefixes = scopePrefixes(u);
   const fetchLimit = Math.min(offset + PAGE, 480); // سقفُ أمانٍ للدمج
+
+  // (تغطيات الإعلام media_post): مرجعها ذاتيٌّ — بلا join؛ تظهر لكل النطاقات (منشورُ شبكة)
+  const posts = await db.select({ id: attachments.id, r2Key: attachments.r2Key, caption: attachments.caption, createdAt: attachments.createdAt })
+    .from(attachments).where(eq(attachments.scope, "media_post")).orderBy(desc(attachments.createdAt)).limit(fetchLimit).all();
 
   // (أ) صورُ سجلّ اليوم: attachments(daily_record) ← weekly_records (مسارُ الوحدة المُدخِلة أو المسجد)
   const dailyPath = sql`coalesce(${weeklyRecords.unitPath}, ${weeklyRecords.mosquePath})`;
@@ -93,13 +97,15 @@ export async function mediaGalleryData(offset = 0) {
   const merged = [
     ...daily.map((r) => ({ ...r, source: "daily" as const })),
     ...lessons.map((r) => ({ ...r, source: "lesson" as const, unitId: r.unitId ?? null })),
+    ...posts.map((r) => ({ ...r, source: "post" as const, path: null as string | null, unitId: null as string | null })),
   ].sort((a, b) => b.createdAt - a.createdAt).slice(offset, offset + PAGE);
   const names = await unitNames(db, merged.map((m) => m.path ?? ""));
   const items: GalleryItem[] = merged.map((m) => ({
     id: m.id, url: `/media/${m.r2Key}`, caption: m.caption, createdAt: m.createdAt, source: m.source,
-    mosqueName: unitOf(m.path ?? "", m.unitId ?? null, names), regionName: regionOf(m.path ?? "", names),
+    mosqueName: m.source === "post" ? "تغطية إعلامية" : unitOf(m.path ?? "", m.unitId ?? null, names),
+    regionName: m.source === "post" ? "" : regionOf(m.path ?? "", names),
   }));
-  return { items, total: dailyTotal + lessonTotal };
+  return { items, total: dailyTotal + lessonTotal + posts.length };
 }
 
 // العُهدُ التي في العمل: الأصولُ النشطة (عهدة/مركبة/معدّات) بحاملها ووحدتها — ضمن النطاق.
