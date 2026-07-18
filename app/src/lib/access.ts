@@ -17,19 +17,21 @@ export const NAV = [
   // الإعلام: معرضُ صور الشبكة (سجلّات اليوم + دروس الحلقات) + العُهدُ في العمل — للإدارة ومسؤول الإعلام
   { to: "/media-hub", label: "الإعلام", cap: "media.hub" },
   { to: "/admin", label: "الإدارة", cap: "admin.view" },
-  // حلقاتي: أخيراً — حتى لا يصبح صفحة هبوط المدير (الذي يملك "*")؛ المدرّس وحده نطاقُه هذا
-  { to: "/my-circles", label: "حلقاتي", cap: "circle.teach" },
-  // لجنتي: صفحةُ مسؤول اللجنة (نطاقُه لجنته وحدها)
-  { to: "/my-committee", label: "لجنتي", cap: "committee.own" },
+  // تبويبان «شخصيّان» (personal): لا يظهران إلا لمن يحمل القدرةَ نصًّا — الشمولُ «*» لا يمنحهما
+  // (كان المديرُ يرى «حلقاتي» و«لجنتي» ولا حلقةَ له ولا لجنة — قاعدة المرآة ٣٤)
+  { to: "/my-circles", label: "حلقاتي", cap: "circle.teach", personal: true },
+  { to: "/my-committee", label: "لجنتي", cap: "committee.own", personal: true },
 ] as const;
 
 export function allowedNav(caps: string[] = []) {
-  return NAV.filter((n) => !("hidden" in n && n.hidden) && hasCap(caps, n.cap));
+  return NAV.filter((n) => !("hidden" in n && n.hidden)
+    && ("personal" in n && n.personal ? caps.includes(n.cap) : hasCap(caps, n.cap)));
 }
 
 export function canAccess(path: string, caps: string[] = []): boolean {
   const n = NAV.find((x) => x.to === path);
-  return !!n && hasCap(caps, n.cap);
+  if (!n) return false;
+  return "personal" in n && n.personal ? caps.includes(n.cap) : hasCap(caps, n.cap);
 }
 
 // الوجهة الطرفيّة للمُصادَقين بلا صلاحيات — صفحةٌ محايدة لا تُعيد القذف (ثابت: التوجيه دالّةٌ كليّة لا تُحلّق أبدًا)

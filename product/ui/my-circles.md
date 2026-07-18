@@ -1,7 +1,7 @@
 ---
 id: my-circles
 route: /my-circles
-roles: [teacher]
+roles: [teacher — نصاً لا بالشمول: قاعدة التبويب الشخصي]
 lens: ع٦
 status: built
 updated: ٢٠٢٦-٠٧-١٨

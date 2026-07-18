@@ -78,3 +78,15 @@ describe("المناهج — المالية لـ«على بصيرة» فقط (D3
     expect(CURRICULUM_OPTIONS.map((o) => o.value)).toEqual(["baseera", "tahfeez", "rashidi", "general"]);
   });
 });
+
+describe("التبويبات الشخصية (قاعدة المرآة ٣٤)", () => {
+  it("«حلقاتي» و«لجنتي» لا يمنحهما الشمول «*» — للمعلم ومسؤول اللجنة نصاً", async () => {
+    const { allowedNav, canAccess } = await import("@/lib/access");
+    const adminNav = allowedNav(["*"]).map((n) => n.to);
+    expect(adminNav).not.toContain("/my-circles");
+    expect(adminNav).not.toContain("/my-committee");
+    expect(canAccess("/my-circles", ["*"])).toBe(false);
+    expect(allowedNav(["circle.teach", "duties.view"]).map((n) => n.to)).toContain("/my-circles");
+    expect(canAccess("/my-committee", ["committee.own"])).toBe(true);
+  });
+});
