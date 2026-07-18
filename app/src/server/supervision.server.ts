@@ -1,7 +1,7 @@
 // المرحلة أ — السجل الإشرافيّ على الحلقات: يعبّئه المشرف (مربع/منطقة) ويرفعه للإدارة فيعتمده الأعلى.
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import { useDb } from "./utils/db";
-import { supervisionVisits, orgUnits, tahfeezCircles, halaqat, venues, notifications, roleAssignments } from "./database/schema";
+import { supervisionVisits, orgUnits, tahfeezCircles, halaqat, venues, notifications, roleAssignments, persons } from "./database/schema";
 import { currentUser } from "./auth.server";
 import { isGlobalAdmin } from "./utils/context";
 import { ROLES } from "./utils/rbac";
@@ -180,6 +180,54 @@ export async function supervisionDashboardData() {
       overdue: circles.filter((c) => c.status === "overdue").length,
     },
   };
+}
+
+
+// «كيف تقوم كلُّ وحدةٍ بواجب الإشراف؟» — عرضُ المطّلع القياديّ (ع١/ع٢، بلاغ المالك ٢٠٢٦-٠٧-١٨):
+// المديرُ ورأسُ القسم لا يُعرَض لهما ١٢٨ حلقةً بأزرار «سجّل زيارة» (ليسا مُكلَّفَين — قاعدة المالك
+// الواحد)، بل تقييمٌ مجمَّعٌ بحسب المنطقة: التغطية في الدورة، المتأخّر، متوسّط النتائج، والمسؤول.
+export async function supervisionOverviewData() {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u) return null;
+  const isAdmin = isGlobalAdmin(u);
+  const isSectionHead = u.assignments.some((a) => a.role === "section_head");
+  if (!isAdmin && !isSectionHead) return null; // المُكلَّفون (مربع/منطقة) لهم اللوحةُ التشغيلية
+  const d = await supervisionDashboardData();
+  if (!("summary" in d) || !d.summary || !d.circles.length) return { rows: [], cadenceDays: VISIT_CADENCE_DAYS };
+
+  const units = await db.select({ id: orgUnits.id, path: orgUnits.path, name: orgUnits.name, section: orgUnits.section }).from(orgUnits).all();
+  const byId = new Map(units.map((x) => [x.id, x]));
+  type Row = { unitId: string; name: string; section: string | null; total: number; due: number; scores: number[] };
+  const groups = new Map<string, Row>();
+  for (const c of d.circles) {
+    const unit = c.mosqueId ? byId.get(c.mosqueId) : null;
+    if (!unit) continue;
+    const segs = unit.path.split("/").filter(Boolean); // [القسم، المنطقة، ...]
+    const regionId = segs[1] ?? segs[0];
+    const region = byId.get(regionId);
+    const row = groups.get(regionId) ?? { unitId: regionId, name: region?.name ?? regionId, section: region?.section ?? unit.section, total: 0, due: 0, scores: [] };
+    row.total++;
+    if (c.status !== "recent") row.due++;
+    if (c.lastScore != null) row.scores.push(c.lastScore);
+    groups.set(regionId, row);
+  }
+
+  // مسؤولُ كلّ وحدةٍ — ليُعرَف من يُسأل (قاعدة النزول السؤالي)
+  const leaders = (await db.select({ orgUnitId: roleAssignments.orgUnitId, name: persons.fullName })
+    .from(roleAssignments).innerJoin(persons, eq(roleAssignments.personId, persons.id))
+    .where(and(inArray(roleAssignments.role, SUP_ROLES), isNull(roleAssignments.endDate), eq(roleAssignments.approvalStatus, "approved"))).all());
+  const leaderByUnit = new Map(leaders.map((l) => [l.orgUnitId, l.name]));
+
+  const rows = [...groups.values()]
+    .map((r) => ({
+      unitId: r.unitId, name: r.name, section: r.section,
+      total: r.total, visited: r.total - r.due, due: r.due,
+      avgScore: r.scores.length ? Math.round(r.scores.reduce((a, b) => a + b, 0) / r.scores.length) : null,
+      leaderName: leaderByUnit.get(r.unitId) ?? null,
+    }))
+    .sort((a, b) => (b.due / Math.max(b.total, 1)) - (a.due / Math.max(a.total, 1))); // الأسوأ تغطيةً أولاً
+  return { rows, cadenceDays: VISIT_CADENCE_DAYS };
 }
 
 // قائمة الحلقات المتاحة للمشرف لإنشاء زيارة (تحفيظ + على‑بصيرة ضمن نطاقه)

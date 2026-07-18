@@ -7,7 +7,7 @@ import { fmtHijriShort } from "@/lib/format";
 import { Field, TextField } from "@/components/ui/field";
 import { MSelect } from "@/components/ui/m-select";
 import { CircleRankings } from "@/components/circles/CircleRankings";
-import { getSupervisionVisits, getSupervisableCircles, getSupervisionDashboard, createSupervisionVisit, submitSupervisionVisit, approveSupervisionVisit } from "@/lib/api/supervision";
+import { getSupervisionOverview, getSupervisionVisits, getSupervisableCircles, getSupervisionDashboard, createSupervisionVisit, submitSupervisionVisit, approveSupervisionVisit } from "@/lib/api/supervision";
 
 type Circle = { kind: "tahfeez" | "baseera"; id: string; name: string; mosqueName: string; mosqueId?: string | null };
 type DashCircle = Circle & { lastVisitAt: number | null; lastVisitBy: string | null; lastScore: number | null; daysSince: number | null; status: string };
@@ -36,6 +36,9 @@ export function SupervisionRegister() {
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [mine, setMine] = useState<Visit[]>([]);
   const [pending, setPending] = useState<Visit[]>([]);
+  // العرض القيادي للمطّلع (المدير/رأس القسم): تقييمٌ بحسب المنطقة بدل قائمة الحلقات التشغيلية
+  type OverviewRow = { unitId: string; name: string; section: string | null; total: number; visited: number; due: number; avgScore: number | null; leaderName: string | null };
+  const [overview, setOverview] = useState<{ rows: OverviewRow[]; cadenceDays: number } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [preset, setPreset] = useState("");
@@ -43,6 +46,7 @@ export function SupervisionRegister() {
   const load = () => {
     getSupervisableCircles().then((r) => setCircles((r as { items: Circle[] }).items)).catch(() => {});
     getSupervisionDashboard().then((r) => setDash(r as Dashboard)).catch(() => {});
+    getSupervisionOverview().then((r) => setOverview(r as never)).catch(() => {});
     getSupervisionVisits().then((r) => { const d = r as { mine: Visit[]; pending: Visit[] }; setMine(d.mine); setPending(d.pending); }).catch(() => {});
   };
   useEffect(() => { load(); }, []);
@@ -63,8 +67,41 @@ export function SupervisionRegister() {
 
   return (
     <div className="space-y-6">
-      {/* لوحة الإشراف الميدانيّ — حلقاتك وحالة زياراتها */}
-      {dash && dash.circles.length > 0 && (
+      {/* عرضُ المطّلع القيادي (ع١/ع٢): «كيف تقوم كلُّ منطقةٍ بواجب الإشراف؟» — بدل قائمة
+          الحلقات التشغيلية بأزرار «سجّل زيارة» التي ليست من عمل المدير (بلاغ المالك) */}
+      {overview && overview.rows.length > 0 && (
+        <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
+          <div className="flex items-center gap-2 border-b border-line bg-surface-2/60 px-5 py-3.5">
+            <MapPin className="size-4 text-emerald-800" strokeWidth={1.75} />
+            <h3 className="font-display text-sm font-semibold text-ink">تقييم الإشراف الميدانيّ بحسب المنطقة</h3>
+            <span className="text-[11px] text-ink-faint">— دورة الزيارة {overview.cadenceDays} يومًا · الأدنى تغطيةً أولاً</span>
+          </div>
+          <ul className="divide-y divide-line">
+            {overview.rows.map((r) => (
+              <li key={r.unitId}>
+                <Link to="/network/$unitId" params={{ unitId: r.unitId }} className="block px-5 py-3.5 transition hover:bg-surface-2/40">
+                  <div className="flex items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-ink">{r.name}{r.section === "women" && <span className="ms-1.5 rounded-full bg-gold-50 px-1.5 text-[10px] text-gold-700">القسم النسائي</span>}</p>
+                      <p className="mt-0.5 text-[11px] text-ink-faint">
+                        زار مشرفوها <span className={cn("font-mono-nums font-semibold", r.visited === r.total ? "text-emerald-800" : "text-ink")}>{r.visited}</span> من {r.total} حلقةً ضمن الدورة
+                        {r.avgScore != null && <> · متوسّط نتائج الزيارات <span className="font-mono-nums font-semibold text-ink">{r.avgScore}٪</span></>}
+                        {r.leaderName && <> — المسؤول: <span className="font-semibold text-ink">{r.leaderName}</span></>}
+                      </p>
+                    </div>
+                    {r.due > 0
+                      ? <span className="shrink-0 rounded-full bg-danger-bg px-2.5 py-0.5 text-[11px] font-bold text-danger ring-1 ring-danger/20">{r.due} تحتاج زيارة</span>
+                      : <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 ring-1 ring-emerald-100">التغطية تامّة ✓</span>}
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* اللوحة التشغيلية — للمُكلَّفين بالزيارات حصراً (المربع/المنطقة) */}
+      {!overview && dash && dash.circles.length > 0 && (
         <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
           <div className="flex flex-wrap items-center gap-2 border-b border-line bg-surface-2/60 px-5 py-3.5">
             <MapPin className="size-4 text-emerald-800" strokeWidth={1.75} />
@@ -115,9 +152,10 @@ export function SupervisionRegister() {
       <section id="visit-form" className="space-y-3 scroll-mt-20 lg:col-span-2">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-1.5 font-display text-sm font-semibold text-ink"><ClipboardCheck className="size-4 text-emerald-800" strokeWidth={1.75} /> السجل الإشرافيّ</h2>
-          <button onClick={() => { setPreset(""); setOpen((v) => !v); }} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-900">
+          {/* الزيارات عملُ المُكلَّفين لا المطّلعين (قاعدة المالك الواحد) */}
+          {!overview && <button onClick={() => { setPreset(""); setOpen((v) => !v); }} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-900">
             <Plus className="size-3.5" /> زيارةٌ جديدة
-          </button>
+          </button>}
         </div>
         {open && <VisitForm key={preset || "new"} circles={circles} busy={busy} initialCircleKey={preset} onCreate={(payload) => act("create", () => createSupervisionVisit({ data: payload as never }), "سُجّلت الزيارة", () => setOpen(false))} />}
 

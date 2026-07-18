@@ -117,3 +117,25 @@ describe("لوحة الإشراف الميدانيّ — حالة الزيارا
     expect(d.circles.every((c) => c.status === "never")).toBe(true);
   });
 });
+
+describe("supervisionOverviewData — عرض المطّلع القيادي (بلاغ المالك)", () => {
+  it("للمدير: تجميع بحسب المنطقة (تغطية/متأخر/مسؤول) — لا قائمة حلقات تشغيلية", async () => {
+    const { supervisionOverviewData } = await import("@/server/supervision.server");
+    // تكليف مسؤول منطقة معتمد ليظهر اسمه في «المسؤول»
+    await db.insert(schema.persons).values({ id: "p-ra", fullName: "مسؤول منطقة حلب", gender: "male", createdAt: 0 }).run();
+    await db.insert(schema.roleAssignments).values({ id: "ra-ov", personId: "p-ra", role: "rabita", orgUnitId: "aleppo", orgPath: "/men/aleppo/", startDate: 0, endDate: null, termNumber: 1, approvalStatus: "approved", createdAt: 0 }).run();
+    setUser(admin);
+    const ov = await supervisionOverviewData();
+    expect(ov).not.toBeNull();
+    const aleppo = ov!.rows.find((r) => r.unitId === "aleppo");
+    expect(aleppo).toMatchObject({ name: "منطقة حلب", leaderName: "مسؤول منطقة حلب" });
+    expect(aleppo!.total).toBeGreaterThan(0);
+    expect(aleppo!.visited + aleppo!.due).toBe(aleppo!.total);
+  });
+
+  it("للمكلَّف (مربع): لا عرض قيادي — تبقى لوحته التشغيلية", async () => {
+    const { supervisionOverviewData } = await import("@/server/supervision.server");
+    setUser(square);
+    expect(await supervisionOverviewData()).toBeNull();
+  });
+});

@@ -17,6 +17,8 @@ export function CircleRankings({ mosqueId, title }: { mosqueId?: string; title?:
 
   if (!items) return <div className="flex justify-center p-4"><Loader2 className="size-4 animate-spin text-ink-faint" /></div>;
   if (items.length < 2) return null; // الترتيب يحتاج حلقتين فأكثر
+  // قاعدة الصفر (٣٤): لا ترتيبَ كلُّه أصفارٌ «خاملة» — لا معنى لترتيبٍ بلا نشاط
+  if (items.every((c) => c.sessionsCount === 0)) return null;
 
   const medal = (i: number) => (i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}`);
   const tone = (i: number, len: number) =>

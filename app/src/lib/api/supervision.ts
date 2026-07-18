@@ -13,6 +13,12 @@ export const getSupervisableCircles = createServerFn({ method: "GET" }).handler(
   return supervisableCirclesData();
 });
 
+// عرضُ المطّلع القيادي: تقييم الإشراف بحسب المنطقة (للمدير ورأس القسم)
+export const getSupervisionOverview = createServerFn({ method: "GET" }).handler(async () => {
+  const { supervisionOverviewData } = await import("@/server/supervision.server");
+  return supervisionOverviewData();
+});
+
 export const getSupervisionDashboard = createServerFn({ method: "GET" }).handler(async () => {
   const { supervisionDashboardData } = await import("@/server/supervision.server");
   return supervisionDashboardData();
