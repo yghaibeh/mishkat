@@ -363,9 +363,11 @@ async function halaqaSupervise(halaqaId: string) {
 }
 
 // صلاحيّاتُ المستخدم تجاه حلقةٍ (للواجهة): هل يُدخل (معلّم مالك/أمير المكان) أو يُشرف (مدير/مشرف)؟
+// canManage بلا المدير — توحيدًا مع قاعدة الإدخال الفعليّة (halaqaInScope: «المدير/المشرف لا
+// يُدخلان منعًا للغش»): كانت الواجهةُ تعرض للمدير نماذجَ إدخالٍ سيرفضها الخادمُ أصلًا (بلاغ المالك).
 export async function halaqaAccessData(halaqaId: string) {
   const r = await halaqaRoles(halaqaId);
-  return { canManage: r.isAdmin || r.isAmir || r.isOwnerTeacher, canSupervise: r.isAdmin || r.isSupervisor };
+  return { canManage: r.isAmir || r.isOwnerTeacher, canSupervise: r.isAdmin || r.isSupervisor };
 }
 
 // نطاق القراءة (التقرير العام): أيّ صلةٍ بالحلقة (إدخال أو إشراف)
