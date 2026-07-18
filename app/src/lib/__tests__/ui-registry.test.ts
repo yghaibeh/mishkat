@@ -16,10 +16,10 @@ const TECHNICAL = new Set(["__root", "no-access"]);
 // شاشات ما قبل إعادة البناء (تُحذف من هنا عند إعادة بناء كلٍّ منها — بوابةُ دفعتها)
 const LEGACY = new Set([
   "index", "login", "register", "manhaj", "student.$token",
-  "network", "network.index", "network.$unitId", "mosque.$mosqueId",
+  "mosque.$mosqueId",
   "finance", "admin", "ala-baseera", "competition", "duties",
   "library", "media-hub", "my-circles", "my-committee", "design-system",
-]);
+]); // ن١ (٣٨): شُطبت الشبكة — لها مواصفتا network.md وnetwork-unit.md
 
 function routeNames(): string[] {
   return readdirSync(ROUTES_DIR)

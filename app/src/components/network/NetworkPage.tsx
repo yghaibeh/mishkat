@@ -180,7 +180,7 @@ function Browser({ data }: { data?: Browse }) {
                 {d.scopeType === "root" ? "لوحة الشبكة" : TYPE_LABEL[d.scopeType] ?? "نطاق"}
               </span>
             </div>
-            <p className="mt-1 text-sm text-ink-soft">{d.childCount} {d.childLabel} · {k.mosques} {noun.counted} ضمن النطاق</p>
+            <p className="mt-1 text-sm text-ink-soft">{d.childLabel}: {d.childCount} · ضمن النطاق {k.mosques} {noun.counted}</p>
           </div>
           <RollupExport section={d.section} unitId={d.breadcrumbs[d.breadcrumbs.length - 1]?.id ?? undefined} />
         </header>
@@ -221,35 +221,22 @@ function Browser({ data }: { data?: Browse }) {
               <Legend dot="bg-warn" label="دون الهدف" value={k.below} onClick={() => goList("below")} />
               <Legend dot="bg-danger" label="متعثّر" value={k.struggling} onClick={() => goList("struggling")} />
             </div>
+            {enteredCount > 0 && (
+              <p className="mt-3 text-[11px] text-ink-faint">متوسط نقاط المُدخلين: <span className="font-semibold text-ink font-mono-nums">{k.avgPoints}</span> من 70</p>
+            )}
           </div>
         </section>
 
-        {/* مؤشرات — قابلةٌ للنقر إلى التفاصيل */}
-        <section className="grid gap-4 sm:grid-cols-3">
-          <StatCard icon={d.section === "women" ? Home : Building2} label={noun.plural} value={k.mosques} onClick={() => goList("all")} />
-          {/* قاعدة الأربعة (٣٥): لا متوسط بلا إدخال — كان يعرض «12/70» بجانب «0% إدخال» (تناقض) */}
-          {enteredCount > 0 ? (
-            <StatCard icon={Target} label="متوسط النقاط" value={k.avgPoints} suffix="/ 70" sub={`${Math.round((k.avgPoints / 70) * 100)}% من الهدف`} onClick={() => goList("top")} />
-          ) : (
-            <div className="rounded-2xl bg-surface px-5 py-4 ring-1 ring-line">
-              <p className="flex items-center gap-1.5 text-xs text-ink-faint"><Target className="size-3.5" /> متوسط النقاط</p>
-              <p className="mt-2 text-sm text-ink-faint">يظهر بعد بدء إدخال هذا الأسبوع.</p>
-            </div>
-          )}
-          <StatCard icon={AlertTriangle} label={`${noun.one === "مسجد" ? "مساجد" : "حلقات"} متعثّرة`} value={k.struggling} tone="danger" sub={k.struggling > 0 ? "يحتاج دعماً" : "لا متعثّر"} onClick={() => goList("struggling")} />
-        </section>
+        {/* صفُّ البطاقات الثلاث حُذف (قاعدة الحقيقة الواحدة ٣٨): عدُّ المساجد في الترويسة،
+            والمتعثرةُ في legend التوزيع، والمتوسط سطرٌ داخل قسم التوزيع */}
 
-        {d.attention && (
-          <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
-            <div className="border-b border-line bg-surface-2/60 px-5 py-3.5">
-              <h3 className="font-display text-sm font-semibold text-ink">يحتاج انتباهك <span className="text-[11px] font-normal text-ink-faint">— انقر للتفاصيل</span></h3>
-            </div>
-            <div className="grid gap-px bg-line sm:grid-cols-3">
-              <AttnItem icon={AlertTriangle} tone="danger" label="مساجد متعثّرة" value={d.attention.struggling} onClick={() => goList("struggling")} />
-              <AttnItem icon={TrendingDown} tone="warn" label="مساجد متأخرة" value={d.attention.late} onClick={() => goList("late")} />
-              <AttnItem icon={UserPlus} tone="info" label="طلبات منح أدوار" value={d.attention.roleRequests} to="/admin" />
-            </div>
-          </section>
+        {/* «يحتاج انتباهك» حُذف (الحقيقة الواحدة ٣٨): متعثرة/متأخرة في legend التوزيع أعلاه؛
+            طلباتُ الأدوار شارةٌ واحدةٌ حين توجد فقط */}
+        {(d.attention?.roleRequests ?? 0) > 0 && (
+          <Link to="/admin" className="flex items-center justify-between rounded-2xl bg-surface px-5 py-4 ring-1 ring-line transition hover:bg-surface-2">
+            <span className="flex items-center gap-2 text-sm font-semibold text-ink"><UserPlus className="size-4 text-brand" /> طلبات منح أدوار بانتظار البتّ</span>
+            <span className="font-mono-nums text-lg font-bold text-brand">{d.attention!.roleRequests}</span>
+          </Link>
         )}
 
         <section id="units-list" className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
@@ -274,7 +261,7 @@ function Browser({ data }: { data?: Browse }) {
 
         {(d.circlesTotal ?? 0) > 0 && <CircleStatsStrip stats={d.circleStats ?? {}} total={d.circlesTotal ?? 0} />}
 
-        {d.scopeType === "root" && d.regions && d.regions.length > 0 && <RegionsSection regions={d.regions} section={d.section} />}
+        {/* «ماذا في كل منطقة» حُذفت نهائياً (الحقيقة الواحدة ٣٨): كانت تكرر قائمة الوحدات — المحافظةُ شارةٌ داخل سطر كل وحدة */}
 
         {/* «لمحات الوحدات» حُذفت (قاموس ٣٥ §٦-١): أرقام عامة بلا فعل — بدائلها بطاقات عدسة كل دور في رئيسيته */}
       </main>
@@ -484,24 +471,6 @@ function FilterBtn({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
-function GlimpseCard({ icon: Icon, label, value, sub, to }: { icon: typeof Wallet; label: string; value: string | number; sub: string; to?: string }) {
-  const body = (
-    <>
-      <div className="flex items-center gap-2 text-xs font-medium text-ink-soft">
-        <Icon className="size-4 text-emerald-700" strokeWidth={1.75} />
-        {label}
-        {to && <ChevronLeft className="ms-auto size-3.5 text-ink-faint" strokeWidth={2} />}
-      </div>
-      <div className="mt-2 flex items-baseline gap-1.5 font-mono-nums">
-        <span className="text-xl font-semibold tracking-tight text-ink">{value}</span>
-        <span className="text-[11px] text-ink-faint">{sub}</span>
-      </div>
-    </>
-  );
-  const cls = "block rounded-2xl bg-surface-2 p-4 ring-1 ring-line transition hover:ring-line-strong";
-  if (to) return <Link to={to as never} className={cls} title="اعرض التفاصيل">{body}</Link>;
-  return <div className={cls}>{body}</div>;
-}
 
 // شريط إحصاء الحلقات حسب النوع — لمحة سريعة على طبيعة العمل في النطاق
 function CircleStatsStrip({ stats, total }: { stats: Record<string, number>; total: number }) {
@@ -524,31 +493,6 @@ function CircleStatsStrip({ stats, total }: { stats: Record<string, number>; tot
   );
 }
 
-// ماذا في كل منطقة — عدد المساجد والحلقات لكل محافظة ضمن النطاق
-function RegionsSection({ regions, section }: { regions: Region[]; section?: "men" | "women" }) {
-  const noun = leafNouns(section);
-  return (
-    <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
-      <div className="flex items-center gap-2 border-b border-line bg-surface-2/60 px-5 py-3.5">
-        <MapPin className="size-4 text-emerald-800" strokeWidth={1.75} />
-        <h3 className="font-display text-sm font-semibold text-ink">ماذا في كل منطقة</h3>
-      </div>
-      <ul className="divide-y divide-line">
-        {regions.map((r) => (
-          <li key={r.governorate ?? "_none"} className="flex items-center gap-3 px-5 py-3.5">
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-2 text-emerald-800 ring-1 ring-line">
-              <MapPin className="size-[18px]" strokeWidth={1.75} />
-            </span>
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{r.governorate ? govLabel(r.governorate) : "بلا منطقة محدّدة"}</span>
-            <span className="shrink-0 font-mono-nums text-[11px] font-semibold text-ink-soft">{r.mosques} {noun.one}</span>
-            <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-0.5 font-mono-nums text-[11px] font-semibold text-emerald-800 ring-1 ring-emerald-100">{r.circles} حلقة</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 function ChildRow({ c, section }: { c: Child; section?: "men" | "women" }) {
   const noun = leafNouns(section);
   const isLeaf = c.type === noun.leafType;
@@ -567,12 +511,13 @@ function ChildRow({ c, section }: { c: Child; section?: "men" | "women" }) {
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-ink">{c.name}</p>
           <p className="mt-0.5 text-[11px] text-ink-faint">
-            {isLeaf
-              ? (c.governorate ? govLabel(c.governorate) : "بلا منطقة")
-              : `${TYPE_LABEL[c.type] ?? c.type} · ${c.mosques} ${noun.counted}`}
-            {(c.circles ?? 0) > 0 && <span className="text-emerald-700"> · {c.circles} حلقة</span>}
-            {(c.baseera ?? 0) > 0 && <span className="text-gold-700"> · {c.baseera} على بصيرة</span>}
-            {c.struggling > 0 && <span className="text-danger"> · {c.struggling} متعثّر</span>}
+            {isLeaf ? (
+              <>{c.governorate ? govLabel(c.governorate) : "بلا منطقة"}{(c.circles ?? 0) > 0 && ` · ${c.circles} حلقة`}</>
+            ) : (
+              // جملةٌ تجيب سؤال الأسبوع (قاعدة السطر المفهوم ٣٨) — لا رصفَ شاراتٍ متراكمة
+              <>{TYPE_LABEL[c.type] ?? c.type}{c.governorate ? ` · ${govLabel(c.governorate)}` : ""} — أدخل {Math.round((c.enteredPct / 100) * c.mosques)} من {c.mosques} {noun.counted} هذا الأسبوع{(c.circles ?? 0) > 0 && ` · ${c.circles} حلقة`}</>
+            )}
+            {c.struggling > 0 && <span className="text-danger"> · {c.struggling} يحتاج دعماً</span>}
           </p>
         </div>
         <div className="hidden w-28 shrink-0 sm:block">
@@ -593,46 +538,7 @@ function ChildRow({ c, section }: { c: Child; section?: "men" | "women" }) {
   );
 }
 
-function StatCard({ icon: Icon, label, value, suffix, sub, tone, onClick }: {
-  icon: typeof Building2; label: string; value: string | number; suffix?: string; sub?: string; tone?: "danger"; onClick?: () => void;
-}) {
-  const danger = tone === "danger";
-  const Tag = (onClick ? "button" : "div") as "div";
-  return (
-    <Tag onClick={onClick} title={onClick ? "اعرض التفاصيل" : undefined}
-      className={cn("rounded-2xl p-5 ring-1 transition", onClick && "cursor-pointer text-start", danger ? "bg-danger-bg ring-danger/20 hover:ring-danger/40" : "bg-surface ring-line hover:ring-line-strong")}>
-      <div className="flex items-center justify-between">
-        <span className={cn("grid size-9 place-items-center rounded-lg ring-1", danger ? "bg-danger/10 text-danger ring-danger/20" : "bg-surface-2 text-emerald-800 ring-line")}>
-          <Icon className="size-[18px]" strokeWidth={1.75} />
-        </span>
-        {sub && <span className={cn("text-[11px] font-semibold", danger ? "text-danger" : "text-ink-faint")}>{sub}</span>}
-      </div>
-      <div className="mt-3 flex items-baseline gap-1.5 font-mono-nums">
-        <span className={cn("text-3xl font-semibold tracking-tight sm:text-4xl", danger ? "text-danger" : "text-ink")}>{value}</span>
-        {suffix && <span className="text-base text-ink-faint">{suffix}</span>}
-      </div>
-      <p className={cn("mt-1.5 text-xs", danger ? "text-danger/80" : "text-ink-soft")}>{label}</p>
-    </Tag>
-  );
-}
 
-function AttnItem({ icon: Icon, tone, label, value, onClick, to }: { icon: typeof AlertTriangle; tone: "danger" | "warn" | "info"; label: string; value: number; onClick?: () => void; to?: string }) {
-  const color = tone === "danger" ? "text-danger" : tone === "warn" ? "text-warn" : "text-emerald-800";
-  const tile = tone === "danger" ? "bg-danger/10 ring-danger/20" : tone === "warn" ? "bg-warn-bg ring-warn/20" : "bg-emerald-50 ring-emerald-100";
-  const body = (
-    <>
-      <span className={cn("grid size-9 shrink-0 place-items-center rounded-lg ring-1", tile, color)}>
-        <Icon className="size-[18px]" strokeWidth={1.75} />
-      </span>
-      <span className="flex-1 text-sm text-ink-soft">{label}</span>
-      <span className={cn("font-mono-nums text-xl font-bold", color)}>{value}</span>
-      <ChevronLeft className="size-3.5 text-ink-faint" strokeWidth={2} />
-    </>
-  );
-  const cls = "flex items-center gap-3 bg-surface px-5 py-4 text-start transition hover:bg-surface-2/50";
-  if (to) return <Link to={to as never} className={cls} title="اعرض التفاصيل">{body}</Link>;
-  return <button onClick={onClick} className={cls} title="اعرض التفاصيل">{body}</button>;
-}
 
 function MosqueLeaf({ data, report }: { data: Leaf; report: Report | null }) {
   const r = report;
