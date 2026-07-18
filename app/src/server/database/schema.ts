@@ -1020,7 +1020,8 @@ export const journalLines = sqliteTable('journal_lines', {
   creditCents: integer('credit_cents').notNull().default(0),
   currency: text('currency'),                 // NULL = الأساس (USD)
   amountOrig: integer('amount_orig'),         // بالوحدة الصغرى للعملة الأصليّة (مقدارٌ موجب)
-}, (t) => ({ entryIdx: index('idx_jl_entry').on(t.entryId), accIdx: index('idx_jl_account').on(t.accountId), fundIdx: index('idx_jl_fund').on(t.fundId) }))
+  unitId: text('unit_id'),                    // ٠٠٧٣ «الصندوق»: بُعدُ الوحدة — رصيدُ صندوق كلّ وحدةٍ من الدفتر الواحد
+}, (t) => ({ entryIdx: index('idx_jl_entry').on(t.entryId), accIdx: index('idx_jl_account').on(t.accountId), fundIdx: index('idx_jl_fund').on(t.fundId), unitIdx: index('idx_jl_unit').on(t.unitId) }))
 
 // العملاتُ المدعومة + أسعارُ الصرف (تعدّد العملات، 0066)
 export const currencies = sqliteTable('currencies', {
@@ -1266,3 +1267,34 @@ export const paymentBatchItems = sqliteTable('payment_batch_items', {
   note: text('note'),
   createdAt: integer('created_at').notNull(),
 }, (t) => ({ batchIdx: index('idx_batch_item').on(t.batchId) }))
+
+
+// ٠٠٧٣ — «الصندوق» الهرمي (ق-د٢): التسليمات بين صناديق الوحدات — عمليةُ عهدةٍ بطرفين بإقرار استلام.
+export const handovers = sqliteTable('handovers', {
+  id: text('id').primaryKey(),
+  fromUnitId: text('from_unit_id').notNull(),
+  toUnitId: text('to_unit_id').notNull(),
+  purpose: text('purpose').notNull(),          // salaries | operations | transfer | other
+  batchId: text('batch_id'),                   // دفعة الرواتب الأمّ إن كانت السلسلة رواتب
+  lines: text('lines').notNull(),              // أسطر العملات JSON [{currency, amount}] بالوحدة الصغرى
+  note: text('note'),
+  status: text('status').notNull().default('delivered'), // delivered | acknowledged
+  deliveredBy: text('delivered_by').notNull(),
+  deliveredAt: integer('delivered_at').notNull(),
+  acknowledgedBy: text('acknowledged_by'),
+  acknowledgedAt: integer('acknowledged_at'),
+  entryId: text('entry_id'),
+  createdAt: integer('created_at').notNull(),
+}, (t) => ({
+  fromIdx: index('idx_ho_from').on(t.fromUnitId, t.status),
+  toIdx: index('idx_ho_to').on(t.toUnitId, t.status),
+  batchIdx: index('idx_ho_batch').on(t.batchId),
+}))
+
+// ٠٠٧٣ — قاموسُ فئات الصرف المغلق (محروقات/نقليات/رواتب…) — يُدار من «الإدارة»، لا نصَّ حرًّا.
+export const expenseCategories = sqliteTable('expense_categories', {
+  key: text('key').primaryKey(),
+  label: text('label').notNull(),
+  active: integer('active', { mode: 'boolean' }).notNull().default(true),
+  sort: integer('sort').notNull().default(0),
+})

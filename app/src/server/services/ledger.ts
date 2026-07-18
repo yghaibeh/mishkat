@@ -12,6 +12,7 @@ export interface JournalLineInput {
   credit?: number  // بالسنتات (بعملة الأساس USD)
   currency?: string     // العملةُ الأصليّة (NULL/USD = الأساس)
   amountOrig?: number   // مقدارُ العملة الأصليّة بوحدتها الصغرى (موجب)
+  unitId?: string       // ٠٠٧٣ «الصندوق»: وحدةُ السطر — رصيدُ صندوق كلّ وحدةٍ يُشتقّ من هذا البُعد
 }
 export interface JournalInput {
   entryDate?: number
@@ -66,6 +67,7 @@ export async function postJournal(db: Db, input: JournalInput, lines: JournalLin
     }),
     ...lines.map((l) => db.insert(journalLines).values({
       id: crypto.randomUUID(), entryId: id, accountId: l.accountId, fundId: l.fundId,
+      unitId: l.unitId ?? null,
       debitCents: Math.max(0, Math.round(l.debit ?? 0)), creditCents: Math.max(0, Math.round(l.credit ?? 0)),
       currency: l.currency && l.currency !== 'USD' ? l.currency : null,
       amountOrig: l.currency && l.currency !== 'USD' && l.amountOrig != null ? Math.max(0, Math.round(l.amountOrig)) : null,

@@ -6,6 +6,7 @@ import {
 import { toast } from "sonner";
 import { useRouteContext } from "@tanstack/react-router";
 import { MTabs } from "@/components/ui/m-tabs";
+import { BoxPanel } from "@/components/finance/BoxPanel";
 import { cn } from "@/lib/utils";
 import { escapeHtml } from "@/lib/escape-html";
 import { hasCap } from "@/lib/capabilities";
@@ -78,7 +79,7 @@ export function FinancePage({ data }: { data?: FinanceData }) {
   const [pay, setPay] = useState<Record<string, string>>({});
   const [payslipFor, setPayslipFor] = useState<string | null>(null); // معرّفُ المستحقّ لكشف الراتب
   // ن٢ (الوثيقة ٣٨): أربعُ مساحات عملٍ بدل ٢١ قسماً متراكماً في لفافةٍ واحدة (تدقيق ٣٣ هـ-٢)
-  const [tab, setTab] = useState<string>(canSupervise ? "money" : "entitlements");
+  const [tab, setTab] = useState<string>("box"); // «الصندوق» أولاً (ق-د٢): كم بقي معي؟ ثم بقية المساحات
 
   // مستحقّات الشهر ضمن شجرة الهيكلية (تفادي اختلاط أسماء المستفيدين المتشابهة عبر الوحدات)
   const [tree, setTree] = useState<{ units: TreeUnit[]; leaves: Row[] }>({ units: [], leaves: [] });
@@ -201,11 +202,14 @@ export function FinancePage({ data }: { data?: FinanceData }) {
         </header>
 
         <MTabs value={tab} onValueChange={setTab} options={[
+          { value: "box", label: "الصندوق" },
           ...(canSupervise || canOperate ? [{ value: "money", label: "القرارات" }] : []),
           { value: "entitlements", label: "الاستحقاقات" },
           { value: "ledger", label: "الدفتر والقوائم" },
           { value: "donors", label: "المانحون" },
         ]} />
+
+        {tab === "box" && <BoxPanel />}
 
         {tab === "entitlements" && (<>
         {/* KPI */}
@@ -412,8 +416,8 @@ export function FinancePage({ data }: { data?: FinanceData }) {
 
         {payslipFor && <PayslipModal entitlementId={payslipFor} canEdit={canOperate} onClose={() => setPayslipFor(null)} onChanged={refreshAll} />}
 
-        {/* الأصول والعُهد (§ع) — مركبات المؤسّسة ومصروفها وعُهدها */}
-        <AssetsPanel />
+        {/* الأصول والعُهد (§ع) — بارزة بقرار المالك (ق-د٢) ضمن مساحة «الصندوق» بعد لوحته */}
+        {(tab === "box" || tab === "ledger") && <AssetsPanel />}
       </main>
     </MishkatShell>
   );
