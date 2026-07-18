@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ROLE_DEFAULTS, ROLE_LABEL, ALL_ROLES, effectiveCaps, hasCap, roleDefaultHas } from "@/lib/capabilities";
+import { ROLE_DEFAULTS, ROLE_LABEL, ALL_ROLES, PERSONAL_CAPS, effectiveCaps, hasCap, roleDefaultHas } from "@/lib/capabilities";
 import { allowedNav, firstAllowed, canAccess } from "@/lib/access";
 import { curriculumIsFinancial, curriculumLabel, CURRICULUM_OPTIONS } from "@/lib/curricula";
 
@@ -26,9 +26,27 @@ describe("RBAC policy — الأدوار", () => {
   });
 
   it("المدير العام (*) يملك كل شيء، والأمير لا يرى المالية المركزية (خصوصية)", () => {
-    expect(hasCap(effectiveCaps(["admin"]), "circle.teach")).toBe(true);
     expect(hasCap(effectiveCaps(["admin"]), "anything.at.all")).toBe(true);
     expect(roleDefaultHas("amir", "finance.view")).toBe(false);
+  });
+
+  // حارسٌ بنيويّ دائم (قاعدة المالك الواحد ٣٤ + بلاغ المالك ٢٠٢٦-٠٧-١٨ «هل المدير يضيف تغطية؟»):
+  // «*» شمولُ اطّلاعٍ لا شمولُ عمل. كلُّ قدرةٍ في PERSONAL_CAPS يقوم بها صاحبُها وحدَه، ويُمنع
+  // منها المديرُ رغم «*». أيُّ قدرةِ عملٍ شخصيّةٍ جديدةٍ تُضاف للقائمة فيسري الحارسُ عليها.
+  it("القدراتُ الشخصيّة: «*» لا يمنح عملًا شخصيًّا — المديرُ يطَّلع ولا يعمل مكان أصحاب الأدوار", () => {
+    const adminCaps = effectiveCaps(["admin"]);
+    for (const cap of PERSONAL_CAPS) {
+      expect(hasCap(adminCaps, cap)).toBe(false);
+      expect(roleDefaultHas("admin", cap)).toBe(false);
+    }
+    // ولكلِّ قدرةٍ شخصيّةٍ دورٌ واحدٌ على الأقلّ يحملها نصًّا (وإلّا فهي قدرةٌ ميتةٌ لا يقوم بها أحد)
+    for (const cap of PERSONAL_CAPS) {
+      expect(ALL_ROLES.some((r) => (ROLE_DEFAULTS[r] ?? []).includes(cap))).toBe(true);
+    }
+    expect(hasCap(effectiveCaps(["media"]), "media.post")).toBe(true);
+    expect(hasCap(effectiveCaps(["teacher"]), "circle.teach")).toBe(true);
+    // ويبقى المنحُ الصريحُ بالتجاوزات ممكنًا (شغورٌ أو تكليفٌ استثنائيّ) — منعٌ للشمول لا للمنح
+    expect(hasCap(effectiveCaps(["amir"], [{ role: "amir", capability: "media.post", effect: "grant" }]), "media.post")).toBe(true);
   });
 
   it("اتحاد القدرات لأدوارٍ متعددة + تطبيق التجاوزات (منح/حجب)", () => {

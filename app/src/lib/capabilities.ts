@@ -52,7 +52,8 @@ export const CAP_CATALOG: Array<{ module: string; caps: Array<{ key: string; lab
     { key: "competition.manage", label: "إدارة المسابقة" },
   ] },
   { module: "الإعلام", caps: [
-    { key: "media.hub", label: "مركز الإعلام — معرض الصور والعُهد في العمل" },
+    { key: "media.hub", label: "مركز الإعلام — معرض صور الشبكة" },
+    { key: "media.post", label: "نشر تغطية إعلامية (عملُ مسؤول الإعلام وحده)" },
   ] },
   { module: "المكتبة التدريبيّة", caps: [
     { key: "library.view", label: "مكتبتي — عرض الموادّ والإقرار بالإنجاز" },
@@ -161,8 +162,8 @@ export const ROLE_DEFAULTS: Record<string, string[]> = {
   teacher: ["circle.teach", "library.view", "duties.view", "duties.manage"],
   // مسؤول اللجنة: يرى ويدير لجنته فقط (تُعزل بالملكية في الخادم) — بلا شبكة/مالية/تهيئة
   committee_head: ["committee.own", "duties.view", "library.view"],
-  // مسؤول الإعلام: مركزُ الإعلام (معرضُ الصور + العُهد في العمل) ضمن نطاق تكليفه — بلا مالية/تهيئة
-  media: ["media.hub", "duties.view", "library.view"],
+  // مسؤول الإعلام: مركزُ الإعلام (معرضُ صور نطاقه) ونشرُ التغطيات — بلا مالية/تهيئة
+  media: ["media.hub", "media.post", "duties.view", "library.view"],
   // المسؤول الماليّ: يعمل بكامل القسم الماليّ لكنّ كلَّ فعلٍ يمسّ المال يمرّ باعتماد المدير (سياسة 0070)
   // بلا finance.approve إطلاقًا — لا يعتمد شيئًا، ولا فعلَ نفسِه (ثوابت الوثيقة ٢٨)
   finance_officer: ["finance.view", "box.view", "finance.entry", "finance.payout", "duties.view", "library.view"],
@@ -184,7 +185,16 @@ export function effectiveCaps(roles: string[], overrides: Override[] = []): stri
   return [...set];
 }
 
+// «القدراتُ الشخصيّة» (قاعدة المالك الواحد ٣٤): عملٌ لا يقوم به إلا صاحبُ الدور نفسِه —
+// الشمولُ «*» يمنح الاطّلاع لا العمل. المديرُ يرى مركزَ الإعلام ولا ينشر تغطية، ويرى
+// الحلقات ولا يدرّس. أيُّ قدرةِ عملٍ شخصيّةٍ جديدةٍ تُضاف هنا فيسري عليها المنع تلقائيًّا.
+export const PERSONAL_CAPS = ["circle.teach", "committee.own", "media.post"] as const;
+export function isPersonalCap(cap: string): boolean {
+  return (PERSONAL_CAPS as readonly string[]).includes(cap);
+}
+
 export function hasCap(caps: string[] = [], cap: string): boolean {
+  if (isPersonalCap(cap)) return caps.includes(cap); // «*» لا يمنح عملًا شخصيًّا
   return caps.includes("*") || caps.includes(cap);
 }
 
@@ -192,10 +202,9 @@ export function hasCap(caps: string[] = [], cap: string): boolean {
 export function roleEffective(role: string, cap: string, overrides: Override[] = []): boolean {
   const ov = overrides.find((o) => o.role === role && o.capability === cap);
   if (ov) return ov.effect === "grant";
-  const d = ROLE_DEFAULTS[role] ?? [];
-  return d.includes("*") || d.includes(cap);
+  return roleDefaultHas(role, cap);
 }
 export function roleDefaultHas(role: string, cap: string): boolean {
   const d = ROLE_DEFAULTS[role] ?? [];
-  return d.includes("*") || d.includes(cap);
+  return hasCap(d, cap);
 }

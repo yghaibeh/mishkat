@@ -222,6 +222,15 @@ add("users", { id: "u-finance", person_id: pFinance, login: "finance", password_
 add("role_assignments", { id: "ra-finance", person_id: pFinance, role: "finance_officer", org_unit_id: "men", org_path: "/", portfolio: null, start_date: NOW - 90 * DAY, end_date: null, term_number: 1, approval_status: "approved", approved_by: "u-admin", created_at: NOW });
 add("person_contacts", { person_id: pFinance, phone: "0955123456", telegram: "@finance_officer", guardian_phone: null });
 
+// ===== مسؤول الإعلام (حسابٌ للتجريب) — كان الدورُ غيرَ مبذورٍ أصلًا فبدا مركزُ الإعلام
+// شاشةً بلا صاحب: لا ناشرَ للتغطيات ولا مالكَ للفراغ (بلاغ المالك ٢٠٢٦-٠٧-١٨).
+const pMedia = person("مسؤول الإعلام", "male", null);
+add("users", { id: "u-media", person_id: pMedia, login: "media", password_hash: PW, last_login: NOW - DAY, mfa_secret: null, mfa_enabled: 0, created_at: NOW });
+add("role_assignments", { id: "ra-media", person_id: pMedia, role: "media", org_unit_id: "men", org_path: "/", portfolio: null, start_date: NOW - 120 * DAY, end_date: null, term_number: 1, approval_status: "approved", approved_by: "u-admin", created_at: NOW });
+add("person_contacts", { person_id: pMedia, phone: "0955987654", telegram: "@media_officer", guardian_phone: null });
+// عُهدتُه الشخصيّة (تبويب «عُهدتي»): كاميرا التغطية باسمه — لا مرآةَ لعُهد الشبكة
+add("assets", { id: "zas-cam", kind: "equipment", name: "كاميرا التغطيات", details: "Canon — مع حقيبة وحامل", org_unit_id: "men", org_path: "/men/", holder_person_id: pMedia, holder_name: "مسؤول الإعلام", status: "active", created_by: "u-admin", created_at: NOW - 100 * DAY, updated_at: NOW - 100 * DAY });
+
 // ===== الدفتر المحاسبيّ (قيودٌ متوازنةٌ حتمًا: Σمدين=Σدائن) =====
 function je(source, ref, memoTxt, hijri, lines, whenDaysAgo) {
   const eid = uid("zje");

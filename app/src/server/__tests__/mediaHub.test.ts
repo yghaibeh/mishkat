@@ -36,9 +36,10 @@ beforeEach(async () => {
   await db.insert(schema.lessonSessions).values({ id: "ls1", halaqaId: "h1", teacherId: "t1", durationHours: 1, createdAt: 0 } as never).run();
   await db.insert(schema.lessonAttachments).values({ id: "att-l", lessonSessionId: "ls1", r2Key: "lessons/2.jpg", caption: "درس المجلس الأول", createdAt: 200 } as never).run();
 
-  // العُهد: نشطةٌ + مُعادةٌ (لا تظهر)
-  await db.insert(schema.assets).values({ id: "as1", kind: "vehicle", name: "دراجة نارية", orgUnitId: "m1", orgPath: "/men/r1/sq1/m1/", holderName: "أبو أحمد", status: "active", createdAt: 10, updatedAt: 10 } as never).run();
-  await db.insert(schema.assets).values({ id: "as2", kind: "equipment", name: "كاميرا قديمة", orgUnitId: "m1", orgPath: "/men/r1/sq1/m1/", holderName: "أبو بكر", status: "returned", createdAt: 5, updatedAt: 5 } as never).run();
+  // العُهد: بعُهدتي نشطة + بعُهدتي مُعادة (لا تظهر) + نشطةٌ بعُهدة غيري في نطاقي (لا تظهر)
+  await db.insert(schema.assets).values({ id: "as1", kind: "equipment", name: "كاميرا التغطية", orgUnitId: "m1", orgPath: "/men/r1/sq1/m1/", holderPersonId: "p-media", holderName: "مسؤول الإعلام", status: "active", createdAt: 10, updatedAt: 10 } as never).run();
+  await db.insert(schema.assets).values({ id: "as2", kind: "equipment", name: "كاميرا قديمة", orgUnitId: "m1", orgPath: "/men/r1/sq1/m1/", holderPersonId: "p-media", holderName: "مسؤول الإعلام", status: "returned", createdAt: 5, updatedAt: 5 } as never).run();
+  await db.insert(schema.assets).values({ id: "as3", kind: "vehicle", name: "دراجة الأمير", orgUnitId: "m1", orgPath: "/men/r1/sq1/m1/", holderPersonId: "p-amir", holderName: "أبو أحمد", status: "active", createdAt: 8, updatedAt: 8 } as never).run();
 });
 
 describe("مركزُ الإعلام (TDD)", () => {
@@ -73,14 +74,26 @@ describe("مركزُ الإعلام (TDD)", () => {
     await expect(mediaGalleryData(0)).rejects.toThrow();
   });
 
-  it("العُهدُ في العمل: النشطةُ فقط بحاملها ووحدتها، والمُعادةُ لا تظهر", async () => {
+  // «عُهدتي» شخصيّةٌ لا مرآةَ لعُهد الشبكة (بلاغ المالك ٢٠٢٦-٠٧-١٨: ما علاقةُ عُهد غيري بالإعلام؟)
+  it("عُهدتي: النشطةُ التي باسمي وحدَها — لا المُعادة ولا التي بعُهدة غيري في نطاقي", async () => {
     setUser(mediaR1);
     const a = await mediaAssetsData();
-    expect(a.items.length).toBe(1);
-    expect(a.items[0].name).toBe("دراجة نارية");
-    expect(a.items[0].holderName).toBe("أبو أحمد");
+    expect(a.items.map((i) => i.name)).toEqual(["كاميرا التغطية"]);
     expect(a.items[0].unitName).toBe("مسجد الفاروق");
     setUser(mediaR2);
-    expect((await mediaAssetsData()).items.length).toBe(0); // عزلُ النطاق
+    expect((await mediaAssetsData()).items.length).toBe(0);
+    setUser(admin); // المديرُ لا عُهدةَ باسمه ⇒ لا تبويبَ له أصلًا
+    expect((await mediaAssetsData()).items.length).toBe(0);
+  });
+
+  // تشخيصُ الفراغ: «لا صور» تُفرَّق عن «لا مسؤولَ إعلامٍ معيَّن» (قاعدة السطر المفهوم ٣٤)
+  it("المعرضُ يُعيد عددَ مسؤولي الإعلام المعتمَدين ليُشخَّص الفراغُ لا ليُعتذَر عنه", async () => {
+    setUser(admin);
+    expect((await mediaGalleryData(0)).mediaOfficers).toBe(0);
+    await db.insert(schema.roleAssignments).values({
+      id: "ra-media", personId: "p-media", role: "media", orgUnitId: "r1", orgPath: "/men/r1/",
+      startDate: 0, endDate: null, termNumber: 1, approvalStatus: "approved", createdAt: 0,
+    } as never).run();
+    expect((await mediaGalleryData(0)).mediaOfficers).toBe(1);
   });
 });

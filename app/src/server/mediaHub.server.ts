@@ -2,7 +2,7 @@
 // مربوطةً بمسجدها ومنطقتها عبر مسار الشجرة، + العُهدُ التي في العمل. للإدارة ومسؤول الإعلام (media.hub).
 import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { useDb } from "./utils/db";
-import { attachments, weeklyRecords, lessonAttachments, lessonSessions, halaqat, venues, orgUnits, assets } from "./database/schema";
+import { attachments, weeklyRecords, lessonAttachments, lessonSessions, halaqat, venues, orgUnits, assets, roleAssignments } from "./database/schema";
 import { currentUser } from "./auth.server";
 import { isGlobalAdmin } from "./utils/context";
 import { hasCap } from "../lib/capabilities";
@@ -102,20 +102,27 @@ export async function mediaGalleryData(offset = 0) {
   const names = await unitNames(db, merged.map((m) => m.path ?? ""));
   const items: GalleryItem[] = merged.map((m) => ({
     id: m.id, url: `/media/${m.r2Key}`, caption: m.caption, createdAt: m.createdAt, source: m.source,
-    mosqueName: m.source === "post" ? "تغطية إعلامية" : unitOf(m.path ?? "", m.unitId ?? null, names),
+    // التغطيةُ منشورُ شبكةٍ لا صورةُ وحدة: بلا وسمَي مسجدٍ ومنطقة (كانا يُعرضان فارغَين)
+    mosqueName: m.source === "post" ? "" : unitOf(m.path ?? "", m.unitId ?? null, names),
     regionName: m.source === "post" ? "" : regionOf(m.path ?? "", names),
   }));
-  return { items, total: dailyTotal + lessonTotal + posts.length };
+  // تشخيصُ الفراغ (قاعدة السطر المفهوم ٣٤): «لا صور» ليست جملةً واحدة — إمّا لا مسؤولَ إعلامٍ
+  // معيَّنٌ أصلًا (فلا ناشرَ للتغطيات) أو معيَّنٌ ولم يرفع بعد. المديرُ يحتاج التمييزَ ليعالج.
+  const officers = (await db.select({ c: sql<number>`count(*)` }).from(roleAssignments)
+    .where(and(eq(roleAssignments.role, "media"), eq(roleAssignments.approvalStatus, "approved"))).all())[0]?.c ?? 0;
+  return { items, total: dailyTotal + lessonTotal + posts.length, mediaOfficers: officers };
 }
 
-// العُهدُ التي في العمل: الأصولُ النشطة (عهدة/مركبة/معدّات) بحاملها ووحدتها — ضمن النطاق.
+// «عُهدتي»: الأصولُ النشطة التي بعُهدة هذا الشخص وحدَه — لا مرآةَ لعُهد الشبكة.
+// (بلاغ المالك ٢٠٢٦-٠٧-١٨: «ما علاقة العهد بالإعلام؟» — سجلُّ عُهد الشبكة مِلكُ «الصندوق»
+// حيث تُدار فعلًا (assets.server)، وهنا لا يبقى إلا ما بيد صاحب الدور: كاميرتُه وحاسوبُه.
+// قاعدتا الحقيقة الواحدة والتبويب الشخصيّ ٣٤ — كان يعرض مركباتِ غيره ولا صلةَ له بها.)
 export async function mediaAssetsData() {
   const u = await requireMediaHub();
   const db = useDb();
-  const prefixes = scopePrefixes(u);
-  const scope = prefixes ? or(...prefixes.map((p) => sql`${assets.orgPath} LIKE ${p + "%"}`)) : undefined;
-  const where = scope ? and(eq(assets.status, "active"), scope) : eq(assets.status, "active");
-  const rows = await db.select().from(assets).where(where).orderBy(desc(assets.createdAt)).limit(300).all();
+  const rows = await db.select().from(assets)
+    .where(and(eq(assets.status, "active"), eq(assets.holderPersonId, u.personId)))
+    .orderBy(desc(assets.createdAt)).limit(100).all();
   const unitIds = [...new Set(rows.map((r) => r.orgUnitId).filter(Boolean))] as string[];
   const names = new Map<string, string>();
   for (let i = 0; i < unitIds.length; i += 90) {

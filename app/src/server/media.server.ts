@@ -3,6 +3,9 @@ import { eq } from "drizzle-orm";
 import { useDb } from "./utils/db";
 import { userFromToken } from "./utils/context";
 import { lessonSessions, halaqat, venues, teachers, lessonAttachments, weeklyRecords, attachments, materials } from "./database/schema";
+// استيرادٌ ساكنٌ لا ديناميكيّ (حارس ns=0): أيُّ import() داخل ملفّ خادمٍ يُسرّب المخطّط إلى الحزمة
+import { userCaps } from "./permissions.server";
+import { hasCap } from "../lib/capabilities";
 
 type Env = { MEDIA?: R2Bucket; JWT_SECRET?: string };
 type R2Bucket = {
@@ -101,11 +104,12 @@ export async function handleMediaRequest(request: Request, env: Env): Promise<Re
       return Response.json({ ok: true, r2Key: key, contentType: file.type, sizeBytes: file.size });
     }
 
-    // تغطيةٌ إعلامية (media_post) — أداةُ عمل دور الإعلام (كان المركزُ سلبيّاً بلا رفع — بلاغ المالك ٢٠٢٦-٠٧-١٨):
-    // يرفعها حاملُ media.hub (مسؤول الإعلام) أو المدير، وتظهر في معرض مركز الإعلام.
+    // تغطيةٌ إعلامية (media_post) — أداةُ عمل دور الإعلام (كان المركزُ سلبيّاً بلا رفع — بلاغ المالك ٢٠٢٦-٠٧-١٨).
+    // بقدرةٍ شخصيّة media.post لا بقائمة أدوارٍ مثبَّتة: صاحبُ الدور ينشر، والمديرُ يرى ولا ينشر
+    // (بلاغ المالك ٢٠٢٦-٠٧-١٨: «هل المدير العام يضيف تغطية؟» — لا؛ قاعدة المالك الواحد ٣٤).
     if (scope === "media_post") {
-      const isMedia = user.assignments.some((a) => a.role === "media" || a.role === "admin");
-      if (!isMedia) return bad(403, "التغطيات لمسؤول الإعلام");
+      const caps = await userCaps(db, [...new Set(user.assignments.map((a) => a.role))]);
+      if (!hasCap(caps, "media.post")) return bad(403, "نشرُ التغطيات لمسؤول الإعلام وحده");
       const key = `media-posts/${crypto.randomUUID()}.${(file.type.split("/")[1] || "jpg").replace(/[^a-z0-9]/gi, "").slice(0, 6)}`;
       await env.MEDIA.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: file.type } });
       const id = crypto.randomUUID();
