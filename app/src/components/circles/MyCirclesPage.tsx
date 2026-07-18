@@ -105,7 +105,7 @@ export function MyCirclesPage() {
                       <HalaqaStudents halaqaId={c.id} onChanged={load} />
                       <RecordLesson halaqaId={c.id} onSaved={load} />
                       <LessonsList halaqaId={c.id} refreshKey={c.lessons} />
-                      <WeeklyHalaqaPanel halaqaId={c.id} />
+                      <WeeklyHalaqaPanel halaqaId={c.id} notesReadOnly />
                     </div>
                   )}
                 </li>

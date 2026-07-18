@@ -198,10 +198,121 @@ export async function weekProgressData(mosqueId: string, now = new Date()): Prom
   return { points: cur?.points ?? 0, target, weekStart: thisWeek };
 }
 
+// ===== رئيسية الطبقات الإشرافية (ع٢–ع٤ — home-supervisor): قائمةُ عملٍ لا لوحةُ أرقام =====
+const SUPERVISOR_ROLES = ["square", "rabita", "section_head"] as const;
+export type UnitWeekState = "none" | "draft" | "submitted" | "approved" | "rejected";
+export type SupervisorHome = {
+  role: "supervisor";
+  supervisorRole: string; unitId: string; unitName: string;
+  pendingApprovals: Array<{ unitId: string; name: string; typeLabel: string; weeks: number; points: number }>;
+  children: { total: number; entered: number; items: Array<{ id: string; name: string; typeLabel: string; state: UnitWeekState; reason?: string }> };
+  visits: { due: number; overdue: number } | null;
+  registrations: number;
+  layerReport: { status: string; points: number } | null;
+};
+
+const TYPE_LABEL: Record<string, string> = { mosque: "مسجد", square: "مربع", rabita: "منطقة", section: "قسم" };
+
+export async function supervisorHomeData(now = new Date()): Promise<SupervisorHome | null> {
+  const db = useDb();
+  const u = await currentUser();
+  const at = u?.assignments.find((a) => (SUPERVISOR_ROLES as readonly string[]).includes(a.role));
+  if (!u || !at) return null;
+  const unit = (await db.select().from(orgUnits).where(eq(orgUnits.id, at.orgUnitId)).all())[0];
+  if (!unit) return null;
+  const thisWeek = weekStartSaturday(now);
+
+  // ١) بانتظار اعتمادي (NESSA — الدالة القائمة نفسها)
+  let pendingApprovals: SupervisorHome["pendingApprovals"] = [];
+  try {
+    const { pendingApprovalsData } = await import("./data.server");
+    pendingApprovals = (await pendingApprovalsData()).items
+      .slice(0, 10)
+      .map((i) => ({ unitId: i.unitId, name: i.name, typeLabel: i.typeLabel, weeks: i.weeks, points: i.points }));
+  } catch { /* بيئة اختبار جزئية */ }
+
+  // ٢) حالة وحداتي المباشرة هذا الأسبوع — قائمةُ عملٍ محدودة (٢٥)
+  const children = await db.select({ id: orgUnits.id, name: orgUnits.name, type: orgUnits.type })
+    .from(orgUnits).where(and(eq(orgUnits.parentId, unit.id), eq(orgUnits.status, "active"))).all();
+  const childIds = children.map((c) => c.id);
+  const weekRows = childIds.length
+    ? await db.select({ unitId: weeklyRecords.unitId, status: weeklyRecords.status, reason: weeklyRecords.rejectionReason })
+      .from(weeklyRecords).where(and(inArray(weeklyRecords.unitId, childIds), eq(weeklyRecords.weekStart, thisWeek))).all()
+    : [];
+  const stateOf = new Map(weekRows.map((r) => [r.unitId, r]));
+  const items = children.slice(0, 25).map((c) => {
+    const r = stateOf.get(c.id);
+    const state: UnitWeekState = !r ? "none"
+      : r.status === "layer_approved" ? "approved"
+      : r.status === "amir_approved" ? "submitted"
+      : r.reason ? "rejected" : "draft";
+    return { id: c.id, name: c.name, typeLabel: TYPE_LABEL[c.type] ?? c.type, state, ...(r?.reason ? { reason: r.reason } : {}) };
+  });
+  const entered = children.filter((c) => stateOf.has(c.id)).length;
+
+  // ٣) زياراتي (إن كان مكلَّفًا بحلقات) + ٤) طلبات الانضمام (الأقرب)
+  let visits: SupervisorHome["visits"] = null;
+  try {
+    const { supervisionDashboardData } = await import("./supervision.server");
+    const d = await supervisionDashboardData();
+    if ("summary" in d && d.summary) visits = { due: d.summary.never, overdue: d.summary.overdue };
+  } catch { /* */ }
+  let registrations = 0;
+  try {
+    const { pendingRegistrationsData } = await import("./registration.server");
+    registrations = (await pendingRegistrationsData()).items.length;
+  } catch { /* */ }
+
+  // ٥) تقرير طبقتي — يظهر زرُّه فقط حين توجد حصيلة (قاعدة الصفر)
+  let layerReport: SupervisorHome["layerReport"] = null;
+  try {
+    const { layerReportStatusData } = await import("./data.server");
+    const lr = await layerReportStatusData(unit.id);
+    if (lr.applicable) layerReport = { status: lr.status, points: (lr.rollup as { points?: number })?.points ?? 0 };
+  } catch { /* */ }
+
+  return {
+    role: "supervisor", supervisorRole: at.role, unitId: unit.id, unitName: unit.name,
+    pendingApprovals,
+    children: { total: children.length, entered, items },
+    visits, registrations, layerReport,
+  };
+}
+
+// ===== رئيسية المسؤول المالي (ع٨): مقترحاتي + سلامة الدفتر =====
+export type FinanceHome = {
+  role: "finance";
+  proposals: Array<{ id: string; summary: string; status: string; rejectReason?: string | null }>;
+  pendingCount: number;
+  ledgerBalanced: boolean;
+};
+
+export async function financeOfficerHomeData(): Promise<FinanceHome | null> {
+  const db = useDb();
+  const u = await currentUser();
+  if (!u || !u.assignments.some((a) => a.role === "finance_officer")) return null;
+  const { listFinanceActions } = await import("./services/financeActions");
+  const proposals = (await listFinanceActions(db, { proposedBy: u.userId, limit: 10 })) as Array<{ id: string; summary: string; status: string; rejectReason?: string | null }>;
+  const pendingCount = (await db.select({ c: sql<number>`count(*)` }).from(financeActions)
+    .where(and(eq(financeActions.status, "pending"), eq(financeActions.proposedBy, u.userId))).all())[0]?.c ?? 0;
+  let ledgerBalanced = true;
+  try {
+    const { trialBalance } = await import("./services/ledger");
+    const tb = await trialBalance(db);
+    const debit = tb.reduce((s, r) => s + r.debit, 0);
+    const credit = tb.reduce((s, r) => s + r.credit, 0);
+    ledgerBalanced = Math.abs(debit - credit) < 0.005;
+  } catch { /* */ }
+  return { role: "finance", proposals: proposals.map((p) => ({ id: p.id, summary: p.summary, status: p.status, rejectReason: p.rejectReason ?? null })), pendingCount, ledgerBalanced };
+}
+
 // ===== الموزّع: رئيسيةُ الدور (البقيّة تسقط لبطاقات «مهامّي» حتى تُبنى دفعتُها) =====
 export type HomeData =
   | AdminHome
   | AmirHome
+  | SupervisorHome
+  | FinanceHome
+  | { role: "redirect"; to: string }
   | { role: "generic"; cards: Array<{ key: string; label: string; count: number; to: string; tone: string }> }
   | null;
 
@@ -209,7 +320,14 @@ export async function homeData(): Promise<HomeData> {
   const u = await currentUser();
   if (!u) return null;
   if (isGlobalAdmin(u)) return adminHomeData();
-  if (u.assignments.some((a) => a.role === "amir")) return amirHomeData();
+  const roles = new Set(u.assignments.map((a) => a.role));
+  if (roles.has("amir")) return amirHomeData();
+  if ([...SUPERVISOR_ROLES].some((r) => roles.has(r))) return supervisorHomeData();
+  if (roles.has("finance_officer")) return financeOfficerHomeData();
+  // رئيسيات المعلم/اللجنة/الإعلام هي صفحاتُ عملهم نفسها (الوثيقة ٣٦ §٢)
+  if (roles.has("teacher")) return { role: "redirect", to: "/my-circles" };
+  if (roles.has("committee_head")) return { role: "redirect", to: "/my-committee" };
+  if (roles.has("media")) return { role: "redirect", to: "/media-hub" };
   const { myTasksSummaryData } = await import("./myTasks.server");
   const { cards } = await myTasksSummaryData();
   return { role: "generic", cards };

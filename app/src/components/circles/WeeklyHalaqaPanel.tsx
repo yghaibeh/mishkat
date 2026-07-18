@@ -12,7 +12,8 @@ type WeeklyData = {
   lastLesson: { id: string; title: string; dateHijri: string | null } | null;
   students: { enrollmentId: string; name: string; score: number | null; note: string | null; externalActivities?: string | null }[];
 };
-export function WeeklyHalaqaPanel({ halaqaId }: { halaqaId: string }) {
+// notesReadOnly: للمعلّم في «حلقاتي» — يقرأ ملاحظات المشرف/الإدارة عنه ولا يحرّرها (العدسة ع٦)
+export function WeeklyHalaqaPanel({ halaqaId, notesReadOnly }: { halaqaId: string; notesReadOnly?: boolean }) {
   const [data, setData] = useState<WeeklyData | null>(null);
   const [busy, setBusy] = useState(true);
   const [sup, setSup] = useState("");
@@ -52,12 +53,23 @@ export function WeeklyHalaqaPanel({ halaqaId }: { halaqaId: string }) {
     <div className="space-y-4 border-t border-line bg-surface-2/30 px-5 py-4">
       <p className="text-[11px] font-semibold text-ink-faint">أسبوع <span className="font-mono-nums">{data.weekLabel}</span></p>
 
-      {/* ملاحظات الإشراف والإدارة */}
-      <div className="grid gap-2 sm:grid-cols-2">
-        <Field label="ملاحظات المشرف"><TextArea value={sup} onChange={(e) => setSup(e.target.value)} rows={2} placeholder="ملاحظات إشرافية على سير الحلقة…" /></Field>
-        <Field label="ملاحظات الإدارة"><TextArea value={adm} onChange={(e) => setAdm(e.target.value)} rows={2} placeholder="ملاحظات إدارية…" /></Field>
-      </div>
-      <button onClick={saveNotes} disabled={savingNotes} className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-emerald-800 px-3 text-xs font-semibold text-emerald-50 ring-1 ring-emerald-900/30 transition hover:bg-emerald-900 disabled:bg-surface-2 disabled:text-ink-faint disabled:ring-line">{savingNotes ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} حفظ الملاحظات</button>
+      {/* ملاحظات الإشراف والإدارة — المعلّم يقرأ فقط (ع٦) */}
+      {notesReadOnly ? (
+        (sup || adm) && (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {sup && <div className="rounded-lg bg-surface px-3 py-2 ring-1 ring-line"><p className="text-[10px] font-semibold text-ink-faint">ملاحظات المشرف لك</p><p className="mt-0.5 text-xs text-ink">{sup}</p></div>}
+            {adm && <div className="rounded-lg bg-surface px-3 py-2 ring-1 ring-line"><p className="text-[10px] font-semibold text-ink-faint">ملاحظات الإدارة</p><p className="mt-0.5 text-xs text-ink">{adm}</p></div>}
+          </div>
+        )
+      ) : (
+        <>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Field label="ملاحظات المشرف"><TextArea value={sup} onChange={(e) => setSup(e.target.value)} rows={2} placeholder="ملاحظات إشرافية على سير الحلقة…" /></Field>
+            <Field label="ملاحظات الإدارة"><TextArea value={adm} onChange={(e) => setAdm(e.target.value)} rows={2} placeholder="ملاحظات إدارية…" /></Field>
+          </div>
+          <button onClick={saveNotes} disabled={savingNotes} className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-emerald-800 px-3 text-xs font-semibold text-emerald-50 ring-1 ring-emerald-900/30 transition hover:bg-emerald-900 disabled:bg-surface-2 disabled:text-ink-faint disabled:ring-line">{savingNotes ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} حفظ الملاحظات</button>
+        </>
+      )}
 
       {/* الأنشطة الجماعية (حتى ٥) */}
       <div>

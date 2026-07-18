@@ -196,3 +196,29 @@ describe("تعديل/أرشفة الحلقة + قائمة الدروس", () => {
     await expect(ala.archiveMyHalaqaData({ id: a.id! })).rejects.toThrow();
   });
 });
+
+describe("ملاحظات المشرف/الإدارة محميّة من المعلّم (العدسة ع٦ — تدقيق ٣٣ أ-٥)", () => {
+  it("المعلّم المالك يُرفض؛ والمشرف المغطّي والأمير يُقبلان", async () => {
+    // وحدة المربع في الشجرة (مقاطع المسار = المعرّفات) — يلزم لاشتقاق نطاق الإشراف
+    await db.insert(schema.orgUnits).values([
+      { id: "idlib", parentId: null, path: "/idlib/", type: "rabita", section: "men", genderTrack: "male", name: "إدلب", status: "active", createdAt: 0 },
+      { id: "sq-1", parentId: "idlib", path: "/idlib/sq-1/", type: "square", section: "men", genderTrack: "male", name: "مربع ١", status: "active", createdAt: 0 },
+    ]).run();
+    setUser(teacherA);
+    await ala.createMyHalaqaData({ name: "حلقة", curriculum: "baseera" });
+    const my = await ala.myCirclesData();
+    const hid = my.items[0].id;
+
+    // المعلّم المالك: ممنوع (كان يحرّر ملاحظات المشرف على نفسه)
+    await expect(ala.saveWeeklyNotesData({ halaqaId: hid, supervisorNotes: "غش" }))
+      .rejects.toThrow(/المشرف|الأمير|الإدارة/);
+
+    // المشرف (مربع يغطّي المسار): مقبول
+    setUser(makeUser("square", "sq-1", "/idlib/sq-1/", { personId: "p-square" }));
+    await expect(ala.saveWeeklyNotesData({ halaqaId: hid, supervisorNotes: "ملاحظة إشرافية" })).resolves.toMatchObject({ ok: true });
+
+    // أمير المكان: مقبول (ملاحظات الإدارة)
+    setUser(amirSq1);
+    await expect(ala.saveWeeklyNotesData({ halaqaId: hid, adminNotes: "ملاحظة إدارية" })).resolves.toMatchObject({ ok: true });
+  });
+});

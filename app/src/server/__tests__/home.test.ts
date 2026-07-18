@@ -7,7 +7,7 @@ const state = vi.hoisted(() => ({ db: null as unknown, user: null as unknown }))
 vi.mock("@/server/utils/db", () => ({ useDb: () => state.db, getCloudflareEnv: () => ({}), setCloudflareEnv: () => {} }));
 vi.mock("@/server/auth.server", () => ({ currentUser: async () => state.user }));
 
-import { adminHomeData, amirHomeData, homeData } from "@/server/home.server";
+import { adminHomeData, amirHomeData, supervisorHomeData, homeData } from "@/server/home.server";
 import { weekStartSaturday } from "@/server/utils/week";
 import * as schema from "@/server/database/schema";
 
@@ -134,6 +134,34 @@ describe("amirHomeData — نقاط الأسبوع الحقيقية وسلسلة
   });
 });
 
+describe("supervisorHomeData — قائمة عمل المشرف (ع٢–ع٤)", () => {
+  const sq = makeUser("square", "sq1", "/men/r1/sq1/", { personId: "p-sq1" });
+
+  it("حالة الوحدات المباشرة هذا الأسبوع: لم يُدخل/مسودة/قُدّم/مرفوض", async () => {
+    setUser(sq);
+    await db.insert(schema.weeklyRecords).values([
+      rec("w1", "m1", "/men/r1/sq1/m1/", THIS_WEEK, 40, "amir_approved"),
+      rec("w2", "m2", "/men/r1/sq1/m2/", THIS_WEEK, 5, "draft", { rejectionReason: "نقص" }),
+    ]).run();
+    const d = await supervisorHomeData(NOW);
+    expect(d).toMatchObject({ role: "supervisor", supervisorRole: "square", unitName: "مربع المدينة" });
+    expect(d!.children.total).toBe(2);
+    expect(d!.children.entered).toBe(2);
+    const st = Object.fromEntries(d!.children.items.map((i) => [i.id, i.state]));
+    expect(st).toEqual({ m1: "submitted", m2: "rejected" });
+    // بانتظار اعتمادي: m1 قُدِّم وأنا الأقرب (NESSA)
+    expect(d!.pendingApprovals.map((p) => p.unitId)).toEqual(["m1"]);
+  });
+
+  it("لا إدخال إطلاقاً: كل الوحدات none والتقرير بلا زر تقديم (points=0)", async () => {
+    setUser(sq);
+    const d = await supervisorHomeData(NOW);
+    expect(d!.children.entered).toBe(0);
+    expect(d!.children.items.every((i) => i.state === "none")).toBe(true);
+    if (d!.layerReport) expect(d!.layerReport.points).toBe(0);
+  });
+});
+
 describe("homeData — الموزّع", () => {
   it("يوجّه المدير والأمير لعدستيهما والبقية لبطاقات مهامّي", async () => {
     setUser(admin);
@@ -141,6 +169,10 @@ describe("homeData — الموزّع", () => {
     setUser(makeUser("amir", "m1", "/men/r1/sq1/m1/", { personId: "p-amir" }));
     expect((await homeData())!.role).toBe("amir");
     setUser(makeUser("rabita", "r1", "/men/r1/"));
+    expect((await homeData())!.role).toBe("supervisor");
+    setUser(makeUser("teacher", "m1", "/men/r1/sq1/m1/"));
+    expect(await homeData()).toMatchObject({ role: "redirect", to: "/my-circles" });
+    setUser(makeUser("student", "m1", "/men/r1/sq1/m1/"));
     expect((await homeData())!.role).toBe("generic");
   });
 });

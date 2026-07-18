@@ -427,8 +427,11 @@ export async function weeklyHalaqaData(halaqaId: string, weekStart?: string) {
   };
 }
 
+// ملاحظاتُ المشرف/الإدارة على الحلقة ليست للمعلّم (العدسة ع٦ — كان المعلّم يحرّر ملاحظاتِ المشرف
+// على نفسه، تدقيق ٣٣ فئة أ-٥): المشرفُ المغطّي أو الأمير أو الإدارة حصراً.
 export async function saveWeeklyNotesData(input: { halaqaId: string; weekStart?: string; supervisorNotes?: string; adminNotes?: string }) {
-  await halaqaInScope(input.halaqaId);
+  const r = await halaqaRoles(input.halaqaId);
+  if (!r.isAdmin && !r.isSupervisor && !r.isAmir) throw new Error("الملاحظات للمشرف أو الأمير أو الإدارة — لا للمعلّم");
   const ws = resolveWeekStart(input.weekStart);
   await upsertWeeklyHalaqaRecord(useDb(), input.halaqaId, ws, { supervisorNotes: input.supervisorNotes ?? "", adminNotes: input.adminNotes ?? "" });
   return { ok: true as const };

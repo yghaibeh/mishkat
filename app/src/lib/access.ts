@@ -10,7 +10,8 @@ export const NAV = [
   // على بصيرة: الأميرُ يراها بـalaBaseera.view (مسجده)، والمشرف/الإدارة بـviewAll (الشبكة) — كلاهما يملك view
   { to: "/ala-baseera", label: "على بصيرة", cap: "alaBaseera.view" },
   { to: "/competition", label: "المسابقة", cap: "competition.view" },
-  { to: "/duties", label: "المطلوب اليوم", cap: "duties.view" },
+  // «المطلوب اليوم» ذاب في «الرئيسية» (٣٦ §١) — لا تبويبَ له؛ يبقى وجهةَ عملٍ تصلها بطاقاتُ الرئيسية والجرس
+  { to: "/duties", label: "المطلوب اليوم", cap: "duties.view", hidden: true },
   { to: "/library", label: "المكتبة", cap: "library.view" },
   // الإعلام: معرضُ صور الشبكة (سجلّات اليوم + دروس الحلقات) + العُهدُ في العمل — للإدارة ومسؤول الإعلام
   { to: "/media-hub", label: "الإعلام", cap: "media.hub" },
@@ -22,7 +23,7 @@ export const NAV = [
 ] as const;
 
 export function allowedNav(caps: string[] = []) {
-  return NAV.filter((n) => hasCap(caps, n.cap));
+  return NAV.filter((n) => !("hidden" in n && n.hidden) && hasCap(caps, n.cap));
 }
 
 export function canAccess(path: string, caps: string[] = []): boolean {

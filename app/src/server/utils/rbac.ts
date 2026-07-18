@@ -6,6 +6,10 @@ export const ROLES = {
   AMIR: 'amir',                // مسؤول الوحدة الطرفية — أمير مسجد (ذكور) / مشرفة حلقة (نساء)
   TEACHER: 'teacher',   // مدرّس/محفّظ — يملك حلقاته (قد تكون بلا مسجد/أمير)
   STUDENT: 'student',   // طالبٌ معتمَد (تسجيلٌ ذاتيّ §ر) — يرى «المطلوب منّي» ومكتبته فقط
+  // كانت ناقصةً هنا رغم وجودها في capabilities.ts (تدقيق ٣٣ §٥.٥) — توحيدُ المصدرين
+  COMMITTEE_HEAD: 'committee_head', // مسؤول لجنة مسجد — يُدخل أنشطة لجنته (ق1)
+  MEDIA: 'media',                    // مسؤول إعلام — معرض النطاق وأنشطته الإعلامية
+  FINANCE_OFFICER: 'finance_officer', // المسؤول المالي — يُعِدّ والمدير يعتمد (وثيقة ٢٨)
 } as const
 
 export type Role = typeof ROLES[keyof typeof ROLES]

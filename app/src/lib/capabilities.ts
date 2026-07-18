@@ -119,11 +119,13 @@ export type ActiveOrgType = typeof ACTIVE_ORG_TYPES[number];
 // المنطقة: الاعتماد + إدارة المستخدمين والبنية في نطاقها
 // المربع: عرض فقط لكل ما دونه
 // الأمير: إدارة كاملة لمسجده
+// عدسة المشرف (الوثيقتان ٣٤/٣٦): بلا «الملف المالي» المركزيّ وبلا «التهيئة» — كانا يظهران
+// للمربع/المنطقة فيريان دفترَ اليومية وميزانَ المراجعة وصفحةً «للإدارة العليا» (تدقيق ٣٣ فئة أ).
+// المحاسبةُ المركزية للمدير والمسؤول المالي حصرًا؛ والتهيئة للمدير.
 const SUPERVISOR_VIEW = [
   "network.view",
   "report.view",
   "dailyLog.view",
-  "finance.view",
   "mosqueFinance.view",
   "circles.view",
   "alaBaseera.viewAll", "alaBaseera.view",
@@ -131,7 +133,6 @@ const SUPERVISOR_VIEW = [
   "competition.view",
   "library.view",
   "duties.view",
-  "admin.view",
 ];
 
 export const ROLE_DEFAULTS: Record<string, string[]> = {

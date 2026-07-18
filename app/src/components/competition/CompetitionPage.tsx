@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useRouteContext } from "@tanstack/react-router";
+import { hasCap } from "@/lib/capabilities";
 import {
   Trophy, Users, Medal, BookOpen, ClipboardList, Loader2, Search, UserPlus, Plus, Crown,
 } from "lucide-react";
@@ -32,6 +34,9 @@ const loadPersons = (q: string): Promise<AsyncOption[]> => searchPersons({ data:
 const loadMosques = (q: string): Promise<AsyncOption[]> => searchOrgUnits({ data: { q, types: ["mosque"] } }).then((rs) => rs.map((r) => ({ value: r.id, label: r.name })));
 
 export function CompetitionPage({ data }: { data?: Data }) {
+  // حراسةُ واجهةٍ لأدوات الإدارة (تدقيق ٣٣ فئة أ-٤): الإنشاء/التسجيل/الرصد لحامل competition.manage فقط
+  const ctx = useRouteContext({ strict: false }) as { user?: { caps?: string[] } };
+  const canManage = hasCap(ctx.user?.caps ?? [], "competition.manage");
   const [comp, setComp] = useState<Comp | null>(data?.competition ?? null);
   const [kpis, setKpis] = useState<Kpis>(data?.kpis ?? { participants: 0, qualified: 0, programs: 0, exams: 0 });
   const [tab, setTab] = useState("board");
@@ -87,7 +92,7 @@ export function CompetitionPage({ data }: { data?: Data }) {
           </div>
         </header>
 
-        {!comp && <CreateCompetition onCreated={refetch} />}
+        {!comp && canManage && <CreateCompetition onCreated={refetch} />}
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="relative overflow-hidden rounded-2xl bg-emerald-900 p-5 text-emerald-50 ring-1 ring-emerald-900">
@@ -108,9 +113,11 @@ export function CompetitionPage({ data }: { data?: Data }) {
         </section>
 
         <MTabs value={tab} onValueChange={setTab}
-          options={[{ value: "board", label: "الترتيب" }, { value: "register", label: "تسجيل مشترك" }, { value: "manage", label: "الإدارة والرصد" }]} />
+          options={canManage
+            ? [{ value: "board", label: "الترتيب" }, { value: "register", label: "تسجيل مشترك" }, { value: "manage", label: "الإدارة والرصد" }]
+            : [{ value: "board", label: "الترتيب" }]} />
 
-        {tab === "manage" ? (
+        {tab === "manage" && canManage ? (
           <ManagePanel comp={comp} onChanged={async () => { const cid = await refetch(); await loadBoard(cid, q, 0, false); }} />
         ) : tab === "board" ? (
           <section className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">

@@ -6,6 +6,8 @@ import { getHome, getDailyActivities } from "@/lib/api/functions";
 import { getMyTasksSummary } from "@/lib/api/activities";
 import { AdminHome } from "@/components/home/AdminHome";
 import { AmirHome } from "@/components/home/AmirHome";
+import { SupervisorHome } from "@/components/home/SupervisorHome";
+import { FinanceHome } from "@/components/home/FinanceHome";
 import { GenericHome } from "@/components/home/GenericHome";
 import type { HomeData } from "@/server/home.server";
 import type { TaskCard } from "@/server/myTasks.server";
@@ -23,6 +25,8 @@ export const Route = createFileRoute("/home")({
   }),
   loader: async () => {
     const home = (await getHome().catch(() => null)) as HomeData;
+    // رئيسيات المعلم/اللجنة/الإعلام هي صفحات عملهم (٣٦ §٢) — تحويلٌ من الخادم
+    if (home?.role === "redirect") throw redirect({ to: home.to });
     let daily = null;
     let tasks: TaskCard[] = [];
     if (home?.role === "amir") {
@@ -47,5 +51,8 @@ function HomeRoute() {
   if (home.role === "amir") {
     return <AmirHome data={home} daily={daily as never} genderTrack={home.genderTrack} tasks={tasks} />;
   }
+  if (home.role === "supervisor") return <SupervisorHome data={home} />;
+  if (home.role === "finance") return <FinanceHome data={home} />;
+  if (home.role !== "generic") return null; // redirect عولج في الـloader
   return <GenericHome cards={home.cards} />;
 }
