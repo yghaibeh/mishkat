@@ -2,7 +2,14 @@
 // تشغيل: node scripts/gen-seed.mjs > src/server/database/seed_big.sql
 // البنية: الإدارة العليا (مشتركة) → قسم (men/women) → منطقة → مربع → [مسجد+حلقات (ذكور)] | [حلقة+طالبات+دروس (نساء)]
 const PW = "pbkdf2$100000$8T/B/AaCUb7IZ0bystvNjw==$LxZKTHYFK9tz1EnXiZLfi4Je5xflHrh4ndYv1TrR+qA="; // = mishkat123
-const NOW = 1751850000000; // ثابت (2025-07) — حتميّة
+const NOW = Date.now(); // حيّ: بذرةُ تجربةٍ بتواريخ اليوم (كانت مجمّدة 2025-07 فتقرأ «هذا الأسبوع/الشهر» صفراً — بلاغ المالك ٢٠٢٦-٠٧-١٨). المعرفاتُ تبقى حتميةً عبر PRNG الثابت.
+// مساعدات هجرية/أسبوعية حيّة (مطابقة لدوال utils/week.ts)
+const _hp = (d) => Object.fromEntries(new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", { year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC" }).formatToParts(d).filter((x) => x.type !== "literal").map((x) => [x.type, x.value]));
+const HM = (t = NOW) => { const p = _hp(new Date(t)); return `${p.year}-${String(p.month).padStart(2, "0")}`; };
+const HD = (t = NOW) => { const p = _hp(new Date(t)); return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")}`; };
+const weekStartSat = (t = NOW) => { const x = new Date(t); const diff = (x.getUTCDay() - 6 + 7) % 7; x.setUTCDate(x.getUTCDate() - diff); return x.toISOString().slice(0, 10); };
+const THIS_HM = HM(); const THIS_WEEK = weekStartSat(); const PREV_WEEK = weekStartSat(NOW - 7 * 86_400_000);
+const hmPlus = (i) => { const [y, m] = THIS_HM.split("-").map(Number); const t = (y * 12 + (m - 1) + i); return `${Math.floor(t / 12)}-${String((t % 12) + 1).padStart(2, "0")}`; };
 const DAY = 86400000;
 
 // PRNG حتميّ (mulberry32) + معرّفات تسلسلية
@@ -92,7 +99,7 @@ function menSquare(sqId, sqPath, gname, gid, firstSq) {
       const status = pick(["draft","draft","amir_approved","layer_approved"]);
       const wid = uid("zwr"); let tot = 0;
       for (let e = 0; e < rint(3, 7); e++) { const [aid, pts] = pick(ACT_MALE); const cnt = rint(1, 4); const p = pts * cnt; tot += p; add("daily_entries", { id: uid("zde"), client_uuid: uid("cu"), weekly_record_id: wid, mosque_id: mid, week_start: "2025-12-06", day: pick(["sat","sun","mon","tue","wed"]), activity_type_id: aid, count: cnt, points: p, note: null, participant_count: rint(1, 9), shura_confirmed: 1, entered_by: null, entered_by_committee: null, recorded_at: NOW, synced_at: NOW }); }
-      add("weekly_records", { id: wid, mosque_id: mid, mosque_path: mpath, week_start: "2025-12-06", hijri_month: "1447-06", scheme_id: "scheme-male", total_points: tot, status, locked: status === "layer_approved" ? 1 : 0, locked_at: status === "layer_approved" ? NOW - 2 * DAY : null, last_entry_at: NOW - rint(0, 8) * DAY, approved_by_amir: status !== "draft" ? "u-admin" : null, approved_by_layer: status === "layer_approved" ? "u-admin" : null, created_at: NOW - rint(1, 10) * DAY });
+      add("weekly_records", { id: wid, mosque_id: mid, mosque_path: mpath, week_start: chance(0.5) ? THIS_WEEK : PREV_WEEK, hijri_month: THIS_HM, scheme_id: "scheme-male", total_points: tot, status, locked: status === "layer_approved" ? 1 : 0, locked_at: status === "layer_approved" ? NOW - 2 * DAY : null, last_entry_at: NOW - rint(0, 8) * DAY, approved_by_amir: status !== "draft" ? "u-admin" : null, approved_by_layer: status === "layer_approved" ? "u-admin" : null, created_at: NOW - rint(1, 10) * DAY });
     }
   }
 }
@@ -122,7 +129,7 @@ function womenSquare(sqId, sqPath, gname, gid, firstSq) {
       const status = pick(["recorded","approved","approved","rejected"]);
       let present = 0;
       for (const en of enr) { const state = pick(["present","present","present","absent","excused"]); if (state === "present") present++; add("lesson_attendance", { id: uid("zla"), lesson_session_id: lid, enrollment_id: en, state, note: null, created_at: NOW - rint(1, 40) * DAY }); }
-      add("lesson_sessions", { id: lid, halaqa_id: halId, teacher_id: tid, date_hijri: `1447-06-${String(rint(1, 28)).padStart(2, "0")}`, hijri_month: "1447-06", lesson_title: pick(LESSON), majlis: pick(MAJALIS), duration_hours: pick([1, 1.5, 2]), materials: null, attendance_count: present, self_eval: rint(3, 5), companion_activities: pick(["زيارة مريضة","جولة دعوية","توزيع مطويات",null]), status, rejection_reason: status === "rejected" ? "يلزم استكمال التقرير" : null, approved_by: status === "approved" ? "u-admin" : null, created_at: NOW - rint(1, 40) * DAY });
+      add("lesson_sessions", { id: lid, halaqa_id: halId, teacher_id: tid, date_hijri: HD(NOW - rint(0, 20) * DAY), hijri_month: THIS_HM, lesson_title: pick(LESSON), majlis: pick(MAJALIS), duration_hours: pick([1, 1.5, 2]), materials: null, attendance_count: present, self_eval: rint(3, 5), companion_activities: pick(["زيارة مريضة","جولة دعوية","توزيع مطويات",null]), status, rejection_reason: status === "rejected" ? "يلزم استكمال التقرير" : null, approved_by: status === "approved" ? "u-admin" : null, created_at: NOW - rint(1, 40) * DAY });
       for (const en of enr) if (chance(0.5)) add("student_evaluations", { id: uid("zse"), enrollment_id: en, lesson_session_id: lid, score: rint(60, 100), note: chance(0.3) ? pick(["ممتازة","تحتاج مراجعة","متقدّمة","ملتزمة"]) : null, created_at: NOW });
     }
   }
@@ -136,22 +143,29 @@ const menVenueRows = []; // أماكن قسم الذكور حصرًا (لا نخ
 for (let i = 0; i < 20; i++) { const id = uid("zv"); add("venues", { id, type: pick(["mosque","institute"]), name: `${pick(["معهد","مركز","دار"])} ${pick(MOSQUE)}`, org_unit_id: pick(menMosques).id, gender_track: "male", created_at: NOW }); menVenueRows.push(id); venueRows.push(id); }
 for (const tp of teacherRows.filter((t) => !t.id).slice(0, 60)) { tp.id = uid("zt"); add("teachers", { id: tp.id, person_id: tp.personId, qualification: pick(QUAL), hourly_rate_id: "rate-hour-current", active: 1, created_at: NOW }); }
 const menTeachers = teacherRows.filter((t) => t.id && t.path && t.path.startsWith("/men/"));
-for (let i = 0; i < 80; i++) { const id = uid("zhl"); add("halaqat", { id, name: `حلقة ${pick(["الفجر","العصر","النور","الإتقان","الصدّيق"])} ${i + 1}`, venue_id: pick(menVenueRows), teacher_id: pick(menTeachers).id, gender_track: "male", curriculum: pick(["baseera","tahfeez","rashidi"]), capacity: pick([15, 20, 25, 30]), status: "active", created_at: NOW }); allHalaqat.push(id); }
+for (let i = 0; i < 80; i++) { const id = uid("zhl"); const tchr = pick(menTeachers); add("halaqat", { id, name: `حلقة ${pick(["الفجر","العصر","النور","الإتقان","الصدّيق"])} ${i + 1}`, venue_id: pick(menVenueRows), teacher_id: tchr.id, gender_track: "male", curriculum: pick(["baseera","tahfeez","rashidi"]), capacity: pick([15, 20, 25, 30]), status: "active", created_at: NOW }); allHalaqat.push(id);
+  // شمول القسم الرجالي (بلاغ المالك): طلاب ودروس هذا الشهر — كانت الحلقات الرجالية قشوراً (طلاب=0، ساعات=0)
+  const menr = []; for (let sN = 0; sN < rint(6, 16); sN++) { const eid = uid("ze"); add("enrollments", { id: eid, halaqa_id: id, person_id: "", student_name: nm("male"), status: chance(0.92) ? "active" : "withdrawn", created_at: NOW - rint(10, 120) * DAY }); menr.push(eid); }
+  for (let l = 0; l < rint(1, 4); l++) { const lid = uid("zls"); const lst = pick(["recorded", "approved", "approved"]); let present = 0;
+    for (const en of menr) { const state = pick(["present", "present", "present", "absent", "excused"]); if (state === "present") present++; add("lesson_attendance", { id: uid("zla"), lesson_session_id: lid, enrollment_id: en, state, note: null, created_at: NOW - rint(1, 20) * DAY }); }
+    add("lesson_sessions", { id: lid, halaqa_id: id, teacher_id: tchr.id, date_hijri: HD(NOW - rint(0, 20) * DAY), hijri_month: THIS_HM, lesson_title: pick(LESSON), majlis: pick(MAJALIS), duration_hours: pick([1, 1.5, 2]), materials: null, attendance_count: present, self_eval: rint(3, 5), companion_activities: null, status: lst, rejection_reason: null, approved_by: lst === "approved" ? "u-admin" : null, created_at: NOW - rint(1, 20) * DAY });
+    for (const en of menr) if (chance(0.4)) add("student_evaluations", { id: uid("zse"), enrollment_id: en, lesson_session_id: lid, score: rint(60, 100), note: null, created_at: NOW }); }
+}
 
 // ===== المالية (نقاط الأمراء + ساعات المعلّمات/ين) =====
 const rate = 50 / 280; let entN = 0;
-for (const a of amirs) { if (!a.recentPoints || !chance(0.6) || entN++ > 90) continue; const amount = Math.round(a.recentPoints * rate * 100) / 100; const eid = uid("zent"); const status = pick(["proposed","proposed","approved","paid"]); add("monthly_entitlements", { id: eid, person_id: a.personId, month: "1447-06", gross_amount: amount, currency: "USD", status, approved_by: status === "proposed" ? null : "u-admin", created_at: NOW }); add("entitlement_tracks", { id: uid("zetk"), entitlement_id: eid, kind: "points", basis: a.recentPoints, rate, amount, source_ref: a.mosqueId }); if (status === "paid") add("payouts", { id: uid("zpo"), entitlement_id: eid, net_amount: amount, paid_amount: amount, reference: `حوالة ${rint(1000, 9999)}`, recorded_by: "u-admin", paid_at: NOW - rint(1, 20) * DAY }); }
-for (const t of menTeachers.slice(0, 40)) { const hours = rint(4, 30); const amount = Math.round(hours * 2 * 100) / 100; const eid = uid("zent"); const status = pick(["proposed","approved","paid"]); add("monthly_entitlements", { id: eid, person_id: t.personId, month: "1447-06", gross_amount: amount, currency: "USD", status, approved_by: status === "proposed" ? null : "u-admin", created_at: NOW }); add("entitlement_tracks", { id: uid("zetk"), entitlement_id: eid, kind: "hours", basis: hours, rate: 2, amount, source_ref: "ala_baseera" }); }
+for (const a of amirs) { if (!a.recentPoints || !chance(0.6) || entN++ > 90) continue; const amount = Math.round(a.recentPoints * rate * 100) / 100; const eid = uid("zent"); const status = pick(["proposed","proposed","approved","paid"]); add("monthly_entitlements", { id: eid, person_id: a.personId, month: THIS_HM, gross_amount: amount, currency: "USD", status, approved_by: status === "proposed" ? null : "u-admin", created_at: NOW }); add("entitlement_tracks", { id: uid("zetk"), entitlement_id: eid, kind: "points", basis: a.recentPoints, rate, amount, source_ref: a.mosqueId }); if (status === "paid") add("payouts", { id: uid("zpo"), entitlement_id: eid, net_amount: amount, paid_amount: amount, reference: `حوالة ${rint(1000, 9999)}`, recorded_by: "u-admin", paid_at: NOW - rint(1, 20) * DAY }); }
+for (const t of menTeachers.slice(0, 40)) { const hours = rint(4, 30); const amount = Math.round(hours * 2 * 100) / 100; const eid = uid("zent"); const status = pick(["proposed","approved","paid"]); add("monthly_entitlements", { id: eid, person_id: t.personId, month: THIS_HM, gross_amount: amount, currency: "USD", status, approved_by: status === "proposed" ? null : "u-admin", created_at: NOW }); add("entitlement_tracks", { id: uid("zetk"), entitlement_id: eid, kind: "hours", basis: hours, rate: 2, amount, source_ref: "ala_baseera" }); }
 
 // ===== المسابقة (قسم الذكور) =====
 const compId = uid("zcomp"); add("competitions", { id: compId, name: "مسابقة المسجد المؤثر 1447–1448", start_month: "1447-07", end_month: "1448-07", qualification_month: "1448-06", prize_pool: 25000, status: "active", created_at: NOW });
-const programs = []; for (let i = 0; i < 8; i++) { const pid = uid("zmp"); add("monthly_programs", { id: pid, competition_id: compId, month_hijri: `1447-${String(7 + i).padStart(2, "0")}`, track: pick(["worship","knowledge","activities"]), title: pick(["حفظ جزء","ختمة تدبر","دورة علمية","نشاط دعوي"]), max_points: pick([50, 100, 150]) }); programs.push(pid); }
+const programs = []; for (let i = 0; i < 8; i++) { const pid = uid("zmp"); add("monthly_programs", { id: pid, competition_id: compId, month_hijri: hmPlus(i - 4), track: pick(["worship","knowledge","activities"]), title: pick(["حفظ جزء","ختمة تدبر","دورة علمية","نشاط دعوي"]), max_points: pick([50, 100, 150]) }); programs.push(pid); }
 const menPersons = persons.filter((p) => p.gender === "male").slice(0, 400); let partN = 0;
 for (const p of menPersons) { if (!chance(0.6) || partN++ > 300) continue; const partId = uid("zpart"); add("participants", { id: partId, competition_id: compId, person_id: p.id, mosque_id: pick(menMosques).id, age_at_registration: rint(15, 40), status: pick(["active","active","qualified","withdrawn"]), created_at: NOW }); for (const prog of programs) if (chance(0.5)) add("participant_scores", { id: uid("zpsc"), participant_id: partId, program_id: prog, points: rint(0, 150), excuse_status: chance(0.85) ? "none" : "excused", recorded_by: "u-admin", created_at: NOW }); }
 
 // ===== مالية المسجد + اجتماعات + تحفيظ (عيّنة للذكور) =====
 for (const m of menMosques) { if (chance(0.4)) { for (let i = 0; i < rint(1, 3); i++) add("donations", { id: uid("zdon"), mosque_id: m.id, donor_name: chance(0.4) ? null : nm("male"), amount: pick([50, 100, 200, 500]), collected_by: "u-admin", approved_by_amir: 1, note: null, at: NOW - rint(1, 90) * DAY }); for (let i = 0; i < rint(1, 2); i++) add("expenses", { id: uid("zexp"), mosque_id: m.id, category: pick(["كهرباء","ماء","صيانة","تدفئة"]), amount: pick([30, 60, 120, 250]), spent_by: "u-admin", note: null, at: NOW - rint(1, 90) * DAY }); }
-  if (chance(0.3)) { const cId = uid("ztc"); add("tahfeez_circles", { id: cId, mosque_id: m.id, name: pick(["حلقة الفجر","حلقة الصغار","حلقة الإتقان"]), teacher_person_id: pick(persons).id, created_at: NOW }); for (let i = 0; i < rint(3, 8); i++) { const sId = uid("zts"); add("tahfeez_students", { id: sId, circle_id: cId, person_id: pick(menPersons).id, status: "active", created_at: NOW }); for (let j = 0; j < rint(1, 2); j++) add("tahfeez_progress", { id: uid("ztp"), student_id: sId, scope: pick(["سورة البقرة","جزء عمّ","سورة الكهف"]), from_ayah: 1, to_ayah: rint(10, 50), rating: rint(3, 5), date_hijri: "1447-06-10", created_at: NOW }); } } }
+  if (chance(0.3)) { const cId = uid("ztc"); add("tahfeez_circles", { id: cId, mosque_id: m.id, name: pick(["حلقة الفجر","حلقة الصغار","حلقة الإتقان"]), teacher_person_id: pick(persons).id, created_at: NOW }); for (let i = 0; i < rint(3, 8); i++) { const sId = uid("zts"); add("tahfeez_students", { id: sId, circle_id: cId, person_id: pick(menPersons).id, status: "active", created_at: NOW }); for (let j = 0; j < rint(1, 2); j++) add("tahfeez_progress", { id: uid("ztp"), student_id: sId, scope: pick(["سورة البقرة","جزء عمّ","سورة الكهف"]), from_ayah: 1, to_ayah: rint(10, 50), rating: rint(3, 5), date_hijri: HD(NOW - rint(1, 15) * DAY), created_at: NOW }); } } }
 
 // ===== بيانات اتصال (خصوصية — جدول منفصل) =====
 for (const p of persons) if (chance(0.5)) add("person_contacts", { person_id: p.id, phone: `09${rint(10000000, 99999999)}`, telegram: chance(0.4) ? `@user${p.id.slice(1, 6)}` : null, guardian_phone: chance(0.15) ? `09${rint(10000000, 99999999)}` : null });
@@ -160,7 +174,7 @@ for (const p of persons) if (chance(0.5)) add("person_contacts", { person_id: p.
 for (const cid of circleIds) if (chance(0.6)) for (let i = 0; i < rint(4, 12); i++) add("circle_students", { id: uid("zcs"), circle_id: cid, name: nm("male"), notes: chance(0.2) ? "منتظم" : null, status: chance(0.9) ? "active" : "left", created_at: NOW });
 
 // ===== حوافز تشغيلية (اختيارية) =====
-for (let i = 0; i < 15; i++) add("incentives", { id: uid("zinc"), person_id: pick(persons).id, recipient_name: nm("male"), month: "1447-06", reason: pick(["تجهيز مراوح","دعم دورة","مكافأة تميّز","صيانة طارئة"]), amount: pick([50, 100, 150, 200]), created_by: "u-admin", created_at: NOW });
+for (let i = 0; i < 15; i++) add("incentives", { id: uid("zinc"), person_id: pick(persons).id, recipient_name: nm("male"), month: THIS_HM, reason: pick(["تجهيز مراوح","دعم دورة","مكافأة تميّز","صيانة طارئة"]), amount: pick([50, 100, 150, 200]), created_by: "u-admin", created_at: NOW });
 
 // ===== اختبارات المسابقة المركزية + النتائج =====
 const partIds = (rows.participants ?? []).map((p) => p.id);
@@ -199,7 +213,7 @@ for (let i = 0; i < 120; i++) add("notifications", { id: uid("zn"), person_id: p
 // ===== توسعةٌ شاملة: كأنّ النظامَ مكتمل — كلُّ الموديلات لها بيانات =====
 // =====================================================================
 const menPersonIds = persons.filter((p) => p.gender === "male").map((p) => p.id);
-const HIJRI = "1447-06";
+const HIJRI = THIS_HM;
 const dh = () => `1447-${String(rint(4, 6)).padStart(2, "0")}-${String(rint(1, 28)).padStart(2, "0")}`;
 
 // ===== المسؤول الماليّ (حسابٌ للتجريب) =====
@@ -234,7 +248,7 @@ for (let i = 0; i < 30; i++) { const id = uid("zdnr"); add("donors", { id, name:
 for (const did of donorIds) if (chance(0.5)) { const amount = pick([500, 1000, 2000, 5000]); const fulfilled = chance(0.4) ? amount : Math.round(amount * pick([0, 0.25, 0.5, 0.75]) * 100) / 100; add("pledges", { id: uid("zplg"), donor_id: did, fund_id: pick(["general", "waqf", "projects", "zakat"]), amount, fulfilled, due_at: NOW + rint(10, 120) * DAY, status: fulfilled >= amount ? "fulfilled" : "open", note: chance(0.3) ? "تعهّدٌ لمشروع المصلّى" : null, created_by: "u-admin", created_at: NOW - rint(10, 90) * DAY }); }
 
 // ===== الموازنات (لكلّ صندوقٍ لفترتين) =====
-for (const period of ["1447-05", "1447-06"]) for (const fund of ["general", "zakat", "sadaqah", "waqf", "projects"]) if (chance(0.8)) add("budgets", { id: uid("zbdg"), period, fund_id: fund, account_id: pick(["5100", "5200", "5300"]), amount: pick([1000, 2000, 3000, 5000]), note: null, created_by: "u-admin", created_at: NOW - rint(20, 80) * DAY });
+for (const period of ["1447-05", THIS_HM]) for (const fund of ["general", "zakat", "sadaqah", "waqf", "projects"]) if (chance(0.8)) add("budgets", { id: uid("zbdg"), period, fund_id: fund, account_id: pick(["5100", "5200", "5300"]), amount: pick([1000, 2000, 3000, 5000]), note: null, created_by: "u-admin", created_at: NOW - rint(20, 80) * DAY });
 
 // ===== مطالبات الصرف (معلّق/معتمَد/مرفوض) =====
 for (let i = 0; i < 20; i++) { const st = pick(["pending", "pending", "approved", "rejected"]); const rq = pick(["u-finance", "u-admin"]); add("expense_claims", { id: uid("zclm"), mosque_id: pick(menMosques).id, fund_id: pick(["general", "waqf", "projects"]), category: pick(["صيانة سبورة", "شراء مكيّف", "طباعة مطويات", "أدوات نظافة", "إكرام ضيف"]), amount: pick([60, 120, 250, 400, 600]), note: chance(0.4) ? "مرفقٌ الإيصال" : null, status: st, requested_by: rq, requested_at: NOW - rint(2, 40) * DAY, decided_by: st === "pending" ? null : "u-admin", decided_at: st === "pending" ? null : NOW - rint(1, 20) * DAY, reject_reason: st === "rejected" ? pick(["يتجاوز الموازنة", "يلزم عرضُ سعرٍ ثانٍ", "بندٌ غيرُ ضروريّ الآن"]) : null, expense_id: null, receipt_url: chance(0.3) ? "/media/receipt-sample.jpg" : null }); }
