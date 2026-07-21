@@ -12,4 +12,9 @@
 | [CR-005](CR-005-matrix-single-source-of-truth.md) | جدول المصفوفة §٣.٣ يُولَّد من الملف الذهبي + G19 | جوهري | ✅ منفَّذ (قب-١٦) — T3-D |
 | [CR-006](CR-006-tenant-root-org-tree.md) | جذر الشبكة (tenant) في نموذج الشجرة — تنفيذ قب-١٨ | جوهري | ✅ منفَّذ (T4A-2) |
 | [CR-007](CR-007-g13-redesign.md) | G13 تُقاس بالأثر لا بوقت التعديل (لا تحرس شيئاً في CI) | جوهري | ✅ منفَّذ ومُغلق (T5-2) |
-| [CR-011](CR-011-personal-capability-ignores-role-bundle.md) | القدرة الشخصية تُفتح بالملكية وحدها — حزمةُ الدور لا تُستشار | جوهري | ⏳ مسجّل (T13) — بانتظار القرار |
+| [CR-008](CR-008-dead-dual-control-exempt-setting.md) | إعداد ميت يَعِد بتعطيل الاعتماد الثنائي | جوهري | ✅ مُغلق (قب-٢٨) |
+| [CR-009](CR-009-draft-bypass-setting-is-a-revoked-rule.md) | إعداد يَعِد بإحياء قاعدة منسوخة | جوهري | ✅ مُغلق (T10) |
+| [CR-010](CR-010-free-activity-scoring-setting-is-a-revoked-rule.md) | `points.free_activity_scores` — ثالث إعداد من الصنف | جوهري | ⏳ يُنفَّذ في T15 |
+| [CR-011](CR-011-g22-caps-list-must-be-derived.md) | G22 تشتقّ قائمتها من سجل الأنواع لا تسردها | جوهري | ✅ معتمد — يُنفَّذ في T15 |
+| [CR-012](CR-012-personal-capability-ignores-role-bundle.md) | القدرة الشخصية تُفتح بالملكية وحدها — حزمةُ الدور لا تُستشار | جوهري | ⏳ **بانتظار قرار المالك** |
+| [CR-013](CR-013-approval-type-location-vs-g22.md) | موقع نوع الاعتماد مقابل G22 | جوهري | ✅ مُغلق — مكرِّر لقب-٣٣ |
