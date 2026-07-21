@@ -9,5 +9,6 @@ import "./features/org/screens/screens.js"
 import "./features/home/screens/screens.js"
 import "./features/ledger/screens/screens.js"
 import "./features/box/screens/screens.js"
+import "./features/dailyLog/screens/screens.js"
 
 export { registeredScreens } from "./ui/screens/registry.js"

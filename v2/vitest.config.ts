@@ -35,6 +35,14 @@ export default defineConfig({
           statements: 95,
         },
         "src/features/approval/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والنقاطُ مالٌ مباشرةً** (ق-٣٣، T10): خدماتُ سجل اليوم عتبتُها ٩٥٪، وطبقةُ بياناته معها.
+        "src/features/dailyLog/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        "src/features/dailyLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },

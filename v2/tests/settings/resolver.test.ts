@@ -6,10 +6,21 @@ import type { SettingOverride } from "../../src/settings/resolver.js"
 const AT = new Date("2026-07-20T00:00:00.000Z")
 
 describe("سلامة السجل (SPEC_settings §١-١)", () => {
-  it("٩٠ إعداداً: ٧٨ عمل + ١٢ منصة (بعد شطب CR-008)", () => {
-    expect(SETTINGS).toHaveLength(90)
-    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(78)
+  it("٨٩ إعداداً: ٧٧ عمل + ١٢ منصة (بعد شطبَي CR-008 وCR-009)", () => {
+    expect(SETTINGS).toHaveLength(89)
+    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(77)
     expect(SETTINGS.filter((d) => d.category === "platform")).toHaveLength(12)
+  })
+
+  /**
+   * **§١-٨أ المُوسَّعة بـCR-009**: كل إعدادٍ يوحي اسمُه بتعطيل حارسٍ أو إحياء قاعدةٍ منسوخة
+   * = مخالفةٌ **بحكم الاسم**، تُشطب ولو بلا مستهلك. والبحثُ عنها **دوريٌّ لا انتظاريّ** —
+   * فهذا الاختبارُ هو تحويلُ المسح اليدويّ إلى فحصٍ آليّ (المادة ١/٤: ما تكرّر مرتين يُؤتمت).
+   */
+  it("**لا إعدادَ يَعِد بإعفاءٍ من حارسٍ أو بإحياء قاعدةٍ منسوخة** (§١-٨أ — CR-008/CR-009)", () => {
+    const suspicious = [/exempt/i, /bypass/i, /_override_/i, /disable_guard/i, /skip_/i]
+    const offenders = SETTINGS.filter((d) => suspicious.some((re) => re.test(d.id)))
+    expect(offenders.map((d) => d.id), "إعدادٌ يشتري إعفاءً من قاعدة").toEqual([])
   })
 
   it("تسعة مفاتيح تفعيل (قب-٧)", () => {
