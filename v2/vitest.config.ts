@@ -42,6 +42,14 @@ export default defineConfig({
           functions: 95,
           statements: 95,
         },
+        // **وسلسلةُ ق-١٣ تمرّ بوحدة اللجان** (T12): بياناتُ اللجنة مدخلُ سجل المسجد،
+        // فخطؤها يُحتسب نقاطاً ⇒ عتبتُها ٩٥٪ كالمال والاعتماد (والعتبةُ أرضيةٌ تصعد — §٣).
+        "src/features/committees/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
         "src/features/dailyLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
         // **والعُهدةُ أمانةٌ في رقبة إنسان** (ق-٧٨…ق-٨٣، T14): خدماتُها عتبتُها ٩٥٪، وطبقةُ
         // بياناتها معها — فسلسلةٌ لا تُمحى تُختبر كما يُختبر المال.
@@ -55,6 +63,7 @@ export default defineConfig({
         },
         "src/features/custody/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
         "src/features/supervision/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        "src/features/committees/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },

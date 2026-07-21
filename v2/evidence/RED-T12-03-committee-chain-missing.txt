@@ -1,0 +1,25 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t12-committees/v2
+
+ ❯ tests/features/approval/committee-chain.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/features/approval/committee-chain.test.ts [ tests/features/approval/committee-chain.test.ts ]
+Error: Cannot find module '../../../src/features/approval/registered/committeeActivity.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t12-committees/v2/tests/features/approval/committee-chain.test.ts
+ ❯ tests/features/approval/committee-chain.test.ts:17:1
+     15| import { recordActivity, mosqueRecordContribution } from "../../../src…
+     16| import type { CommitteeContext } from "../../../src/features/committee…
+     17| import {
+       | ^
+     18|   COMMITTEE_ACTIVITY,
+     19|   committeeActivityPayloadSource,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  02:18:52
+   Duration  91ms (transform 26ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+
