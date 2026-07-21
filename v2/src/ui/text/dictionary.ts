@@ -6,8 +6,10 @@
  */
 
 import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG } from "./domains.js"
+// قاموسُ وحدةِ ميزةٍ يعيش **داخلها** (`PARALLEL_WORK` §٣)، ويُدمج هنا في المصدر الواحد.
+import { SUPERVISION } from "../../features/supervision/text.js"
 
-const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG] as const
+const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, SUPERVISION] as const
 
 const SOURCE = {
   ...COMMON,
@@ -18,6 +20,7 @@ const SOURCE = {
   ...LEDGER,
   ...BOX,
   ...DAILY_LOG,
+  ...SUPERVISION,
 } as const
 
 export type TextKey = keyof typeof SOURCE

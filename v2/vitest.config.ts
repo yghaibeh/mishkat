@@ -43,6 +43,14 @@ export default defineConfig({
           statements: 95,
         },
         "src/features/dailyLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والزيارةُ عملُ المشرف الميدانيّ** (ق-٩٩، T11): خدماتُ الإشراف عتبتُها ٩٥٪، وطبقةُ بياناته معها.
+        "src/features/supervision/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        "src/features/supervision/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },

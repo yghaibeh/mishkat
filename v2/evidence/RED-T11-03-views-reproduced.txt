@@ -1,0 +1,28 @@
+### دليلٌ أحمرُ **مُعادُ الإنتاج** — إقرارُ صدق:
+### اختبارُ العروض (views.test.ts) كُتب قبل الكود، لكنّي لم أُشغّله قبله فلم ألتقط فشلَه ساعتَه.
+### فأُعيد هنا إنتاجُ الحالة نفسِها بإزالة الملفّ الذي لم يكن موجوداً — ولم يُغيَّر الاختبار.
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid-T11/v2
+
+ ❯ tests/features/supervision/views.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/features/supervision/views.test.ts [ tests/features/supervision/views.test.ts ]
+Error: Cannot find module '../../../src/features/supervision/services/views.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid-T11/v2/tests/features/supervision/views.test.ts
+ ❯ tests/features/supervision/views.test.ts:10:1
+      8| import { describe, it, expect } from "vitest"
+      9| import { recordVisit } from "../../../src/features/supervision/service…
+     10| import {
+       | ^
+     11|   supervisionBoard,
+     12|   supervisionOverview,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  02:19:58
+   Duration  85ms (transform 22ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+
