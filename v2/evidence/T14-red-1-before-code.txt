@@ -1,0 +1,142 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2
+
+ ❯ tests/features/custody/acknowledge.test.ts (0 test)
+ ❯ tests/features/custody/endpoints.test.ts (0 test)
+ ❯ tests/features/custody/states.test.ts (0 test)
+ ❯ tests/screens/custody-screen-matrix.test.ts (0 test)
+ ❯ tests/features/custody/handoff.test.ts (0 test)
+ ❯ tests/features/custody/chain.test.ts (0 test)
+ ❯ tests/features/custody/audit.test.ts (0 test)
+ ❯ tests/features/custody/tenant-isolation.test.ts (0 test)
+ ❯ tests/features/custody/single-path.test.ts (0 test)
+ ❯ tests/features/custody/scope.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 10 ⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/screens/custody-screen-matrix.test.ts [ tests/screens/custody-screen-matrix.test.ts ]
+Error: Cannot find module '../../src/features/custody/server/endpoints.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/screens/custody-screen-matrix.test.ts
+ ❯ tests/screens/custody-screen-matrix.test.ts:13:1
+     11|  */
+     12| import { describe, it, expect } from "vitest"
+     13| import { makeCustodyEndpoints } from "../../src/features/custody/serve…
+       | ^
+     14| import { clearRegistryForTests } from "../../src/server/defineServerFn…
+     15| import { computeCustodyCaps, hasOwnCustody } from "../../src/features/…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  tests/features/custody/acknowledge.test.ts [ tests/features/custody/acknowledge.test.ts ]
+Error: Cannot find module '../../../src/features/custody/services/chain.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/acknowledge.test.ts
+ ❯ tests/features/custody/acknowledge.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect, beforeEach } from "vitest"
+      8| import { acknowledgeReceipt, recordCustodyMove } from "../../../src/fe…
+       | ^
+      9| import { assetStateOf, pendingReceiptsFor } from "../../../src/feature…
+     10| import { makeCustodyEndpoints } from "../../../src/features/custody/se…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  tests/features/custody/audit.test.ts [ tests/features/custody/audit.test.ts ]
+Error: Cannot find module '../../../src/features/custody/services/assets.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/audit.test.ts
+ ❯ tests/features/custody/audit.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect } from "vitest"
+      8| import { amendAsset, registerAsset } from "../../../src/features/custo…
+       | ^
+      9| import { acknowledgeReceipt, recordCustodyMove } from "../../../src/fe…
+     10| import { custodyContext, seedAsset, seedCustodyStore } from "./_seed.j…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  tests/features/custody/chain.test.ts [ tests/features/custody/chain.test.ts ]
+Error: Cannot find module '../../../src/features/custody/services/assets.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/chain.test.ts
+ ❯ tests/features/custody/chain.test.ts:9:1
+      7|  */
+      8| import { describe, it, expect } from "vitest"
+      9| import { amendAsset, registerAsset } from "../../../src/features/custo…
+       | ^
+     10| import { recordCustodyMove } from "../../../src/features/custody/servi…
+     11| import { assetStateOf, chainOf } from "../../../src/features/custody/s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  tests/features/custody/endpoints.test.ts [ tests/features/custody/endpoints.test.ts ]
+Error: Cannot find module '../../../src/features/custody/server/endpoints.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/endpoints.test.ts
+ ❯ tests/features/custody/endpoints.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect, beforeEach } from "vitest"
+      8| import { makeCustodyEndpoints } from "../../../src/features/custody/se…
+       | ^
+      9| import { clearRegistryForTests, registeredServerFns } from "../../../s…
+     10| import { recordCustodyMove } from "../../../src/features/custody/servi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  tests/features/custody/handoff.test.ts [ tests/features/custody/handoff.test.ts ]
+Error: Cannot find module '../../../src/features/custody/services/chain.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/handoff.test.ts
+ ❯ tests/features/custody/handoff.test.ts:9:1
+      7| import { describe, it, expect } from "vitest"
+      8| import { readFileSync } from "node:fs"
+      9| import { acknowledgeReceipt, recordCustodyMove } from "../../../src/fe…
+       | ^
+     10| import { custodyClearance } from "../../../src/features/custody/servic…
+     11| import { openCustodyOf } from "../../../src/features/custody/services/…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  tests/features/custody/scope.test.ts [ tests/features/custody/scope.test.ts ]
+Error: Cannot find module '../../../src/features/custody/services/chain.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/scope.test.ts
+ ❯ tests/features/custody/scope.test.ts:9:1
+      7|  */
+      8| import { describe, it, expect, beforeEach } from "vitest"
+      9| import { recordCustodyMove } from "../../../src/features/custody/servi…
+       | ^
+     10| import { assetStateOf } from "../../../src/features/custody/services/d…
+     11| import { makeScopeReach } from "../../../src/features/custody/services…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  tests/features/custody/single-path.test.ts [ tests/features/custody/single-path.test.ts ]
+Error: Cannot find module '../../../src/features/custody/services/assets.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/single-path.test.ts
+ ❯ tests/features/custody/single-path.test.ts:15:1
+     13| import { join } from "node:path"
+     14| import { fileURLToPath } from "node:url"
+     15| import { EDITABLE_ASSET_FIELDS } from "../../../src/features/custody/s…
+       | ^
+     16|
+     17| const UNIT_DIR = fileURLToPath(new URL("../../../src/features/custody"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  tests/features/custody/states.test.ts [ tests/features/custody/states.test.ts ]
+Error: Cannot find module '../../../src/features/custody/services/chain.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/states.test.ts
+ ❯ tests/features/custody/states.test.ts:9:1
+      7|  */
+      8| import { describe, it, expect } from "vitest"
+      9| import { recordCustodyMove } from "../../../src/features/custody/servi…
+       | ^
+     10| import { assetStateOf, assetsInScope, chainOf } from "../../../src/fea…
+     11| import { custodyContext, KHALID_PATH, seedAsset, seedCustodyStore } fr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/features/custody/tenant-isolation.test.ts [ tests/features/custody/tenant-isolation.test.ts ]
+Error: Cannot find module '../../../src/features/custody/data/store.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t14-custody/v2/tests/features/custody/tenant-isolation.test.ts
+ ❯ tests/features/custody/tenant-isolation.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect, beforeEach } from "vitest"
+      8| import { CustodyStore } from "../../../src/features/custody/data/store…
+       | ^
+      9| import { CustodyTenantRegistry } from "../../../src/features/custody/d…
+     10| import { recordCustodyMove } from "../../../src/features/custody/servi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  10 failed (10)
+      Tests  no tests
+   Start at  02:11:57
+   Duration  118ms (transform 271ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

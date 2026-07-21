@@ -43,6 +43,15 @@ export default defineConfig({
           statements: 95,
         },
         "src/features/dailyLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والعُهدةُ أمانةٌ في رقبة إنسان** (ق-٧٨…ق-٨٣، T14): خدماتُها عتبتُها ٩٥٪، وطبقةُ
+        // بياناتها معها — فسلسلةٌ لا تُمحى تُختبر كما يُختبر المال.
+        "src/features/custody/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        "src/features/custody/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
