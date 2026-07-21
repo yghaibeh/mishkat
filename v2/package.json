@@ -6,6 +6,7 @@
   "scripts": {
     "gen": "node tools/generate/emit-derived.mjs",
     "gen:matrix-table": "node tools/generate/matrix-table.mjs",
+    "gen:tokens-css": "vitest run tests/ui/tokens.test.ts -u",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
     "gate:g1": "tsc --noEmit -p tsconfig.json",
@@ -27,6 +28,7 @@
     "gate:g17": "node tools/gates/g17-db-import-boundary.mjs",
     "gate:g18": "node tools/gates/g18-query-params-ceiling.mjs",
     "gate:g19": "node tools/gates/g19-spec-matrix-table.mjs",
+    "gate:g20": "node tools/gates/g20-ui-contract.mjs",
     "gates": "node tools/gates/run-all.mjs",
     "gates:prove": "node tools/gates/prove-all.mjs"
   },

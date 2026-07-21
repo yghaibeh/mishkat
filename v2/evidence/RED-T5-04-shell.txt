@@ -1,0 +1,14 @@
+      8| import { describe, it, expect } from "vitest"
+      9| import {
+       | ^
+     10|   SURFACES,
+     11|   SURFACE_IDS,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  19:20:05
+   Duration  67ms (transform 11ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

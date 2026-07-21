@@ -20,7 +20,10 @@ describe("شاشة الشجرة", () => {
     if (v.kind === "granted") {
       expect(v.actions.createUnit).toBe(true)
       expect(v.actions.archiveUnit).toBe(true)
-      expect(v.disabledLayersAr.some((s) => s.includes("bloc"))).toBe(true)
+      // بعد دخول الشاشة سياجَ الواجهة (T5): الوسمُ **بالعربية من المعجم المغلق** —
+      // لا مفتاحٌ خامٌّ («bloc») يظهر للمستخدم أبداً (ق-١١٧، §٥-٣).
+      expect(v.disabledLayersAr.some((s) => s.includes("كتلة"))).toBe(true)
+      expect(v.disabledLayersAr.some((s) => s.includes("bloc"))).toBe(false)
       expect(v.nodes.length).toBeGreaterThan(0)
     }
   })

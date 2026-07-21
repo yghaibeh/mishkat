@@ -1,0 +1,18 @@
+ FAIL  tests/ui/components.test.ts [ tests/ui/components.test.ts ]
+Error: Cannot find module '../../src/ui/components/kernel.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/ui/components.test.ts
+ ❯ tests/ui/components.test.ts:9:1
+      7|  */
+      8| import { describe, it, expect } from "vitest"
+      9| import {
+       | ^
+     10|   COMPONENTS,
+     11|   COMPONENT_IDS,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  19:13:51
+   Duration  80ms (transform 15ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

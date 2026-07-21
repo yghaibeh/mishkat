@@ -147,6 +147,40 @@ const PROOFS = [
         ),
     },
   },
+  {
+    gate: "G20", script: "g20-ui-contract.mjs",
+    what: "شاشةُ ميزةٍ بلا عقدٍ مسجَّل (وريثُ ui-registry — ق-١١٣)",
+    file: "src/features/points/screens/screens.ts",
+    content: `export function pointsScreen(): string {\n  return "x"\n}\n`,
+  },
+  {
+    gate: "G20", script: "g20-ui-contract.mjs",
+    what: "قيمةٌ بصرية خام في مكوّن (خارج مِلفّ الرموز — §١-٩)",
+    file: "src/ui/components/__violation__.ts",
+    content: `export const style = { color: "#2E6B4F", padding: "13px" }\n`,
+  },
+  {
+    gate: "G20", script: "g20-ui-contract.mjs",
+    what: "نصٌّ عربيٌّ حرفيٌّ في القشرة (خارج طبقة النصوص — §٥-٣)",
+    file: "src/ui/shell/__violation__.ts",
+    content: `export const heading = "الرئيسية"\n`,
+  },
+  {
+    gate: "G20", script: "g20-ui-contract.mjs",
+    what: "**دورٌ يرى ما خارج عدسته**: عنصرٌ يُعرَض بلا شرط قدرته (البُعد الدلاليّ)",
+    patch: {
+      file: "src/features/home/screens/screens.ts",
+      // إزالةُ الشرط تجعل بطاقةَ «هدف الأسبوع» تظهر لكل دورٍ — فيرى المعلّمُ والطالبُ
+      // فعلاً بقدرة `dailyLog.edit` ليست لهما: تسريبُ عدسةٍ يجب أن تمسكه G20.
+      apply: (src) => src.replace('if (caps.has("dailyLog.edit")) {', "if (true) {"),
+    },
+  },
+  {
+    gate: "G20", script: "g20-ui-contract.mjs",
+    what: "مكوّنٌ خارج المكتبة المغلقة (§٦-١)",
+    file: "src/ui/components/__violation2__.ts",
+    content: `export const banner = { component: "FancyCarousel", capability: "network.view" }\n`,
+  },
 ]
 
 function runGate(script) {

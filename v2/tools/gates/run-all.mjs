@@ -1,4 +1,4 @@
-/** تشغيل البوابات الـ١٩ بالترتيب — المادة ١٠. */
+/** تشغيل البوابات الـ٢٠ بالترتيب — المادة ١٠. */
 import { execFileSync } from "node:child_process"
 import { join } from "node:path"
 import { ROOT } from "./_lib.mjs"
@@ -11,6 +11,7 @@ const GATES = [
   ["G13", "g13-spec-present.mjs"], ["G14", "g14-no-hard-numbers.mjs"], ["G15", "g15-cr-reference.mjs"],
   ["G16", "g16-public-routes-ceiling.mjs"], ["G17", "g17-db-import-boundary.mjs"],
   ["G18", "g18-query-params-ceiling.mjs"], ["G19", "g19-spec-matrix-table.mjs"],
+  ["G20", "g20-ui-contract.mjs"],
 ]
 
 let failed = []
