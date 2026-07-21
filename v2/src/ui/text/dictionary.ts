@@ -10,7 +10,9 @@ import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG } from ".
 // والدمجُ يبقى في موضعٍ واحد فيُفحص التصادمُ لكل المفاتيح معاً.
 import { CUSTODY } from "../../features/custody/text.js"
 
-const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, CUSTODY] as const
+import { SUPERVISION } from "../../features/supervision/text.js"
+
+const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, CUSTODY, SUPERVISION] as const
 
 const SOURCE = {
   ...COMMON,
@@ -22,6 +24,7 @@ const SOURCE = {
   ...BOX,
   ...DAILY_LOG,
   ...CUSTODY,
+  ...SUPERVISION,
 } as const
 
 export type TextKey = keyof typeof SOURCE

@@ -11,5 +11,6 @@ import "./features/ledger/screens/screens.js"
 import "./features/box/screens/screens.js"
 import "./features/dailyLog/screens/screens.js"
 import "./features/custody/screens/screens.js"
+import "./features/supervision/screens/screens.js"
 
 export { registeredScreens } from "./ui/screens/registry.js"
