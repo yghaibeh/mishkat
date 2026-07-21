@@ -6,8 +6,11 @@
  */
 
 import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG } from "./domains.js"
+// قاموسُ وحدةٍ يعيش **في وحدتها** ويُدمج هنا (قب-٣١ §٣: نصوصُ الوحدة لا في ملفٍّ مشترك)؛
+// والدمجُ يبقى في موضعٍ واحد فيُفحص التصادمُ لكل المفاتيح معاً.
+import { CUSTODY } from "../../features/custody/text.js"
 
-const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG] as const
+const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, CUSTODY] as const
 
 const SOURCE = {
   ...COMMON,
@@ -18,6 +21,7 @@ const SOURCE = {
   ...LEDGER,
   ...BOX,
   ...DAILY_LOG,
+  ...CUSTODY,
 } as const
 
 export type TextKey = keyof typeof SOURCE
