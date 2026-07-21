@@ -64,6 +64,10 @@ export default defineConfig({
         "src/features/custody/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
         "src/features/supervision/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
         "src/features/committees/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والمحتوى المنشور لا يُسترجَع بعد أن يُرى** (T13): خدماتُ الإعلام — النسبةُ والعزلُ
+        // وتحقّقُ الرفع — عتبتُها ٩٥٪، وطبقةُ بياناتها معها.
+        "src/features/media/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/media/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },

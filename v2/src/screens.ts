@@ -13,5 +13,6 @@ import "./features/dailyLog/screens/screens.js"
 import "./features/custody/screens/screens.js"
 import "./features/supervision/screens/screens.js"
 import "./features/committees/screens/screens.js"
+import "./features/media/screens/screens.js"
 
 export { registeredScreens } from "./ui/screens/registry.js"
