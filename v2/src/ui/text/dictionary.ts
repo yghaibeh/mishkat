@@ -5,11 +5,11 @@
  * صراحةً** (مفتاحٌ يُعرَّف مرتين خطأُ مصدرٍ مزدوج — المادة ١/٢، لا سكوتَ عليه بالكتابة فوقه).
  */
 
-import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER } from "./domains.js"
+import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX } from "./domains.js"
 
-const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER] as const
+const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX] as const
 
-const SOURCE = { ...COMMON, ...SHELL, ...STATES, ...AMIR_HOME, ...ORG, ...LEDGER } as const
+const SOURCE = { ...COMMON, ...SHELL, ...STATES, ...AMIR_HOME, ...ORG, ...LEDGER, ...BOX } as const
 
 export type TextKey = keyof typeof SOURCE
 

@@ -24,6 +24,9 @@ export default defineConfig({
         },
         // وطبقةُ بياناتِه معها — فثوابتُ الذرّية والتكامل المرجعيّ تعيش هناك.
         "src/features/ledger/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والصندوقُ مالٌ كذلك** (T8): خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها.
+        "src/features/box/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/box/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },

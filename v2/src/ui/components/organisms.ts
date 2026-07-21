@@ -37,6 +37,11 @@ export function emptyState(props: EmptyStateProps): UiNode {
     meta: {
       audience: props.audience,
       diagnostic: "true",
+      // **قب-٢٥**: الفراغُ **مِحرابٌ ينتظر أن يُعمَر** لا مثلثُ خطأ — والرسالةُ التشخيصية
+      // (ق-١١٢) تبقى كما هي. والطابعُ **أشكالٌ هندسيةٌ تُرسم في الصفحة**: `assets: none`
+      // — صفرُ صورةٍ وصفرُ تحميل، فلا يُدفع الطابعُ من ميزانية الحمولة (قب-٢٦/١).
+      motif: "mihrab",
+      assets: "none",
       ...(props.capability === undefined ? {} : { actionCapability: props.capability }),
     },
   })

@@ -114,6 +114,45 @@ export const LEDGER = {
   "ledger.emptyApprovals": "لا مقترحَ ينتظر بتَّك — لا شيء عليك الآن",
 } as const
 
+/**
+ * الصندوقُ الهرميّ ومالية المسجد — عقدُ وحدة `box` (ب-٧/ب-٩، قب-٨).
+ * **الوجهُ يتبسّط**: «قبضتُ · صرفتُ · سلّمتُ» و«رصيدُ صندوقي» — لا مدينَ ولا دائنَ ولا يوميّة؛
+ * والقيدُ المزدوجُ يجري تحتها لا أمامها.
+ */
+export const BOX = {
+  "box.heading": "الصندوق",
+  "box.scopeNote": "الأرقام على صندوق وحدتك وما تحتها",
+  "box.derivedNote": "كلُّ رقمٍ هنا مشتقٌّ من الدفتر لحظتَه",
+  "box.balance": "رصيدُ الصندوق",
+  "box.incoming": "الوارد",
+  "box.outgoing": "الصادر",
+  "box.movements": "آخرُ حركات الصندوق",
+  "box.voucherNo": "رقمُ السند",
+  "box.amount": "المبلغ",
+  "box.currency": "العملة",
+  "box.receive": "قبضتُ",
+  "box.spend": "صرفتُ",
+  "box.handover": "سلّمتُ نازلاً",
+  "box.category": "فئةُ الصرف",
+  "box.destinationUnit": "الوحدةُ المستلِمة",
+  "box.recipientCustodian": "أمينُ الوحدة المستلِمة",
+  "box.childBoxes": "صناديقُ الوحدات تحتك",
+  "box.handoversHeading": "التسليماتُ وإقرارُها",
+  "box.handoverFrom": "من",
+  "box.acknowledge": "أقرُّ استلامي",
+  "box.acknowledged": "أُقرَّ الاستلام",
+  "box.pendingAck": "تسليمٌ ينتظر إقرارك",
+  "box.emptyOwner": "لم تُسجَّل حركةٌ في صندوقك بعد — ابدأ بتسجيل قبض",
+  "box.emptyChildBoxes": "لا وحدةَ تحتك بصندوق",
+  "box.emptyHandovers": "لا تسليمَ ينتظر إقرارك — لا شيءَ عليك الآن",
+  "box.emptyMovements": "لم تُسجَّل حركةٌ بعد",
+  "mosqueFinance.heading": "ماليةُ مسجدي",
+  "mosqueFinance.scopeNote": "الأرقام على مسجدك وحده",
+  "mosqueFinance.balance": "رصيدُ مسجدي",
+  "mosqueFinance.record": "تسجيلُ عملية: قبضتُ · صرفتُ",
+  "mosqueFinance.emptyOwner": "لم تُسجَّل حركةٌ في مسجدك بعد — سجّل قبضاً أو صرفاً",
+} as const
+
 /** الشجرة والحسابات (وحدة org القائمة). */
 export const ORG = {
   "org.treeHeading": "الشجرة التنظيمية",
