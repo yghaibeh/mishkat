@@ -4,11 +4,13 @@
  * هذا الملف هو **الموضع الوحيد المسموح فيه بالأرقام التشغيلية** في v2 (قب-٦):
  * «فيه تعيش الافتراضيات بحكم التعريف» (§١-٩). بوابة G14 تستثنيه وتفشل على ما عداه.
  *
- * عدد الإعدادات: ٩٠ = ٧٨ إعداد عمل + ١٢ إعداد منصة.
+ * عدد الإعدادات: ٨٩ = ٧٧ إعداد عمل + ١٢ إعداد منصة.
  * (المواصفة تسرد ٩٣؛ وقب-١١ أسقط `network.unit_status.done_pct` و`below_pct`
  *  حين اعتُمد تصنيف المسجد بنسبة الهدف ١٠٠٪/٥٠٪ — «يسقط ولا يُنقل إعداداً»؛
  *  وCR-008 شطب `finance.dual_control.exempt_roles` — **الإعداداتُ تضبط قِيَماً لا تُلغي
- *  ثوابت** (§١-٨أ): إعفاءٌ بالدور من الاعتماد الثنائي ينقض ق-٥٣ وتُفشله G6.)
+ *  ثوابت** (§١-٨أ): إعفاءٌ بالدور من الاعتماد الثنائي ينقض ق-٥٣ وتُفشله G6؛
+ *  وCR-009 شطب `approval.draft_bypass_enabled` — **إعدادٌ يُحيي قاعدةً نسخها المالك**
+ *  (ب-٣٠أ)، وهو مخالفٌ **بحكم الاسم** (§١-٨أ المُوسَّعة) فيُشطب ولو بلا مستهلك.)
  */
 
 export type SettingType =
@@ -70,7 +72,11 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   s({ id: "records.backdate_lock_days", ar: "بعد كم يوم يُقفل الإدخال الرجعي", type: "duration", default: 14, level: "section", effect: "forward_dated", category: "business", source: "ب-٣٩د", min: 0 }),
 
   // ═══ approval — سلسلة الاعتماد ═══
-  s({ id: "approval.draft_bypass_enabled", ar: "هل تعتمد الطبقةُ الأقربُ مسودةً قبل إقرار الأمير", type: "toggle", default: false, level: "global", effect: "immediate", category: "business", source: "ب-٣٠أ (ناسخ لـق-٦)" }),
+  // ❌ شُطب `approval.draft_bypass_enabled` بـCR-009 (٢٠٢٦-٠٧-٢٢): بندٌ **يَعِد بإحياء قاعدةٍ
+  // نسخها المالك نصاً** (ب-٣٠أ: «لا اعتمادَ لمسودةٍ قبل إقرار الأمير»)، فتفعيلُه نقضٌ صامتٌ
+  // لقرارٍ مسجَّل في صورة إعدادٍ إداريّ (قب-١٠). **أخطرُ من CR-008**: ذاك يعطّل حارساً لم
+  // يُقرَّر إلغاؤه، وهذا يُحيي قاعدةً قُرِّر إلغاؤها. والمحرّك لم يقرأه قط — واختبارُ
+  // «الإعدادُ غيرُ مسجَّلٍ فلا يُقرأ» يبقى حارساً في `tests/features/approval/engine.test.ts`.
   s({ id: "approval.amir_can_withdraw", ar: "هل يسحب الأمير إقراره قبل اعتماد الطبقة", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ب-٣٠ج" }),
   s({ id: "approval.escalation_days", ar: "بعد كم يوم من إقرار الأمير يُصعَّد المتأخر", type: "duration", default: 7, level: "global", effect: "immediate", category: "business", source: "ب-٣٠ب · scheduled.server.ts:70", min: 1 }),
   s({ id: "approval.escalation_mode", ar: "أثر التصعيد", type: "enum", default: "notify_only", level: "global", effect: "immediate", category: "business", source: "ب-٣٠ب (لا يفتح صلاحية)", allowed: ["notify_only"] }),

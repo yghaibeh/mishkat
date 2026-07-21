@@ -153,6 +153,49 @@ export const BOX = {
   "mosqueFinance.emptyOwner": "لم تُسجَّل حركةٌ في مسجدك بعد — سجّل قبضاً أو صرفاً",
 } as const
 
+/**
+ * سجلُّ اليوم والنقاط وكتالوج الأنشطة — عقدُ وحدة `dailyLog` (ب-٦/ب-٣٩ج، ق-٤٠…ق-٤٦).
+ * **مفرداتُ المُدخِل لا مفرداتُ المحاسب**: «أدخلتُ · بقي لهدفي · عددُ أسرتي» — والقواعدُ
+ * (السقفُ والعتبةُ والتصنيف) تجري تحتها لا أمامها.
+ */
+export const DAILY_LOG = {
+  "dailyLog.heading": "سجلُّ اليوم",
+  "dailyLog.scopeNote": "الأرقام على وحدتك وحدها",
+  "dailyLog.weekPoints": "نقاطُ الأسبوع من الهدف",
+  "dailyLog.target": "هدفُ الفترة",
+  "dailyLog.tier": "تصنيفُ المسجد",
+  "dailyLog.tierExcellent": "متميّز",
+  "dailyLog.tierBelow": "دون الهدف",
+  "dailyLog.tierStruggling": "متعثّر",
+  "dailyLog.entries": "قيودُ الأسبوع",
+  "dailyLog.activity": "النشاط",
+  "dailyLog.count": "العدد",
+  "dailyLog.points": "النقاط",
+  "dailyLog.record": "أدخلتُ نشاطاً",
+  "dailyLog.attendees": "عددُ الحاضرين",
+  "dailyLog.freeActivity": "نشاطٌ خارج القائمة",
+  "dailyLog.freeActivityNote": "يُوثَّق بلا نقاطٍ آلية، ويراه معتمِدُ السجل فيقرّر",
+  "dailyLog.familyRoster": "عددُ طلاب أسرة المسجد",
+  "dailyLog.setFamilyRoster": "اضبط عدد طلاب الأسرة",
+  "dailyLog.rosterUnset": "لم يُضبط عددُ طلاب الأسرة — الأنشطةُ المشروطة بلا نقاطٍ حتى يُضبط",
+  "dailyLog.submit": "تقديمُ سجل الأسبوع للاعتماد",
+  "dailyLog.retract": "سحبُ الإقرار قبل الاعتماد",
+  "dailyLog.zeroHarvest": "لا إدخالَ في نطاقك بعد — ذكّر مساجدك ثم قدِّم",
+  "dailyLog.emptyOwner": "لم يُدخَل سجلُ اليوم بعد — ابدأ بتسجيل نشاط",
+  "dailyLog.emptyEntries": "لا قيدَ في هذا الأسبوع بعد",
+  "catalog.heading": "كتالوجُ الأنشطة",
+  "catalog.scopeNote": "الكتالوجُ مرجعٌ مركزيٌّ على الشبكة كلِّها",
+  "catalog.scheme": "المخطّط",
+  "catalog.activity": "النشاط",
+  "catalog.weight": "الوزنُ بالنقاط",
+  "catalog.maxPerDay": "السقفُ اليوميّ",
+  "catalog.requiresParticipation": "يشترط عتبةَ الحضور",
+  "catalog.active": "مُفعَّل",
+  "catalog.validFrom": "يسري من",
+  "catalog.upsert": "أضف نشاطاً أو عدّل وزنَه",
+  "catalog.emptyOwner": "لا نشاطَ في الكتالوج بعد — أضف أوّلَ نشاط",
+} as const
+
 /** الشجرة والحسابات (وحدة org القائمة). */
 export const ORG = {
   "org.treeHeading": "الشجرة التنظيمية",
