@@ -27,6 +27,14 @@ export default defineConfig({
         // **والصندوقُ مالٌ كذلك** (T8): خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها.
         "src/features/box/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
         "src/features/box/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **ومحرّكُ الاعتماد قلبُ النظام** (T9/قب-٢٩): كلُّ موافقةٍ تمرّ به ⇒ عتبتُه ٩٥٪.
+        "src/features/approval/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        "src/features/approval/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },

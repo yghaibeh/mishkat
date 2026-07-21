@@ -4,9 +4,11 @@
  * هذا الملف هو **الموضع الوحيد المسموح فيه بالأرقام التشغيلية** في v2 (قب-٦):
  * «فيه تعيش الافتراضيات بحكم التعريف» (§١-٩). بوابة G14 تستثنيه وتفشل على ما عداه.
  *
- * عدد الإعدادات: ٩١ = ٧٩ إعداد عمل + ١٢ إعداد منصة.
+ * عدد الإعدادات: ٩٠ = ٧٨ إعداد عمل + ١٢ إعداد منصة.
  * (المواصفة تسرد ٩٣؛ وقب-١١ أسقط `network.unit_status.done_pct` و`below_pct`
- *  حين اعتُمد تصنيف المسجد بنسبة الهدف ١٠٠٪/٥٠٪ — «يسقط ولا يُنقل إعداداً».)
+ *  حين اعتُمد تصنيف المسجد بنسبة الهدف ١٠٠٪/٥٠٪ — «يسقط ولا يُنقل إعداداً»؛
+ *  وCR-008 شطب `finance.dual_control.exempt_roles` — **الإعداداتُ تضبط قِيَماً لا تُلغي
+ *  ثوابت** (§١-٨أ): إعفاءٌ بالدور من الاعتماد الثنائي ينقض ق-٥٣ وتُفشله G6.)
  */
 
 export type SettingType =
@@ -82,7 +84,9 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   s({ id: "finance.currency.base", ar: "عملة الدفتر", type: "enum", default: "USD", level: "global", effect: "forward_dated", category: "business", source: "ق-٤٨، ق-٦٢", allowed: ["USD", "SYP", "TRY"] }),
   s({ id: "finance.currencies.enabled", ar: "عملات القبض المسموحة", type: "list", default: ["USD", "SYP", "TRY"], level: "global", effect: "immediate", category: "business", source: "ق-٦٢", allowed: ["USD", "SYP", "TRY"] }),
   s({ id: "finance.dual_control.enabled", ar: "الاعتماد الثنائي على أفعال المسؤول المالي", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ق-٥٣" }),
-  s({ id: "finance.dual_control.exempt_roles", ar: "مَن يقبض ويصرف مباشرةً بلا طابور", type: "list", default: ["amir"], level: "global", effect: "immediate", category: "business", source: "ق-٦٣" }),
+  // ❌ شُطب `finance.dual_control.exempt_roles` بـCR-008 (٢٠٢٦-٠٧-٢١): إعفاءٌ **بالدور** من
+  // الاعتماد الثنائي ينقض ق-٥٣ («نقطةُ خنقٍ واحدة لا تُلتف»)، وقراءتُه فحصُ دورٍ مقنّع تُفشله G6.
+  // وما يحققه ق-٦٣ محققٌ **بالقدرة**: `mosqueFinance.manage` على المسجد بعينه (وحدة box §٤).
   s({ id: "finance.restricted_funds.block_overspend", ar: "منع الصرف من المقيَّد شرعاً فوق رصيده", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ق-٥٥" }),
   s({ id: "finance.budget.overrun_blocking", ar: "هل تجاوز الموازنة يمنع الصرف", type: "toggle", default: false, level: "global", effect: "immediate", category: "business", source: "ق-٥٨" }),
   s({ id: "finance.budget.alert_pct", ar: "نسبة استهلاك الموازنة التي يبدأ عندها التنبيه", type: "percent", default: 100, level: "unit", effect: "immediate", category: "business", source: "ق-٥٨ · services/budgets.ts", min: 0, max: 100 }),

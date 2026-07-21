@@ -193,6 +193,24 @@ const PROOFS = [
     file: "src/ui/components/__violation2__.ts",
     content: `export const banner = { component: "FancyCarousel", capability: "network.view" }\n`,
   },
+  {
+    gate: "G22", script: "g22-approval-engine-only.mjs",
+    what: "**فحصُ «من يعتمد؟» في وحدة ميزة** (وريثُ `approvalRouting` المبعثر في v1 — ق-١)",
+    file: "src/features/box/services/__violation__.ts",
+    content: `export function approverLayerFor(unitPath: string): string {\n  return unitPath.split("/").slice(0, -2).join("/") + "/"\n}\n`,
+  },
+  {
+    gate: "G22", script: "g22-approval-engine-only.mjs",
+    what: "**حالةُ اعتمادٍ تُدار خارج المحرّك** (آلةُ حالاتٍ ثانية — ق-٥)",
+    file: "src/features/ledger/services/__violation__.ts",
+    content: `export type ClosingRow = {\n  readonly id: string\n  readonly approvalState: "draft" | "submitted" | "approved"\n}\n`,
+  },
+  {
+    gate: "G22", script: "g22-approval-engine-only.mjs",
+    what: "**استهلاكُ قدرةِ اعتمادٍ خارج المحرّك** (قرارٌ في غير موطنه — §٤.٢)",
+    file: "src/features/org/services/__violation__.ts",
+    content: `export const requiredCapability = "box.closing.approve"\n`,
+  },
 ]
 
 function runGate(script) {

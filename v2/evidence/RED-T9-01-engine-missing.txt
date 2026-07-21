@@ -1,0 +1,60 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid/v2
+
+ ❯ tests/features/approval/exceptions.test.ts (0 test)
+ ❯ tests/features/approval/box-closing.test.ts (0 test)
+ ❯ tests/features/approval/endpoints.test.ts (0 test)
+ ❯ tests/features/approval/routing.test.ts (0 test)
+ ❯ tests/features/approval/engine.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/features/approval/box-closing.test.ts [ tests/features/approval/box-closing.test.ts ]
+Error: Cannot find module '../../../src/features/approval/data/store.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/features/approval/box-closing.test.ts
+ ❯ tests/features/approval/box-closing.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect } from "vitest"
+      8| import { ApprovalStore } from "../../../src/features/approval/data/sto…
+       | ^
+      9| import {
+     10|   approveRequest,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/features/approval/endpoints.test.ts [ tests/features/approval/endpoints.test.ts ]
+Error: Cannot find module '../../../src/features/approval/server/endpoints.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/features/approval/endpoints.test.ts
+ ❯ tests/features/approval/endpoints.test.ts:9:1
+      7|  */
+      8| import { describe, it, expect, beforeEach } from "vitest"
+      9| import { makeApprovalEndpoints } from "../../../src/features/approval/…
+       | ^
+     10| import { ApprovalTenantRegistry } from "../../../src/features/approval…
+     11| import { clearRegistryForTests } from "../../../src/server/defineServe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/features/approval/engine.test.ts [ tests/features/approval/engine.test.ts ]
+Error: Cannot find module '../../../src/features/approval/data/store.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/features/approval/engine.test.ts
+ ❯ tests/features/approval/engine.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect } from "vitest"
+      8| import { ApprovalStore } from "../../../src/features/approval/data/sto…
+       | ^
+      9| import {
+     10|   amendLocked,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/features/approval/exceptions.test.ts [ tests/features/approval/exceptions.test.ts ]
+Error: Cannot find module '../../../src/features/approval/data/store.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/features/approval/exceptions.test.ts
+ ❯ tests/features/approval/exceptions.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect } from "vitest"
+      8| import { ApprovalStore } from "../../../src/features/approval/data/sto…
+       | ^
+      9| import {
+     10|   breakGlassApprove,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/features/approval/routing.test.ts [ tests/features/approval/routing.test.ts ]

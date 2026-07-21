@@ -6,9 +6,9 @@ import type { SettingOverride } from "../../src/settings/resolver.js"
 const AT = new Date("2026-07-20T00:00:00.000Z")
 
 describe("سلامة السجل (SPEC_settings §١-١)", () => {
-  it("٩١ إعداداً: ٧٩ عمل + ١٢ منصة", () => {
-    expect(SETTINGS).toHaveLength(91)
-    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(79)
+  it("٩٠ إعداداً: ٧٨ عمل + ١٢ منصة (بعد شطب CR-008)", () => {
+    expect(SETTINGS).toHaveLength(90)
+    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(78)
     expect(SETTINGS.filter((d) => d.category === "platform")).toHaveLength(12)
   })
 
