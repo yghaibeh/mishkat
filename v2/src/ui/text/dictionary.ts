@@ -6,10 +6,21 @@
  */
 
 import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX } from "./domains.js"
+// قاموسُ وحدةٍ **يعيش في وحدته** (§٥-٢: نصوصُ كل مجالٍ في موضعها) ويُدمَج هنا وحده.
+import { COMMITTEES } from "../../features/committees/text.js"
 
-const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX] as const
+const DOMAINS = [COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, COMMITTEES] as const
 
-const SOURCE = { ...COMMON, ...SHELL, ...STATES, ...AMIR_HOME, ...ORG, ...LEDGER, ...BOX } as const
+const SOURCE = {
+  ...COMMON,
+  ...SHELL,
+  ...STATES,
+  ...AMIR_HOME,
+  ...ORG,
+  ...LEDGER,
+  ...BOX,
+  ...COMMITTEES,
+} as const
 
 export type TextKey = keyof typeof SOURCE
 

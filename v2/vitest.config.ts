@@ -35,6 +35,15 @@ export default defineConfig({
           statements: 95,
         },
         "src/features/approval/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **وسلسلةُ ق-١٣ تمرّ بوحدة اللجان** (T12): بياناتُ اللجنة مدخلُ سجل المسجد،
+        // فخطؤها يُحتسب نقاطاً ⇒ عتبتُها ٩٥٪ كالمال والاعتماد (والعتبةُ أرضيةٌ تصعد — §٣).
+        "src/features/committees/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        "src/features/committees/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
