@@ -1,0 +1,25 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid/v2
+
+ ❯ tests/settings/resolver.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/settings/resolver.test.ts [ tests/settings/resolver.test.ts ]
+Error: Cannot find module '../../src/settings/resolver.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/settings/resolver.test.ts
+ ❯ tests/settings/resolver.test.ts:3:1
+      1| import { describe, it, expect } from "vitest"
+      2| import { SETTINGS, SETTINGS_BY_ID, DELIBERATE_HARD_CONSTANTS } from ".…
+      3| import { createSettingsResolver } from "../../src/settings/resolver.js"
+       | ^
+      4| import type { SettingOverride } from "../../src/settings/resolver.js"
+      5|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  19:29:15
+   Duration  78ms (transform 19ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

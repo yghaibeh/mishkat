@@ -1,0 +1,36 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid/v2
+
+ ❯ tests/features/org/tenant-isolation.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/features/org/tenant-isolation.test.ts [ tests/features/org/tenant-isolation.test.ts ]
+Error: Cannot find module '../../../src/features/org/data/tenant.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/features/org/tenant-isolation.test.ts
+ ❯ tests/features/org/tenant-isolation.test.ts:13:1
+     11| import { buildActor } from "../../../src/features/org/services/session…
+     12| import { clearRegistryForTests } from "../../../src/server/defineServe…
+     13| import { DEFAULT_TENANT_ID, TenantRegistry, globalPath } from "../../.…
+       | ^
+     14| import { can, type Actor, type DecisionContext } from "../../../src/au…
+     15| import { unitScope } from "../../../src/authorization/scope.js"
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  00:58:41
+   Duration  113ms (transform 46ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+
+
+────────────────────────────────────────────────────────────────────────
+دليلُ الأحمر (TESTING_POLICY §٢): كُتب اختبارُ العزل أوّلاً فأخفق للسبب الصحيح —
+غيابُ نموذج جذر الشبكة: `data/tenant.js` غيرُ موجود، و`seedSecondTenant` غيرُ معرّف،
+و`tenantId` ليس على الكيانات. ثم أُضيف الجذرُ فاخضرّ (٨ حالات، منها اختبارُ العزل).
+
+أحمرٌ سلوكيّ موثَّق داخل الطقم نفسِه (لا يُحذف بعد الإخضرار):
+«بلا تقسيم الشبكة: تطابُقُ المسار النسبيّ يسرّب الاحتواء» — يُثبت أنّ فاعلاً نطاقُه
+`/men/homs/` **يُخدَم** كيانَ `/men/homs/sq2/bilal/` في فضاءٍ واحدٍ بلا شبكة (allowed=true).
+يقابله «مع جذر الشبكة» حيث مستودعُ الشبكة (ب) لا يجد «bilal» ⇒ DENIED_OUT_OF_SCOPE.
+فالجذرُ حِملٌ لا زينة: النسخةُ بلا الجذر تفشل العزل، والنسخةُ به تمرّه.

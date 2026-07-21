@@ -1,0 +1,45 @@
+{
+  "name": "mishkat-v2",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "gen": "node tools/generate/emit-derived.mjs",
+    "gen:matrix-table": "node tools/generate/matrix-table.mjs",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "gate:g1": "tsc --noEmit -p tsconfig.json",
+    "gate:g2": "eslint .",
+    "gate:g3": "node tools/gates/g3-any-tsignore.mjs",
+    "gate:g4": "vitest run --coverage",
+    "gate:g5": "node tools/gates/g5-golden-matrix.mjs",
+    "gate:g6": "node tools/gates/g6-no-role-checks.mjs",
+    "gate:g7": "node tools/gates/g7-declared-serverfns.mjs",
+    "gate:g8": "node tools/gates/g8-smoke.mjs",
+    "gate:g9": "node tools/gates/g9-role-matrix-e2e.mjs",
+    "gate:g10": "node tools/gates/g10-migrations.mjs",
+    "gate:g11": "node tools/gates/g11-secrets.mjs",
+    "gate:g12": "node tools/gates/g12-bundle-guard.mjs",
+    "gate:g13": "node tools/gates/g13-spec-present.mjs",
+    "gate:g14": "node tools/gates/g14-no-hard-numbers.mjs",
+    "gate:g15": "node tools/gates/g15-cr-reference.mjs",
+    "gate:g16": "node tools/gates/g16-public-routes-ceiling.mjs",
+    "gate:g17": "node tools/gates/g17-db-import-boundary.mjs",
+    "gate:g18": "node tools/gates/g18-query-params-ceiling.mjs",
+    "gate:g19": "node tools/gates/g19-spec-matrix-table.mjs",
+    "gates": "node tools/gates/run-all.mjs",
+    "gates:prove": "node tools/gates/prove-all.mjs"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "@vitest/coverage-v8": "^4.1.9",
+    "eslint": "^9.32.0",
+    "prettier": "^3.7.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.1.9"
+  }
+}

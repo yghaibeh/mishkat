@@ -1,0 +1,30 @@
+ FAIL  tests/features/org/orgTree.test.ts [ tests/features/org/orgTree.test.ts ]
+Error: Cannot find module '../../../src/features/org/services/orgTree.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/features/org/orgTree.test.ts
+ ❯ tests/features/org/orgTree.test.ts:7:1
+      5| import { describe, it, expect } from "vitest"
+      6| import { seedWorld, NOW } from "./_seed.js"
+      7| import { createUnit, moveUnit, archiveUnit } from "../../../src/featur…
+       | ^
+      8|
+      9| const CTX = { now: NOW }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/features/org/provisioning.test.ts [ tests/features/org/provisioning.test.ts ]
+Error: Cannot find module '../../../src/features/org/services/provisioning.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/features/org/provisioning.test.ts
+ ❯ tests/features/org/provisioning.test.ts:8:1
+      6| import { describe, it, expect } from "vitest"
+      7| import { seedWorld, NOW } from "./_seed.js"
+      8| import { provision } from "../../../src/features/org/services/provisio…
+       | ^
+      9| import { buildActor } from "../../../src/features/org/services/session…
+     10| import type { Actor, Override } from "../../../src/authorization/can.j…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  7 failed (7)
+      Tests  no tests
+   Start at  00:10:50
+   Duration  110ms (transform 203ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

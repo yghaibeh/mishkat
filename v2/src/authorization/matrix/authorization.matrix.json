@@ -1,0 +1,283 @@
+{
+  "$comment": "المصفوفة الذهبية — مصدر الحقيقة الوحيد (SPEC_authorization §٥.١). لا يُحرَّر إلا بطلب تغيير معتمد (قب-١٠). كل مشتقاته تُولَّد آلياً بـ`npm run gen` وتحرسها G5.",
+  "source": {
+    "spec": "rebuild/specs/SPEC_authorization.md",
+    "sections": ["§٢ الكتالوج", "§٣.١ الأدوار", "§٣.٣ المصفوفة", "§١.٦ مصفوفة التمكين"],
+    "amendments": [
+      "قب-١١ / ق-م٥: نُزعت finance.entry عن section_head",
+      "قب-١١ / ق-م٦: custody.grant للمالي وللأمير",
+      "قب-١٣ / CR-001: competition.manage منطاقة لـ section_head·rabita·square·amir + قدرة competition.result.declare"
+    ]
+  },
+  "scopeKinds": {
+    "subtree": "و — وحدة التكليف وما تحتها (الاحتواء)",
+    "exact": "ذ — وحدة التكليف بذاتها حصراً (لا ما تحتها)",
+    "below": "ف — الوحدة التي تحت وحدة المكلَّف (اعتماد عمل الأدنى) — تُفحص بالاحتواء",
+    "root": "ج — الجذر / حصراً",
+    "personal": "ش — لا نطاق، بل ملكية الكيان"
+  },
+  "unitTypes": [
+    { "id": "root", "ar": "الجذر", "enabled": true, "parent": null },
+    { "id": "section", "ar": "القسم", "enabled": true, "parent": "root" },
+    { "id": "bloc", "ar": "الكتلة", "enabled": false, "parent": "section", "featureFlag": "feature.layer_bloc_enabled" },
+    { "id": "region", "ar": "المنطقة", "enabled": true, "parent": "bloc" },
+    { "id": "square", "ar": "المربع", "enabled": true, "parent": "region" },
+    { "id": "mosque", "ar": "المسجد", "enabled": true, "parent": "square" },
+    { "id": "circle", "ar": "الحلقة", "enabled": true, "parent": "mosque" }
+  ],
+  "capabilities": [
+    { "no": 1, "id": "network.view", "ar": "عرض الشبكة والتنقل", "type": "scoped", "scopeKind": "subtree", "module": "network" },
+    { "no": 2, "id": "report.view", "ar": "عرض التقارير", "type": "scoped", "scopeKind": "subtree", "module": "network" },
+    { "no": 3, "id": "report.submit", "ar": "تقديم تقرير الوحدة", "type": "scoped", "scopeKind": "exact", "module": "network" },
+    { "no": 4, "id": "report.approve", "ar": "اعتماد/رفض عمل الأقرب", "type": "scoped", "scopeKind": "below", "module": "network" },
+    { "no": 5, "id": "report.approve.override", "ar": "التدخل الفوقي", "type": "scoped", "scopeKind": "below", "module": "network" },
+    { "no": 6, "id": "approve.breakGlass", "ar": "كسر الزجاج عند الشغور الكامل", "type": "root", "scopeKind": "root", "module": "network" },
+    { "no": 7, "id": "report.retract", "ar": "سحب الإقرار قبل الاعتماد", "type": "scoped", "scopeKind": "exact", "module": "network" },
+    { "no": 8, "id": "report.export", "ar": "تصدير التقارير والرولّ-أب", "type": "scoped", "scopeKind": "subtree", "module": "network" },
+    { "no": 9, "id": "records.editLocked", "ar": "تعديل أسبوع مقفل", "type": "scoped", "scopeKind": "subtree", "module": "network" },
+    { "no": 10, "id": "records.correct", "ar": "التعديل التصحيحي المحكوم", "type": "root", "scopeKind": "root", "module": "network" },
+
+    { "no": 11, "id": "dailyLog.view", "ar": "عرض سجل اليوم", "type": "scoped", "scopeKind": "subtree", "module": "dailyLog" },
+    { "no": 12, "id": "dailyLog.edit", "ar": "إدخال سجل اليوم", "type": "scoped", "scopeKind": "exact", "module": "dailyLog" },
+    { "no": 13, "id": "dailyLog.attach", "ar": "رفع صور التوثيق", "type": "scoped", "scopeKind": "exact", "module": "dailyLog" },
+    { "no": 14, "id": "familyRoster.manage", "ar": "ضبط عدد طلاب الأسرة", "type": "scoped", "scopeKind": "exact", "module": "dailyLog" },
+    { "no": 15, "id": "activityCatalog.manage", "ar": "إدارة كتالوج الأنشطة وأوزانها", "type": "root", "scopeKind": "root", "module": "dailyLog" },
+
+    { "no": 16, "id": "circle.view", "ar": "عرض الحلقات وسجلاتها", "type": "scoped", "scopeKind": "subtree", "module": "circles" },
+    { "no": 17, "id": "circle.manage", "ar": "إنشاء الحلقات وإدارتها وسجلها اليومي", "type": "scoped", "scopeKind": "exact", "module": "circles" },
+    { "no": 18, "id": "circle.teach", "ar": "حلقاتي (المعلم)", "type": "personal", "scopeKind": "personal", "module": "circles" },
+    { "no": 19, "id": "circle.notes.supervise", "ar": "ملاحظات الإشراف على الحلقة", "type": "scoped", "scopeKind": "subtree", "module": "circles" },
+    { "no": 20, "id": "guardianLink.manage", "ar": "إصدار وتجديد رابط وليّ الأمر", "type": "scoped", "scopeKind": "exact", "module": "circles" },
+    { "no": 21, "id": "exam.manage", "ar": "إنشاء الاختبارات والواجبات", "type": "scoped", "scopeKind": "subtree", "module": "circles" },
+    { "no": 22, "id": "exam.take", "ar": "تسليم اختباري", "type": "personal", "scopeKind": "personal", "module": "circles" },
+
+    { "no": 23, "id": "duties.own", "ar": "المطلوب مني", "type": "personal", "scopeKind": "personal", "module": "activities" },
+    { "no": 24, "id": "duties.manage", "ar": "إنشاء النشاطات ومتابعتها", "type": "scoped", "scopeKind": "subtree", "module": "activities" },
+    { "no": 25, "id": "library.own", "ar": "مكتبتي", "type": "personal", "scopeKind": "personal", "module": "activities" },
+    { "no": 26, "id": "library.manage", "ar": "إدارة الموادّ ومصفوفة المتابعة", "type": "scoped", "scopeKind": "subtree", "module": "activities" },
+
+    { "no": 27, "id": "meetings.view", "ar": "عرض الاجتماعات والقرارات", "type": "scoped", "scopeKind": "subtree", "module": "meetings" },
+    { "no": 28, "id": "meetings.manage", "ar": "تسجيل المحاضر والقرارات", "type": "scoped", "scopeKind": "exact", "module": "meetings" },
+    { "no": 29, "id": "committees.view", "ar": "عرض اللجان وخططها", "type": "scoped", "scopeKind": "subtree", "module": "meetings" },
+    { "no": 30, "id": "committees.manage", "ar": "تشكيل اللجان وتعيين مسؤوليها", "type": "scoped", "scopeKind": "exact", "module": "meetings" },
+    { "no": 31, "id": "committee.own", "ar": "لجنتي", "type": "personal", "scopeKind": "personal", "module": "meetings" },
+
+    { "no": 32, "id": "visit.conduct", "ar": "تنفيذ زيارة إشرافية", "type": "scoped", "scopeKind": "subtree", "module": "supervision" },
+    { "no": 33, "id": "visit.approve", "ar": "اعتماد زيارة", "type": "scoped", "scopeKind": "below", "module": "supervision" },
+    { "no": 34, "id": "visit.view", "ar": "العرض القيادي للزيارات", "type": "scoped", "scopeKind": "subtree", "module": "supervision" },
+
+    { "no": 35, "id": "finance.view", "ar": "عرض الملف المالي", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 36, "id": "finance.entry", "ar": "إدخال الحركات (مُدخِل)", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 37, "id": "finance.approve", "ar": "اعتماد الصرف (معتمِد)", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 38, "id": "finance.supervise", "ar": "الاعتماد الثنائي (البتّ في المقترحات)", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 39, "id": "finance.payout", "ar": "تسجيل الصرف", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 40, "id": "ledger.journal.entry", "ar": "القيد المحاسبي اليدوي", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 41, "id": "finance.import", "ar": "الاستيراد والرصيد الافتتاحي", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 42, "id": "finance.reconcile", "ar": "المطابقة البنكية", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 43, "id": "finance.export", "ar": "تصدير الملف المالي", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 44, "id": "budget.manage", "ar": "وضع الموازنات", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 45, "id": "payroll.view", "ar": "عرض كشوف الرواتب", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 46, "id": "payroll.own", "ar": "كشف راتبي", "type": "personal", "scopeKind": "personal", "module": "finance" },
+    { "no": 47, "id": "payroll.run", "ar": "احتساب المستحقات الشهرية", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 48, "id": "payroll.approve", "ar": "إقرار الإدارة آخر الشهر", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+    { "no": 49, "id": "incentive.manage", "ar": "الحوافز الاستثنائية", "type": "scoped", "scopeKind": "subtree", "module": "finance" },
+
+    { "no": 50, "id": "box.view", "ar": "عرض الصندوق", "type": "scoped", "scopeKind": "subtree", "module": "box" },
+    { "no": 51, "id": "box.receive", "ar": "قبض (متعدد العملات)", "type": "scoped", "scopeKind": "exact", "module": "box" },
+    { "no": 52, "id": "box.spend", "ar": "صرف بفئة مغلقة", "type": "scoped", "scopeKind": "exact", "module": "box" },
+    { "no": 53, "id": "box.handover", "ar": "تسليم نازل", "type": "scoped", "scopeKind": "exact", "module": "box" },
+    { "no": 54, "id": "box.handover.acknowledge", "ar": "إقرار الاستلام", "type": "personal", "scopeKind": "personal", "module": "box" },
+    { "no": 55, "id": "box.closing.submit", "ar": "رفع الإقفال الدوري", "type": "scoped", "scopeKind": "exact", "module": "box" },
+    { "no": 56, "id": "box.closing.approve", "ar": "اعتماد الإقفال", "type": "scoped", "scopeKind": "below", "module": "box" },
+
+    { "no": 57, "id": "mosqueFinance.view", "ar": "عرض مالية المسجد", "type": "scoped", "scopeKind": "subtree", "module": "mosqueFinance" },
+    { "no": 58, "id": "mosqueFinance.manage", "ar": "تبرعات ومصروفات المسجد", "type": "scoped", "scopeKind": "exact", "module": "mosqueFinance" },
+
+    { "no": 59, "id": "custody.view", "ar": "عُهد نطاقي (اطّلاع)", "type": "scoped", "scopeKind": "subtree", "module": "custody" },
+    { "no": 60, "id": "custody.grant", "ar": "تسليم/نقل/استرداد العهدة", "type": "scoped", "scopeKind": "subtree", "module": "custody" },
+    { "no": 61, "id": "custody.own", "ar": "عُهدتي والإقرار بالاستلام", "type": "personal", "scopeKind": "personal", "module": "custody" },
+    { "no": 62, "id": "asset.manage", "ar": "سجل الأصل ومحاسبته", "type": "scoped", "scopeKind": "subtree", "module": "custody" },
+
+    { "no": 63, "id": "media.hub", "ar": "مركز الإعلام والمعرض", "type": "scoped", "scopeKind": "subtree", "module": "media" },
+    { "no": 64, "id": "media.post", "ar": "نشر تغطية وحذفها", "type": "personal", "scopeKind": "personal", "module": "media" },
+
+    { "no": 65, "id": "competition.view", "ar": "عرض المسابقة", "type": "scoped", "scopeKind": "subtree", "module": "competition" },
+    { "no": 66, "id": "competition.manage", "ar": "إنشاء المسابقة وضبط فئاتها ومراحلها وكتالوج تنقيطها", "type": "scoped", "scopeKind": "subtree", "module": "competition" },
+    { "no": 67, "id": "competition.enroll.approve", "ar": "الموافقة على مشترك", "type": "scoped", "scopeKind": "exact", "module": "competition" },
+    { "no": 68, "id": "competition.score.record", "ar": "رصد نقاط المشتركين", "type": "scoped", "scopeKind": "exact", "module": "competition" },
+
+    { "no": 69, "id": "announcement.publish", "ar": "نشر إعلان لنطاق", "type": "scoped", "scopeKind": "subtree", "module": "announcement" },
+
+    { "no": 70, "id": "users.provision", "ar": "توفير حسابات وحدتي", "type": "scoped", "scopeKind": "subtree", "module": "identity" },
+    { "no": 71, "id": "user.manage", "ar": "تعديل المستخدمين والتكاليف وإنهاؤها", "type": "scoped", "scopeKind": "subtree", "module": "identity" },
+    { "no": 72, "id": "user.role.grant.elevated", "ar": "منح الأدوار العليا", "type": "root", "scopeKind": "root", "module": "identity" },
+    { "no": 73, "id": "registration.approve", "ar": "بتّ طلبات الانضمام", "type": "scoped", "scopeKind": "subtree", "module": "identity" },
+    { "no": 74, "id": "account.status.manage", "ar": "تجميد/إلغاء/تفعيل الحساب", "type": "scoped", "scopeKind": "subtree", "module": "identity" },
+    { "no": 75, "id": "account.password.reset", "ar": "إعادة تعيين كلمة مرور", "type": "scoped", "scopeKind": "subtree", "module": "identity" },
+    { "no": 76, "id": "account.self", "ar": "ملفي وكلمة مروري والتحقق الثنائي", "type": "personal", "scopeKind": "personal", "module": "identity" },
+    { "no": 77, "id": "orgUnit.manage", "ar": "إنشاء الوحدات ونقلها وأرشفتها", "type": "scoped", "scopeKind": "subtree", "module": "identity" },
+    { "no": 78, "id": "orgUnit.manage.root", "ar": "إنشاء/تعديل الوحدات الجذرية والأقسام", "type": "root", "scopeKind": "root", "module": "identity" },
+
+    { "no": 79, "id": "admin.view", "ar": "عرض التهيئة", "type": "scoped", "scopeKind": "subtree", "module": "governance" },
+    { "no": 80, "id": "permissions.manage", "ar": "منح/حجب القدرات (التجاوزات)", "type": "scoped", "scopeKind": "subtree", "module": "governance" },
+    { "no": 81, "id": "settings.view", "ar": "عرض سجل الإعدادات", "type": "scoped", "scopeKind": "subtree", "module": "governance" },
+    { "no": 82, "id": "settings.manage", "ar": "ضبط الإعدادات الحية", "type": "scoped", "scopeKind": "subtree", "module": "governance" },
+    { "no": 83, "id": "audit.view", "ar": "عرض سجل التدقيق", "type": "scoped", "scopeKind": "subtree", "module": "governance" },
+    { "no": 84, "id": "featureFlag.manage", "ar": "مفاتيح التفعيل", "type": "root", "scopeKind": "root", "module": "governance" },
+    { "no": 85, "id": "support.impersonate_read", "ar": "الانتحال القرائي للدعم", "type": "root", "scopeKind": "root", "module": "governance" },
+    { "no": 86, "id": "system.jobs.run", "ar": "تشغيل المجدولات يدوياً", "type": "root", "scopeKind": "root", "module": "governance" },
+
+    { "no": 87, "id": "competition.result.declare", "ar": "التأهيل وإعلان الفائزين وإغلاق المسابقة", "type": "scoped", "scopeKind": "subtree", "module": "competition" }
+  ],
+  "roles": [
+    { "id": "admin", "ar": "الإدارة العليا", "rank": 0, "state": "active", "allowedUnitTypes": ["root"] },
+    { "id": "section_head", "ar": "مشرف عام القسم", "rank": 1, "state": "active", "allowedUnitTypes": ["section"] },
+    { "id": "bloc_head", "ar": "مسؤول الكتلة", "rank": 2, "state": "suspended", "allowedUnitTypes": ["bloc"] },
+    { "id": "rabita", "ar": "مسؤول منطقة", "rank": 3, "state": "active", "allowedUnitTypes": ["region"] },
+    { "id": "square", "ar": "مسؤول مربع", "rank": 4, "state": "active", "allowedUnitTypes": ["square"] },
+    { "id": "amir", "ar": "أمير المسجد", "rank": 5, "state": "active", "allowedUnitTypes": ["mosque"] },
+    { "id": "teacher", "ar": "معلّم / محفّظ", "rank": 6, "state": "active", "allowedUnitTypes": ["mosque", "circle"] },
+    { "id": "committee_head", "ar": "مسؤول لجنة", "rank": 6, "state": "active", "allowedUnitTypes": ["mosque"] },
+    { "id": "media", "ar": "مسؤول إعلام", "rank": 6, "state": "active", "allowedUnitTypes": ["root", "section", "bloc", "region", "mosque"] },
+    { "id": "finance_officer", "ar": "مسؤول ماليّ", "rank": 6, "state": "active", "allowedUnitTypes": ["root", "section", "bloc", "region"] },
+    { "id": "student", "ar": "طالب", "rank": 7, "state": "active", "allowedUnitTypes": ["mosque", "circle"] },
+    { "id": "deputy", "ar": "نائب أمير المسجد", "rank": 6, "state": "suspended", "allowedUnitTypes": ["mosque"] },
+    { "id": "secretary", "ar": "أمين سرّ المسجد", "rank": 6, "state": "suspended", "allowedUnitTypes": ["mosque"] },
+    { "id": "treasurer", "ar": "أمين صندوق المسجد", "rank": 6, "state": "suspended", "allowedUnitTypes": ["mosque"] },
+    { "id": "member", "ar": "عضو", "rank": 7, "state": "suspended", "allowedUnitTypes": ["mosque"] },
+    { "id": "participant", "ar": "مشترك", "rank": 7, "state": "suspended", "allowedUnitTypes": ["mosque"] }
+  ],
+  "matrix": {
+    "admin": [
+      "network.view", "report.view", "approve.breakGlass", "report.export", "records.editLocked",
+      "records.correct", "dailyLog.view", "activityCatalog.manage", "circle.view", "duties.own",
+      "library.own", "library.manage", "meetings.view", "committees.view", "visit.view",
+      "finance.view", "finance.supervise", "finance.export", "budget.manage", "payroll.view",
+      "payroll.own", "payroll.approve", "incentive.manage", "box.view", "mosqueFinance.view",
+      "custody.view", "media.hub", "competition.view", "competition.manage", "competition.result.declare",
+      "announcement.publish", "users.provision", "user.manage", "user.role.grant.elevated",
+      "account.status.manage", "account.password.reset", "account.self", "orgUnit.manage",
+      "orgUnit.manage.root", "admin.view", "permissions.manage", "settings.view", "settings.manage",
+      "audit.view", "featureFlag.manage", "support.impersonate_read", "system.jobs.run"
+    ],
+    "section_head": [
+      "network.view", "report.view", "report.submit", "report.approve", "report.approve.override",
+      "report.export", "records.editLocked", "dailyLog.view", "dailyLog.attach", "familyRoster.manage",
+      "circle.view", "circle.notes.supervise", "duties.own", "library.own", "library.manage",
+      "meetings.view", "committees.view", "visit.conduct", "visit.approve", "visit.view",
+      "finance.approve", "finance.export", "payroll.own", "box.view", "box.receive", "box.spend",
+      "box.handover", "box.handover.acknowledge", "box.closing.submit", "box.closing.approve",
+      "mosqueFinance.view", "custody.view", "custody.grant", "custody.own", "media.hub",
+      "competition.view", "competition.manage", "competition.result.declare", "announcement.publish",
+      "users.provision", "user.manage", "registration.approve", "account.status.manage",
+      "account.password.reset", "account.self", "orgUnit.manage", "audit.view"
+    ],
+    "rabita": [
+      "network.view", "report.view", "report.submit", "report.approve", "report.approve.override",
+      "report.export", "records.editLocked", "dailyLog.view", "dailyLog.attach", "familyRoster.manage",
+      "circle.view", "circle.notes.supervise", "duties.own", "library.own", "meetings.view",
+      "committees.view", "visit.conduct", "visit.approve", "visit.view", "finance.approve",
+      "payroll.own", "box.view", "box.receive", "box.spend", "box.handover",
+      "box.handover.acknowledge", "box.closing.submit", "box.closing.approve", "mosqueFinance.view",
+      "custody.view", "custody.grant", "custody.own", "media.hub", "competition.view",
+      "competition.manage", "competition.result.declare", "announcement.publish", "users.provision",
+      "user.manage", "registration.approve", "account.status.manage", "account.password.reset",
+      "account.self", "orgUnit.manage", "audit.view"
+    ],
+    "square": [
+      "network.view", "report.view", "report.submit", "report.approve", "report.export",
+      "dailyLog.view", "dailyLog.attach", "familyRoster.manage", "circle.view",
+      "circle.notes.supervise", "duties.own", "library.own", "meetings.view", "committees.view",
+      "visit.conduct", "visit.approve", "visit.view", "payroll.own", "box.view", "box.receive",
+      "box.spend", "box.handover", "box.handover.acknowledge", "box.closing.submit",
+      "box.closing.approve", "mosqueFinance.view", "custody.view", "custody.grant", "custody.own",
+      "media.hub", "competition.view", "competition.manage", "competition.result.declare",
+      "announcement.publish", "users.provision", "registration.approve", "account.self"
+    ],
+    "amir": [
+      "report.view", "report.submit", "report.approve", "report.retract", "dailyLog.view",
+      "dailyLog.edit", "dailyLog.attach", "familyRoster.manage", "circle.view", "circle.manage",
+      "circle.notes.supervise", "guardianLink.manage", "exam.manage", "duties.own", "duties.manage",
+      "library.own", "meetings.view", "meetings.manage", "committees.view", "committees.manage",
+      "visit.view", "payroll.own", "box.view", "box.receive", "box.spend", "box.handover",
+      "box.handover.acknowledge", "box.closing.submit", "mosqueFinance.view", "mosqueFinance.manage",
+      "custody.view", "custody.grant", "custody.own", "competition.view", "competition.manage",
+      "competition.result.declare", "competition.enroll.approve", "competition.score.record",
+      "announcement.publish", "users.provision", "registration.approve", "account.self"
+    ],
+    "teacher": [
+      "circle.teach", "guardianLink.manage", "exam.manage", "duties.own", "duties.manage",
+      "library.own", "payroll.own", "custody.own", "account.self"
+    ],
+    "committee_head": [
+      "committee.own", "duties.own", "library.own", "payroll.own", "custody.own", "account.self"
+    ],
+    "media": [
+      "duties.own", "library.own", "payroll.own", "custody.own", "media.hub", "media.post",
+      "account.self"
+    ],
+    "finance_officer": [
+      "duties.own", "library.own", "finance.view", "finance.entry", "finance.payout",
+      "ledger.journal.entry", "finance.import", "finance.reconcile", "finance.export",
+      "budget.manage", "payroll.view", "payroll.own", "payroll.run", "box.view", "custody.view",
+      "custody.grant", "custody.own", "asset.manage", "account.self"
+    ],
+    "student": ["exam.take", "duties.own", "library.own", "account.self"],
+
+    "bloc_head": [
+      "network.view", "report.view", "report.submit", "report.approve", "report.approve.override",
+      "report.export", "records.editLocked", "dailyLog.view", "dailyLog.attach", "familyRoster.manage",
+      "circle.view", "circle.notes.supervise", "duties.own", "library.own", "meetings.view",
+      "committees.view", "visit.conduct", "visit.approve", "visit.view", "finance.approve",
+      "payroll.own", "box.view", "box.receive", "box.spend", "box.handover",
+      "box.handover.acknowledge", "box.closing.submit", "box.closing.approve", "mosqueFinance.view",
+      "custody.view", "custody.grant", "custody.own", "media.hub", "competition.view",
+      "competition.manage", "competition.result.declare", "announcement.publish", "users.provision",
+      "user.manage", "registration.approve", "account.status.manage", "account.password.reset",
+      "account.self", "orgUnit.manage", "audit.view"
+    ],
+    "deputy": [
+      "report.view", "report.submit", "report.retract", "dailyLog.view", "dailyLog.edit",
+      "dailyLog.attach", "familyRoster.manage", "circle.view", "circle.manage",
+      "circle.notes.supervise", "guardianLink.manage", "exam.manage", "duties.own", "duties.manage",
+      "library.own", "meetings.view", "meetings.manage", "committees.view", "committees.manage",
+      "visit.view", "payroll.own", "box.view", "box.receive", "box.spend", "box.handover",
+      "box.handover.acknowledge", "box.closing.submit", "mosqueFinance.view", "mosqueFinance.manage",
+      "custody.view", "custody.grant", "custody.own", "competition.view", "competition.enroll.approve",
+      "competition.score.record", "announcement.publish", "account.self"
+    ],
+    "secretary": [
+      "report.view", "dailyLog.view", "dailyLog.edit", "meetings.view", "meetings.manage",
+      "duties.own", "library.own", "payroll.own", "custody.own", "account.self"
+    ],
+    "treasurer": [
+      "mosqueFinance.view", "mosqueFinance.manage", "box.view", "duties.own", "library.own",
+      "payroll.own", "custody.own", "account.self"
+    ],
+    "member": ["duties.own", "library.own", "account.self"],
+    "participant": ["duties.own", "library.own", "account.self"]
+  },
+  "provisionRules": {
+    "$comment": "SPEC_authorization §١.٦ — الشروط الخمسة",
+    "reservedRoles": ["admin", "section_head"],
+    "reservedRolesCapability": "user.role.grant.elevated",
+    "provisionCapability": "users.provision",
+    "unitTypeAllowedRoles": {
+      "root": ["admin", "finance_officer", "media"],
+      "section": ["section_head", "finance_officer", "media"],
+      "bloc": ["bloc_head", "finance_officer", "media"],
+      "region": ["rabita", "finance_officer", "media"],
+      "square": ["square"],
+      "mosque": ["amir", "teacher", "committee_head", "media", "deputy", "secretary", "treasurer", "member", "student", "participant"],
+      "circle": ["teacher", "student"]
+    }
+  },
+  "publicDeclaredWhitelist": {
+    "$comment": "CR-001 §ج — قائمة بيضاء مغلقة؛ أي إضافة تغيير جوهري بـCR. تحرسها G16.",
+    "ceiling": 2,
+    "routes": [
+      { "id": "competition.publicEnroll", "ar": "التسجيل العام في المسابقة", "cr": "CR-001", "writesPendingEntity": "competition_enrollment" },
+      { "id": "registration.publicRequest", "ar": "طلب الانضمام العام", "cr": "قائم قبل CR-001 (ق-٣٢)", "writesPendingEntity": "registration_request" }
+    ]
+  }
+}

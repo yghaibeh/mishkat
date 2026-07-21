@@ -1,0 +1,24 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid/v2
+
+ ❯ tests/world/canonical-world.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/world/canonical-world.test.ts [ tests/world/canonical-world.test.ts ]
+Error: Cannot find module '../../src/../tests/fixtures/canonical-world.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/world/canonical-world.test.ts
+ ❯ tests/world/canonical-world.test.ts:2:1
+      1| import { describe, it, expect } from "vitest"
+      2| import { buildCanonicalWorld } from "../../src/../tests/fixtures/canon…
+       | ^
+      3| import { ROLE_IDS, ROLES } from "../../src/authorization/generated/rol…
+      4| import { isValidScopePath, unitScope } from "../../src/authorization/s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  19:31:18
+   Duration  68ms (transform 11ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

@@ -1,0 +1,24 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid/v2
+
+ ❯ tests/engine/can.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/engine/can.test.ts [ tests/engine/can.test.ts ]
+Error: Cannot find module '../../src/authorization/can.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/v2/tests/engine/can.test.ts
+ ❯ tests/engine/can.test.ts:2:1
+      1| import { describe, it, expect } from "vitest"
+      2| import { can } from "../../src/authorization/can.js"
+       | ^
+      3| import type { Actor, Assignment, Override, DecisionContext } from "../…
+      4| import { unitScope, rootScope, selfScope, NO_SCOPE } from "../../src/a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  19:19:50
+   Duration  79ms (transform 15ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+
