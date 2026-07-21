@@ -88,6 +88,32 @@ export const AMIR_HOME = {
   "amirHome.scopeNote": "الأرقام على مسجدك وحده",
 } as const
 
+/**
+ * نواةُ الدفتر المحاسبيّ — `SPEC_finance_ledger` §٦.٤ (قب-٨).
+ * **الوجهُ يتبسّط**: مفرداتُ المالي البسيط («قبضتُ/دفعتُ/سلّمتُ»، «هل الدفتر سليم؟»)
+ * لا مصطلحاتُ المحاسبة (مدين/دائن/يومية) — وهي خلف مدخلٍ هادئٍ واحد.
+ */
+export const LEDGER = {
+  "ledger.heading": "الدفتر",
+  "ledger.scopeNote": "الأرقام على نطاقك وحده",
+  "ledger.healthQuestion": "هل الدفتر سليم؟",
+  "ledger.healthBalanced": "متوازنٌ قرشاً بقرش",
+  "ledger.healthBroken": "غيرُ متوازن — راجع مسؤولك فوراً",
+  "ledger.balances": "أرصدةُ نطاقك بالعملات",
+  "ledger.movements": "حركاتُ الدفتر",
+  "ledger.voucherNo": "رقم السند",
+  "ledger.amount": "المبلغ",
+  "ledger.recordOperation": "تسجيلُ عملية: قبضتُ · دفعتُ · سلّمتُ",
+  "ledger.proposeJournal": "اقتراحُ قيدٍ محاسبيّ",
+  "ledger.deductions": "الخصومات",
+  "ledger.emptyOwner": "لم تُسجَّل حركةٌ بعد — ابدأ بتسجيل عملية",
+  "ledger.approvalsHeading": "مقترحاتٌ بانتظار بتّك",
+  "ledger.approvalRequester": "مَن اقترحها",
+  "ledger.approve": "اعتماد",
+  "ledger.reject": "رفضٌ بسببٍ يصل المقترِح",
+  "ledger.emptyApprovals": "لا مقترحَ ينتظر بتَّك — لا شيء عليك الآن",
+} as const
+
 /** الشجرة والحسابات (وحدة org القائمة). */
 export const ORG = {
   "org.treeHeading": "الشجرة التنظيمية",

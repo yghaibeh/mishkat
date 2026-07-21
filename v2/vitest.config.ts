@@ -15,6 +15,15 @@ export default defineConfig({
         lines: 85,
         branches: 85,
         "src/authorization/**": { lines: 100, branches: 100, functions: 100, statements: 100 },
+        // **المال لا يُساهَل فيه** (T7): خدماتُ الدفتر عتبتُها ٩٥٪ أسطراً وأفرعاً.
+        "src/features/ledger/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        // وطبقةُ بياناتِه معها — فثوابتُ الذرّية والتكامل المرجعيّ تعيش هناك.
+        "src/features/ledger/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
