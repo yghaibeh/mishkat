@@ -24,10 +24,32 @@
 - **التمكين المفوَّض ومسارا الإلحاق** (`services/provisioning.ts`): التوفير من فوق
   (`users.provision`) وطلب التسجيل من تحت (`registration.approve` + المسار العام) — كلاهما
   ينتهي بإسنادٍ واحد، **بمصفوفة §١.٦ عبر `canProvision` وحدها (صفر فحص دور)**، ذرّياً (ع-٣٣).
-- **الخادم** (`server/endpoints.ts`): تسع نقاطٍ مُعلَنة؛ النطاق يُشتقّ من الكيان المخزَّن،
-  والكيانُ الغائب ⇒ `NO_SCOPE` ⇒ رفض.
+- **الخادم** (`server/endpoints.ts`): تسع نقاطٍ مُعلَنة (مُسمّاةٌ في §سطوح الوحدة أدناه)؛
+  النطاق يُشتقّ من الكيان المخزَّن، والكيانُ الغائب ⇒ `NO_SCOPE` ⇒ رفض.
 - **الشاشات** (`screens/`): شجرة · إنشاء حساب · قائمة إسنادات — تعرض قدرات الخادم المحسوبة
   فقط (المادة ٤/٦)، وتحرسها **مصفوفة الشاشات** (الطبقة الثانية، `tests/screens/`).
+
+## سطوح الوحدة المُعلَنة — دوالُّ الخادم التسع (CR-007: العقد يُسمّي سطحَه)
+
+**كلُّ سطحٍ في الكود مذكورٌ هنا باسمه وقدرته** — وG13 تُطابق الاثنين بالمحتوى لا بوقت التعديل.
+النطاق يُشتقّ في كلٍّ من **الكيان المخزَّن** (لا من مدخل العميل)، والغائبُ ⇒ `NO_SCOPE` ⇒ رفض.
+
+| # | الدالة المُعلَنة | القدرة | ما تفعله |
+|---|---|---|---|
+| ١ | `orgUnit.create` | `orgUnit.manage` | إنشاء وحدة (المعرّف هو المقطع ت-٢، وراثة القسم ق-٢٠) |
+| ٢ | `orgUnit.move` | `orgUnit.manage` | تحريك وحدة وإعادة اشتقاق النسل ذرّياً |
+| ٣ | `orgUnit.archive` | `orgUnit.manage` | أرشفةٌ = تعطيلٌ منطقيّ يرفع الحِقبة |
+| ٤ | `users.provision` | `users.provision` | التمكين من فوق (مصفوفة §١.٦ عبر `canProvision`) |
+| ٥ | `registration.approve` | `registration.approve` | اعتماد طلب التسجيل من تحت (ع-٣٢) |
+| ٦ | `registration.publicRequest` | `PUBLIC_DECLARED` | المسار العام المعلن — في القائمة البيضاء (قب-١٣/CR-001 §ج، حارسها G16) |
+| ٧ | `assignment.end` | `user.manage` | إنهاء التكليف يقطع فوراً (ق-٢٤) — لا للمربع/الأمير (قب-١١/ق-م٢) |
+| ٨ | `account.setStatus` | `account.status.manage` | حالة الحساب: فعّال/موقوف/ملغى (ق-٢٢) وإبطالٌ لحظيّ برفع `sessionEpoch` (ق-٢٣) |
+| ٩ | `account.resetPassword` | `account.password.reset` | إعادة تعيين كلمة المرور لحسابٍ في نطاق الفاعل |
+
+**القدرات التي تستهلكها الوحدة** (وهي عينُ `SCREEN_SURFACE_CAPS` في `screens/caps.ts`):
+`network.view` · `orgUnit.manage` · `users.provision` · `user.manage` · `account.status.manage` ·
+`registration.approve` · `account.password.reset` — سبعٌ لا ثامنَ لها، ومصدرُ تعريفها
+[`SPEC_authorization.md`](../../../../rebuild/specs/SPEC_authorization.md) §٥.١ وحده.
 
 ## عقود الشاشات (دخلت سياج الواجهة — T5)
 

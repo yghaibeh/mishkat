@@ -102,6 +102,18 @@ const PROOFS = [
     content: `export const points = 1\n`,
   },
   {
+    gate: "G13", script: "g13-spec-present.mjs",
+    what: "**دالة خادم مُعلَنة غير مذكورة في مواصفة وحدتها** (سطحٌ خارج عقده — CR-007)",
+    file: "src/features/org/server/__violation__.server.ts",
+    content: `import { defineServerFn } from "../../../server/defineServerFn.js"\n\nexport const ghostFn = defineServerFn({\n  name: "orgUnit.ghost",\n  capability: "orgUnit.manage",\n  intent: "write",\n  audit: "orgUnit.ghost",\n  handler: async () => undefined,\n})\n`,
+  },
+  {
+    gate: "G13", script: "g13-spec-present.mjs",
+    what: "**مواصفةٌ بلا إسناد قرار** (لا قب- ولا CR- ولا مواصفةٌ حاكمة — CR-007)",
+    file: "src/features/points/SPEC.md",
+    content: `# وحدة الميزة: النقاط (points)\n\nوحدةٌ تحسب نقاط الأسبوع وتعرضها. تصف نفسها سرداً حسناً وتُطيل، لكنها **لا تستند إلى أي قرارٍ**\nولا إلى أي طلب تغييرٍ ولا إلى عقدٍ حاكمٍ في دليل المواصفات — فهي وصفٌ لا عقد.\n\n## ما تفعله الوحدة\n\nتجمع مدخلات السجل اليومي وتحوّلها نقاطاً، ثم تعرض حصيلة الأسبوع في بطاقةٍ واحدة.\nهذا النصّ طويلٌ بما يكفي لتجاوز حدّ «أقصر من أن تكون عقداً»، وهذا مقصودٌ في الزرع:\nالمخالفةُ المطلوب اصطيادها هي **غياب الإسناد** لا قِصَر النصّ.\n`,
+  },
+  {
     gate: "G14", script: "g14-no-hard-numbers.mjs",
     what: "رقم تشغيلي صلب في طبقة الخدمات",
     file: "src/services/__violation__.ts",
