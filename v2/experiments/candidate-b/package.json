@@ -1,0 +1,12 @@
+{
+  "name": "mishkat-exp-candidate-b",
+  "private": true,
+  "type": "module",
+  "description": "نموذج قياس المرشّح (ب): Hono + جزيرة — إصدارات مثبّتة حرفياً لإعادة التشغيل",
+  "dependencies": {
+    "hono": "4.12.31"
+  },
+  "devDependencies": {
+    "vite": "7.3.1"
+  }
+}
