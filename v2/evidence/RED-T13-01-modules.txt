@@ -1,0 +1,20 @@
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/features/media/uploads.test.ts [ tests/features/media/uploads.test.ts ]
+Error: Cannot find module '../../../src/features/media/server/endpoints.js' imported from /Users/muhammad/alraqeem/projects/influential_masjid/.claude/worktrees/t13-media/v2/tests/features/media/uploads.test.ts
+ ❯ tests/features/media/uploads.test.ts:8:1
+      6|  */
+      7| import { describe, it, expect } from "vitest"
+      8| import { makeMediaEndpoints } from "../../../src/features/media/server…
+       | ^
+      9| import { clearRegistryForTests } from "../../../src/server/defineServe…
+     10| import { createSettingsResolver } from "../../../src/settings/resolver…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  10 failed (10)
+      Tests  no tests
+   Start at  02:16:20
+   Duration  112ms (transform 270ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+
