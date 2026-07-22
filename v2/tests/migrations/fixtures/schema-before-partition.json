@@ -1,0 +1,344 @@
+[
+  {
+    "name": "_migrations",
+    "columns": [
+      "name:text:notnull",
+      "applied_at:int:notnull"
+    ],
+    "primaryKey": [
+      "name"
+    ],
+    "appendOnly": true,
+    "infrastructure": true
+  },
+  {
+    "name": "org_units",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "type:text:notnull",
+      "label_ar:text:notnull",
+      "parent_id:text:null",
+      "section:text:null",
+      "archived:int:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "org_accounts",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "person_id:text:notnull",
+      "username:text:notnull",
+      "status:text:notnull",
+      "session_epoch:int:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "person_id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "org_assignments",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "person_id:text:notnull",
+      "role_id:text:notnull",
+      "unit_id:text:notnull",
+      "start_date:int:notnull",
+      "end_date:int:null",
+      "approval_status:text:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "org_requests",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "person_id:text:notnull",
+      "username:text:notnull",
+      "requested_role_id:text:notnull",
+      "requested_unit_id:text:notnull",
+      "status:text:notnull",
+      "origin:text:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "ledger_accounts",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "ar:text:notnull",
+      "kind:text:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "funds",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "ar:text:notnull",
+      "restricted:int:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "ledger_units",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "journal_entries",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "voucher_no:text:notnull",
+      "voucher_seq:int:notnull",
+      "at:int:notnull",
+      "memo_ar:text:notnull",
+      "source_type:text:notnull",
+      "source_id:text:notnull",
+      "posting_key:text:null",
+      "reversal_of:text:null",
+      "reversed_by:text:null",
+      "reason_ar:text:null",
+      "posted_by:text:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": true,
+    "infrastructure": false
+  },
+  {
+    "name": "journal_lines",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "entry_id:text:notnull",
+      "account_id:text:notnull",
+      "fund_id:text:null",
+      "currency:text:notnull",
+      "debit:int:notnull",
+      "credit:int:notnull",
+      "kind:text:notnull",
+      "deduction_kind:text:null"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": true,
+    "infrastructure": false
+  },
+  {
+    "name": "active_posting_keys",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "posting_key:text:notnull",
+      "entry_id:text:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "posting_key"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "fund_balances",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "fund_id:text:notnull",
+      "currency:text:notnull",
+      "balance:int:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "unit_path",
+      "fund_id",
+      "currency"
+    ],
+    "appendOnly": true,
+    "infrastructure": false
+  },
+  {
+    "name": "finance_actions",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "kind:text:notnull",
+      "payload:text:notnull",
+      "requested_by:text:notnull",
+      "requested_at:int:notnull",
+      "status:text:notnull",
+      "decided_by:text:null",
+      "decided_at:int:null",
+      "reason_ar:text:null",
+      "result_entry_id:text:null",
+      "failure_code:text:null"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "custody_units",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  },
+  {
+    "name": "custody_assets",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "label_ar:text:notnull",
+      "serial_ar:text:null",
+      "note_ar:text:null",
+      "registered_by:text:notnull",
+      "registered_at:int:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": true,
+    "infrastructure": false
+  },
+  {
+    "name": "custody_moves",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "id:text:notnull",
+      "asset_id:text:notnull",
+      "seq:int:notnull",
+      "kind:text:notnull",
+      "from_person_id:text:null",
+      "to_person_id:text:null",
+      "condition_ar:text:notnull",
+      "note_ar:text:null",
+      "at:int:notnull",
+      "by_person_id:text:notnull",
+      "acknowledged_by:text:null",
+      "acknowledged_at:int:null"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "id"
+    ],
+    "appendOnly": true,
+    "infrastructure": false
+  },
+  {
+    "name": "audit_log",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "source:text:notnull",
+      "seq:int:notnull",
+      "at:int:notnull",
+      "actor_person_id:text:notnull",
+      "action:text:notnull",
+      "capability:text:null",
+      "target_type:text:null",
+      "target_id:text:notnull",
+      "reason:text:null",
+      "scope_exact:int:notnull",
+      "actor_roles_at_time:text:null",
+      "impersonated_by:text:null",
+      "decision:text:null",
+      "reason_code:text:null",
+      "request_id:text:null",
+      "before:text:null",
+      "after:text:null"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "source",
+      "seq"
+    ],
+    "appendOnly": true,
+    "infrastructure": false
+  },
+  {
+    "name": "sequences",
+    "columns": [
+      "tenant_id:text:notnull",
+      "unit_path:text:notnull",
+      "name:text:notnull",
+      "value:int:notnull"
+    ],
+    "primaryKey": [
+      "tenant_id",
+      "name"
+    ],
+    "appendOnly": false,
+    "infrastructure": false
+  }
+]
