@@ -72,6 +72,20 @@ export default defineConfig({
         // اشتقاقٌ لا عدّاد ⇒ خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها (والعتبةُ أرضيةٌ تصعد).
         "src/features/circles/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
         "src/features/circles/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والإشعارُ يخرج من النظام إلى هاتفٍ خارجه** (T21): مَن يُشعَر جوابُ المحرّك (ق-١١/ق-٢٥)،
+        // وخطؤه لا يُسترجَع بعد أن يصل — فخدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها (والعتبةُ أرضيةٌ تصعد).
+        "src/features/notifications/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        "src/features/notifications/data/**": {
+          lines: 95,
+          branches: 90,
+          functions: 95,
+          statements: 95,
+        },
       },
     },
   },
