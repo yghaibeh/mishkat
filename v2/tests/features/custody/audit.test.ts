@@ -26,17 +26,17 @@ describe("ق-٨٣ — التدقيقُ يلازم كلَّ حركةِ حيازة
       conditionAr: "سليم",
     })
 
-    const moves = store.audit().filter((a) => a.action === "custody.move.record")
+    const moves = store.audit.all().filter((a) => a.action === "custody.move.record")
     expect(moves).toHaveLength(2)
-    expect(moves[0]?.beforeAr).toContain("inUnit")
-    expect(moves[0]?.afterAr).toContain("u-teacher")
+    expect(moves[0]?.before).toContain("inUnit")
+    expect(moves[0]?.after).toContain("u-teacher")
     // «من كان يحوزها» محفوظٌ في قيد التدقيق نفسِه لا في السلسلة وحدها.
-    expect(moves[1]?.beforeAr).toContain("u-teacher")
-    expect(moves[1]?.afterAr).toContain("u-committee-head")
+    expect(moves[1]?.before).toContain("u-teacher")
+    expect(moves[1]?.after).toContain("u-committee-head")
     for (const entry of moves) {
       expect(entry.actorPersonId).toBe("u-amir")
       expect(entry.targetId).toBe(assetId)
-      expect(entry.scopePath).toBe("/men/homs/sq2/khalid/")
+      expect(entry.unitPath).toBe("/men/homs/sq2/khalid/")
     }
   })
 
@@ -51,7 +51,7 @@ describe("ق-٨٣ — التدقيقُ يلازم كلَّ حركةِ حيازة
         conditionAr: "حال",
       })
     }
-    expect(store.audit().filter((a) => a.action === "custody.move.record")).toHaveLength(
+    expect(store.audit.all().filter((a) => a.action === "custody.move.record")).toHaveLength(
       store.moves().length,
     )
   })
@@ -59,7 +59,7 @@ describe("ق-٨٣ — التدقيقُ يلازم كلَّ حركةِ حيازة
   it("والحركةُ المرفوضةُ لا تترك قيداً — الارتدادُ يشمل التدقيق", () => {
     const store = seedCustodyStore()
     const assetId = seedAsset(store)
-    const before = store.audit().length
+    const before = store.audit.all().length
     const rejected = recordCustodyMove(store, custodyContext("u-amir"), {
       assetId,
       action: "hand",
@@ -67,7 +67,7 @@ describe("ق-٨٣ — التدقيقُ يلازم كلَّ حركةِ حيازة
       conditionAr: "سليم",
     })
     expect(rejected.ok).toBe(false)
-    expect(store.audit()).toHaveLength(before)
+    expect(store.audit.all()).toHaveLength(before)
     expect(store.moves()).toHaveLength(0)
   })
 
@@ -85,9 +85,9 @@ describe("ق-٨٣ — التدقيقُ يلازم كلَّ حركةِ حيازة
       moveId: handed.value.id,
       personId: "u-teacher",
     })
-    const entry = store.audit().find((a) => a.action === "custody.receipt.acknowledge")
+    const entry = store.audit.all().find((a) => a.action === "custody.receipt.acknowledge")
     expect(entry?.actorPersonId).toBe("u-teacher")
-    expect(entry?.afterAr).toContain("held")
+    expect(entry?.after).toContain("held")
   })
 })
 
@@ -104,22 +104,22 @@ describe("ق-٨٣ — والتدقيقُ يلازم تعديلَ الأصل كذ
       fields: { labelAr: "كاميرا احترافية" },
     })
 
-    const actions = store.audit().map((a) => a.action)
+    const actions = store.audit.all().map((a) => a.action)
     expect(actions).toContain("custody.asset.register")
     expect(actions).toContain("custody.asset.amend")
-    const amend = store.audit().find((a) => a.action === "custody.asset.amend")
-    expect(amend?.beforeAr).toContain("كاميرا")
-    expect(amend?.afterAr).toContain("كاميرا احترافية")
+    const amend = store.audit.all().find((a) => a.action === "custody.asset.amend")
+    expect(amend?.before).toContain("كاميرا")
+    expect(amend?.after).toContain("كاميرا احترافية")
   })
 
   it("**والتعديلُ المرفوض لا يُدوَّن ولا يُغيّر** — لا أثرَ لمحاولةٍ مردودة", () => {
     const store = seedCustodyStore()
     const assetId = seedAsset(store)
-    const before = store.audit().length
+    const before = store.audit.all().length
     amendAsset(store, custodyContext("u-finance"), {
       assetId,
       fields: { holderPersonId: "u-teacher" },
     })
-    expect(store.audit()).toHaveLength(before)
+    expect(store.audit.all()).toHaveLength(before)
   })
 })

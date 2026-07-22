@@ -174,9 +174,39 @@ describe("لهجةُ القاسم المشترك — ع-٣", () => {
     }
   })
 
-  it("لا مخططَ لوحدةٍ خارج وحدتَي الريادة — الثلاث عشرة الباقية لـT26", () => {
-    const pilot =
-      /^(_migrations|org_|ledger_|journal_|finance_actions|funds|fund_balances|audit_log|active_posting_keys|sequences)/
-    for (const spec of TABLES) expect(`${spec.name}:${pilot.test(spec.name)}`).toBe(`${spec.name}:true`)
+  /**
+   * **بدَلُ حارسٍ انقضى موضوعُه** — كان هنا توكيدٌ يُثبت أن «لا مخططَ لوحدةٍ خارج وحدتَي
+   * الريادة»، وهو **قائمةُ بادئاتٍ تُسرد**، وموضوعُه ينقضي بأوّل وحدةٍ تُنقل في T26-ب
+   * (وقد نُقلت `custody`). فسردُها كان يوجب على **كلٍّ من السبع الباقية** تحريرَ هذا الملفّ
+   * — أي سبعةَ تعارضاتِ دمجٍ في موجةٍ متوازية، وهو عينُ ما يحذّر منه CR-011/قب-٣٦.
+   *
+   * فاستُبدل بثابتٍ **أقوى وأدوم ويشتقّ قائمتَه**: لا جدولَ في المخطط بلا مالكٍ معلن.
+   * جدولٌ يُضاف ولا يملكه مستودعٌ **لا يُحمَّل ولا يُقذف** — أي مخططٌ ميّتٌ يوهم بأن الوحدة
+   * منقولة؛ ومستودعٌ يطلب جدولاً بلا مخطط تُرمى وحدةُ عمله. الطرفان محروسان هنا **بلا سردٍ**.
+   */
+  it("كلُّ جدولٍ في المخطط **يملكه مستودعٌ معلن** — والقائمةُ مشتقّةٌ من مجلد المستودعات", async () => {
+    const { readdirSync, readFileSync } = await import("node:fs")
+    const { dirname, join } = await import("node:path")
+    const { fileURLToPath } = await import("node:url")
+    const dir = join(dirname(fileURLToPath(import.meta.url)), "../../src/db/repositories")
+
+    const claimed = new Set<string>()
+    let factories = 0
+    for (const file of readdirSync(dir).filter((f) => f.endsWith(".ts"))) {
+      const source = readFileSync(join(dir, file), "utf8")
+      for (const factory of source.matchAll(/export function (persistent\w+)\s*\(/g)) {
+        factories += 1
+        const block = /\n\s*tables:\s*\[([\s\S]*?)\n\s*\],/.exec(source.slice(factory.index))
+        expect(`${factory[1]}:${block !== null}`).toBe(`${factory[1]}:true`)
+        // مدخلٌ نصّيٌّ في سطره، أو مُطالبةٌ بـ`table:` — والصنفان لا ثالثَ لهما في العقد.
+        for (const bare of block![1]!.matchAll(/^\s*"(\w+)",/gm)) claimed.add(bare[1]!)
+        for (const claim of block![1]!.matchAll(/table:\s*"(\w+)"/g)) claimed.add(claim[1]!)
+      }
+    }
+    expect(factories).toBeGreaterThan(0)
+
+    const declared = TABLES.filter((t) => !t.infrastructure).map((t) => t.name)
+    expect([...claimed].filter((t) => !declared.includes(t)).sort()).toEqual([])
+    expect(declared.filter((t) => !claimed.has(t)).sort()).toEqual([])
   })
 })

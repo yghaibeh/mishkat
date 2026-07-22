@@ -114,15 +114,20 @@ export function recordCustodyMove(
       acknowledgedAt: null,
     })
     const after = assetStateOf(store, asset.id)!
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: ctx.actorPersonId,
       action: "custody.move.record",
-      scopePath: asset.unitPath,
+      // **النطاقُ يُقال ولا يُشتقّ** (CR-027): موطنُ الأصل التنظيميّ — ومَن يكتب القيدَ
+      // يعرف على أيِّ وحدةٍ وقع الحدث. ولا يبلغ الجذرَ أبداً فلا يقترب من الحَجْر المعلن.
+      unitPath: asset.unitPath,
+      capability: null,
+      targetType: "asset",
       targetId: asset.id,
+      reason: null,
       // **قبل/بعد** بالحائز والحالة معاً — «من كان يحوزها» لا يضيع (ق-٨٣).
-      beforeAr: holdingLabel(state),
-      afterAr: holdingLabel(after),
+      before: holdingLabel(state),
+      after: holdingLabel(after),
     })
     return custodyOk(store.getMove(id)!)
   })
@@ -153,14 +158,17 @@ export function acknowledgeReceipt(
     const before = assetStateOf(store, move.assetId)!
     store.stampReceipt(move.id, input.personId, ctx.now)
     const after = assetStateOf(store, move.assetId)!
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: input.personId,
       action: "custody.receipt.acknowledge",
-      scopePath: before.unitPath,
+      unitPath: before.unitPath,
+      capability: null,
+      targetType: "asset",
       targetId: move.assetId,
-      beforeAr: holdingLabel(before),
-      afterAr: holdingLabel(after),
+      reason: null,
+      before: holdingLabel(before),
+      after: holdingLabel(after),
     })
     return custodyOk(store.getMove(move.id)!)
   })

@@ -38,10 +38,14 @@ function collect(entries: readonly SqlRow[], name: string): [string, ReadonlyMap
 }
 
 /**
- * صفُّ التدقيق — **شكلُ `AuditEntry` المعلن حقلاً بحقل** (`contracts.ts`). والحقولُ الستةُ
- * الأخيرة تبقى `NULL` اليوم لأن **لا مُستدعِيَ يملكها بعد** (الأدوارُ لحظتها، والانتحال،
- * والقرار، ورمزُ السبب، ومعرّفُ الطلب، والحمولة قبل/بعد) — وعمودُها موجودٌ منذ الهجرة
- * الأولى عمداً: إضافتُه لاحقاً إلى أكبر جدولٍ في القاعدة هي الهجرةُ التي نتجنّبها.
+ * صفُّ التدقيق — **شكلُ `AuditEntry` المعلن حقلاً بحقل** (`contracts.ts`). والحقولُ
+ * الأربعةُ الأخيرة تبقى `NULL` اليوم لأن **لا مُستدعِيَ يملكها بعد** (الأدوارُ لحظتها،
+ * والانتحال، والقرار، ورمزُ السبب، ومعرّفُ الطلب) — وعمودُها موجودٌ منذ الهجرة الأولى
+ * عمداً: إضافتُه لاحقاً إلى أكبر جدولٍ في القاعدة هي الهجرةُ التي نتجنّبها.
+ *
+ * **و`before`/`after` صار لهما كاتبٌ في T26-ب-١**: ق-٨٣ يوجب أن يحمل قيدُ العُهد لقطتَي
+ * الحال قبل الحركة وبعدها — فالعمودان اللذان انتُظرا يُملآن الآن، وهذا بعينه ما جعل
+ * تركَهما في الهجرة الأولى قراراً صائباً لا احتياطاً زائداً.
  */
 function auditRow(record: AuditEntryRecord): SqlRow {
   return {
@@ -62,8 +66,8 @@ function auditRow(record: AuditEntryRecord): SqlRow {
     decision: null,
     reason_code: null,
     request_id: null,
-    before: null,
-    after: null,
+    before: record.before,
+    after: record.after,
   }
 }
 
@@ -105,6 +109,8 @@ export function persistentAudit(journal: AuditJournal): PersistentStore {
           targetType: readTextOrNull(row, "target_type") ?? "",
           targetId: readText(row, "target_id"),
           reason: readTextOrNull(row, "reason"),
+          before: readTextOrNull(row, "before"),
+          after: readTextOrNull(row, "after"),
         })),
       )
 
