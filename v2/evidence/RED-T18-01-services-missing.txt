@@ -1,0 +1,40 @@
+
+ FAIL  tests/features/tahfeezLog/single-source.test.ts > **ب-٢٨/٧ — التعلّقُ بنموذج T16 لا استنساخُه** > **وكاتبُ الجلسة واحدٌ** (`services/sessions.ts`) — لا مسارَ ثانٍ يكتب يوماً
+AssertionError: expected [] to deeply equal [ 'services/sessions.ts' ]
+
+- Expected
++ Received
+
+- [
+-   "services/sessions.ts",
+- ]
++ []
+
+ ❯ tests/features/tahfeezLog/single-source.test.ts:106:21
+    104|       .filter((f) => /\.upsertSession\s*\(/.test(code(f)))
+    105|       .map(within)
+    106|     expect(writers).toEqual(["services/sessions.ts"])
+       |                     ^
+    107|   })
+    108| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/features/tahfeezLog/single-source.test.ts > **٨/بنيوياً — صفر عدّادٍ مخزَّن** للتقدّم أو الحضور > **ولا رقمَ تشغيليٍّ صلبٌ في الخدمات** (G14 نظيراً): كلُّ حدٍّ ونسبةٍ من سجل الإعدادات
+AssertionError: expected 0 to be greater than 0
+ ❯ tests/features/tahfeezLog/single-source.test.ts:130:29
+    128|   it("**ولا رقمَ تشغيليٍّ صلبٌ في الخدمات** (G14 نظيراً): كلُّ حدٍّ ون…
+    129|     const services = sourceFiles(UNIT_DIR).filter((f) => within(f).sta…
+    130|     expect(services.length).toBeGreaterThan(0)
+       |                             ^
+    131|     const offenders: string[] = []
+    132|     for (const file of services) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  7 failed (7)
+      Tests  4 failed | 5 passed (9)
+   Start at  11:03:03
+   Duration  132ms (transform 252ms, setup 0ms, import 29ms, tests 9ms, environment 0ms)
+

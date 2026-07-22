@@ -91,6 +91,10 @@ export default defineConfig({
           functions: 95,
           statements: 95,
         },
+        // **وسجلُّ الحلقة اليوميّ يحمل علامةَ طالبٍ ورمزَ وليّ أمرِه** (ق-٩٠…ق-٩٣، T18):
+        // خطؤه يُصيب تقييماً وتقديراً وبياناتِ قاصر ⇒ خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها.
+        "src/features/tahfeezLog/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/tahfeezLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
