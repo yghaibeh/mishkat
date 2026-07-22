@@ -10,6 +10,7 @@ import { upsertActivity } from "../../../src/features/dailyLog/services/catalog.
 import { recordDailyEntry } from "../../../src/features/dailyLog/services/entries.js"
 import { setFamilyRoster } from "../../../src/features/dailyLog/services/roster.js"
 import { periodPoints } from "../../../src/features/dailyLog/services/totals.js"
+import { SETTINGS_BY_ID } from "../../../src/settings/registry.js"
 import { KHALID, KHALID_PATH, NOW, WEEK, dailyLogContext, seedDailyLogStore } from "./_seed.js"
 
 const FROM = new Date("2026-01-01T00:00:00.000Z")
@@ -266,14 +267,14 @@ describe("ب-٤٢ — النشاطُ الحرّ: توثيقٌ بلا نقاطٍ 
     expect(!r.ok && r.error.code).toBe("ACTIVITY_OR_FREE_TEXT_REQUIRED")
   })
 
-  it("**وضبطُ `points.free_activity_scores` على «صحيح» لا يغيّر شيئاً** — الإعدادُ لا يُلغي قرارَ ب-٤٢ (CR-010)", () => {
+  // **بعد شطب CR-010** (T15): كان الاختبارُ يضبط `points.free_activity_scores` على «صحيح»
+  // ويثبت أنه لا يغيّر شيئاً. واليومَ **لا وجودَ للإعداد أصلاً** — فصار التوكيدُ أقوى:
+  // البابُ **غيرُ مُسجَّلٍ فلا يُضبط**، والنشاطُ الحرُّ صفرُ نقاطٍ بنيوياً لا بامتناعِ قارئ.
+  it("**النشاطُ الحرّ صفرُ نقاطٍ ولا مفتاحَ يشتري غيرَ ذلك** — `points.free_activity_scores` مشطوبٌ من السجل (CR-010/ب-٤٢)", () => {
+    expect(SETTINGS_BY_ID.has("points.free_activity_scores")).toBe(false)
+
     const store = seedDailyLogStore()
-    const ctx = dailyLogContext("u-amir", {
-      settings: [
-        { settingId: "points.free_activity_scores", scopePath: "/", value: true, validFrom: FROM },
-      ],
-    })
-    const r = recordDailyEntry(store, ctx, {
+    const r = recordDailyEntry(store, dailyLogContext("u-amir"), {
       clientUuid: "c-free3",
       unitId: KHALID,
       freeTextAr: "نشاطٌ يُراد تنقيطُه آلياً",

@@ -6,9 +6,9 @@ import type { SettingOverride } from "../../src/settings/resolver.js"
 const AT = new Date("2026-07-20T00:00:00.000Z")
 
 describe("سلامة السجل (SPEC_settings §١-١)", () => {
-  it("٨٩ إعداداً: ٧٧ عمل + ١٢ منصة (بعد شطبَي CR-008 وCR-009)", () => {
-    expect(SETTINGS).toHaveLength(89)
-    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(77)
+  it("٨٨ إعداداً: ٧٦ عمل + ١٢ منصة (بعد شطبات CR-008 وCR-009 وCR-010)", () => {
+    expect(SETTINGS).toHaveLength(88)
+    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(76)
     expect(SETTINGS.filter((d) => d.category === "platform")).toHaveLength(12)
   })
 
@@ -17,8 +17,18 @@ describe("سلامة السجل (SPEC_settings §١-١)", () => {
    * = مخالفةٌ **بحكم الاسم**، تُشطب ولو بلا مستهلك. والبحثُ عنها **دوريٌّ لا انتظاريّ** —
    * فهذا الاختبارُ هو تحويلُ المسح اليدويّ إلى فحصٍ آليّ (المادة ١/٤: ما تكرّر مرتين يُؤتمت).
    */
-  it("**لا إعدادَ يَعِد بإعفاءٍ من حارسٍ أو بإحياء قاعدةٍ منسوخة** (§١-٨أ — CR-008/CR-009)", () => {
-    const suspicious = [/exempt/i, /bypass/i, /_override_/i, /disable_guard/i, /skip_/i]
+  it("**لا إعدادَ يَعِد بإعفاءٍ من حارسٍ أو بإحياء قاعدةٍ منسوخة** (§١-٨أ — CR-008/CR-009/CR-010)", () => {
+    const suspicious = [
+      /exempt/i,
+      /bypass/i,
+      /_override_/i,
+      /disable_guard/i,
+      /skip_/i,
+      // **صنفُ CR-010**: مفتاحٌ يَعِد بتنقيطٍ آليٍّ لِما لا وزنَ له في الكتالوج — نقضٌ
+      // لـب-٤٢ («بلا نقاط آلية») ولـب-٣٢ («نقطةٌ بلا تحقّقٍ نقطةٌ زائفة») معاً.
+      /free_.*scores?/i,
+      /auto_.*(scores?|points)/i,
+    ]
     const offenders = SETTINGS.filter((d) => suspicious.some((re) => re.test(d.id)))
     expect(offenders.map((d) => d.id), "إعدادٌ يشتري إعفاءً من قاعدة").toEqual([])
   })

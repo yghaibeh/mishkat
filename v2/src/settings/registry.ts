@@ -59,7 +59,11 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   s({ id: "points.weekly_target", ar: "هدف نقاط المسجد الأسبوعي", type: "number", default: 70, level: "section", effect: "forward_dated", category: "business", source: "ق-٤٢، ق-٤٣ · schema.ts:407", min: 1 }),
   s({ id: "points.participation_min_pct", ar: "عتبة نسبة حضور الأسرة التي يشترطها النشاط المشروط", type: "percent", default: 70, level: "global", effect: "forward_dated", category: "business", source: "ق-٤٠ · utils/points.ts:43-45", min: 0, max: 100 }),
   s({ id: "points.participation_fail_closed", ar: "حين لا يُضبط عدد طلاب الأسرة: امنع النقاط", type: "toggle", default: true, level: "global", effect: "forward_dated", category: "business", source: "ق-٤٠، ب-٣٢" }),
-  s({ id: "points.free_activity_scores", ar: "هل يُنقَّط النشاط الحرّ النصّي آلياً", type: "toggle", default: false, level: "global", effect: "forward_dated", category: "business", source: "ب-٤٢" }),
+  // ❌ شُطب `points.free_activity_scores` بـCR-010 (٢٠٢٦-٠٧-٢٢): بندٌ **يَعِد بإلغاء قيدٍ
+  // قرّره المالك نصاً** (ب-٤٢: «النشاط الحر يُسجَّل توثيقاً **بلا نقاط آلية**») — ثالثُ ظهورٍ
+  // للصنف بعد CR-008 وCR-009، وقاعدتُه المعمَّمة في `SPEC_settings` §١-٨أ. وفيه فوق ذلك عيبٌ
+  // يجعله غيرَ قابلٍ للتنفيذ: النشاطُ الحرُّ **خارج الكتالوج فلا وزنَ له** — فتفعيلُه يقتضي
+  // اختراعَ وزنٍ بلا سند (ب-٣٢/ق-٤٠). والطريقُ المشروع قائم: يُضاف للكتالوج بوزنٍ معلن.
   s({ id: "points.tier.excellent_pct", ar: "عتبة «متميّز» من الهدف", type: "percent", default: 100, level: "global", effect: "immediate", category: "business", source: "ق-٤٤ (قب-١١: المقياس المعتمد)", min: 0, max: 100 }),
   s({ id: "points.tier.below_pct", ar: "عتبة «دون الهدف»", type: "percent", default: 50, level: "global", effect: "immediate", category: "business", source: "ق-٤٤ (قب-١١)", min: 0, max: 100 }),
   s({ id: "network.unit_status.stale_days", ar: "بعد كم يوم بلا إدخال تُوسم الوحدة «متأخرة»", type: "duration", default: 2, level: "global", effect: "immediate", category: "business", source: "scheduled.server.ts:58", min: 1 }),
