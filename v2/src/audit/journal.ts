@@ -47,7 +47,27 @@ export const AUDIT_SOURCE = "audit"
  * **صراحةً بقيمةٍ معلنة** لا بالإغفال: عمودُها موجودٌ في المخطط منذ الهجرة الأولى، لأن
  * إضافتَه لاحقاً إلى أكبر جدولٍ في القاعدة هي الهجرةُ التي نتجنّبها (ADR ملحق أ).
  */
-export type AuditAppend = {
+/**
+ * **حمولةُ «قبل/بعد»** — عمودان في `audit_log` منذ الهجرة الأولى **بلا كاتبٍ** حتى نُقلت
+ * العُهد: ق-٨٣ يوجب نصّاً أن «كلَّ تعديلٍ يغيّر الحائزَ أو الحالة يكتب قيدَ تدقيقٍ
+ * (before/after)» — فـ«من كان يحوزها» لا يضيع ولو تبدّل عشراً. فمن يملكهما يقولهما.
+ *
+ * > **ولماذا اختياريّان لا إلزاميّان-قابلان-للفراغ كـ`capability`؟** إعلانُهما إلزاميّين
+ * > كان **الأصحّ عقداً** ويطابق مذهبَ هذا الملفّ («بقيمةٍ معلنة لا بالإغفال») — لكنه يوجب
+ * > تحريرَ كلِّ مُستدعٍ قائم، ومنهم `box` و`payroll` وهما من **الاثنتي عشرة التي يحظر
+ * > T26-ب-١ مسَّها نصّاً** (معيار القبول ٤). فاختير الاختياريّ **بثمنٍ معلنٍ لا مخفيّ**:
+ * > الطبقةُ تُثبّت الفراغَ صراحةً عند الإلحاق (`?? null`) فيبقى **الصفُّ المخزَّن صريحاً**،
+ * > والانتقالُ إلى الإلزاميّ مرفوعٌ في `CR-DRAFT-custody-audit-before-after` ليُنفَّذ في
+ * > مرورٍ واحدٍ بعد انتهاء الموجة — لا في سبعة تسليماتٍ متوازية.
+ */
+export type AuditPayload = {
+  /** لقطةُ الحال **قبل** الفعل — `null` لِما لا حالَ له قبله (إنشاءٌ) أو لا يملكها مُستدعيه. */
+  readonly before: string | null
+  /** ولقطتُه **بعده** — والصياغةُ واحدةٌ في الطرفين، فلا يُقرأ القيدُ بلسانين. */
+  readonly after: string | null
+}
+
+export type AuditAppend = Partial<AuditPayload> & {
   /** **زمن الخادم** لا زمن العميل (ب-٣٩هـ) — يُحقن ولا يُقرأ من ساعة التشغيل. */
   readonly at: Date
   readonly actorPersonId: string
@@ -64,8 +84,12 @@ export type AuditAppend = {
   readonly reason: string | null
 }
 
-/** القيدُ المخزَّن — يضيف ما تولّده الطبقة، ويطابق أعمدةَ `audit_log` حقلاً بحقل. */
-export type AuditEntryRecord = AuditAppend & {
+/**
+ * القيدُ المخزَّن — يضيف ما تولّده الطبقة، ويطابق أعمدةَ `audit_log` حقلاً بحقل.
+ * و`AuditPayload` هنا **إلزاميٌّ** وإن كان اختيارياً عند الإلحاق: الطبقةُ تُثبّت الفراغَ
+ * قيمةً معلنة، فلا يعبر إلى المخزَّن `undefined` يُخفي الفرقَ بين «لا حمولة» و«حمولةٌ فارغة».
+ */
+export type AuditEntryRecord = AuditAppend & AuditPayload & {
   readonly tenantId: string
   readonly source: string
   readonly seq: number
@@ -110,6 +134,10 @@ export class AuditJournal {
     this.highestSeq += 1
     const record: AuditEntryRecord = Object.freeze({
       ...entry,
+      // **الفراغُ يُثبَّت هنا مرّةً واحدة** — فلا يتفرّق التطبيعُ على المستدعين ولا يعبر
+      // `undefined` إلى الإسقاط فيصير الفرقُ بين «لا حمولة» و«حمولةٌ فارغة» صامتاً.
+      before: entry.before ?? null,
+      after: entry.after ?? null,
       tenantId: this.tenantId,
       source: AUDIT_SOURCE,
       seq: this.highestSeq,

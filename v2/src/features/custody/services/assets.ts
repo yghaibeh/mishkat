@@ -64,14 +64,19 @@ export function registerAsset(
       registeredAt: ctx.now,
     })
     const saved = store.getAsset(id)!
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: ctx.actorPersonId,
       action: "custody.asset.register",
-      scopePath: unit.path,
+      // النطاقُ **موطنُ الأصل** يُقال صراحةً (CR-027) — لا يُشتقّ ولا يُوجَّه إلى جذر الشبكة.
+      unitPath: unit.path,
+      capability: null,
+      targetType: "asset",
       targetId: id,
-      beforeAr: "—",
-      afterAr: `${describe(saved)} · inUnit`,
+      reason: null,
+      // **لا حالَ قبله**: `null` قيمةٌ معلنة لا محرفُ غيابٍ يُقرأ نصّاً (ق-٨٣).
+      before: null,
+      after: `${describe(saved)} · inUnit`,
     })
     return custodyOk(saved)
   })
@@ -109,14 +114,17 @@ export function amendAsset(
     const saved = store.getAsset(asset.id)!
     // الحالةُ تُذكر في الطرفين **مشتقّةً** لا مُحرَّرة — فالقيدُ يشهد أنّها لم تتغيّر.
     const status = assetStateOf(store, asset.id)!.status
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: ctx.actorPersonId,
       action: "custody.asset.amend",
-      scopePath: asset.unitPath,
+      unitPath: asset.unitPath,
+      capability: null,
+      targetType: "asset",
       targetId: asset.id,
-      beforeAr: `${before} · ${status}`,
-      afterAr: `${describe(saved)} · ${status}`,
+      reason: null,
+      before: `${before} · ${status}`,
+      after: `${describe(saved)} · ${status}`,
     })
     return custodyOk(saved)
   })

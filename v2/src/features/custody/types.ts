@@ -81,17 +81,13 @@ export type CustodyMove = {
  * > holder…` أو `readonly status…` — فلو عاشا هنا لَما أمكن قياسُ الادّعاء أصلاً.
  */
 
-/** قيدُ التدقيق (ق-٨٣) — **بقبل/بعد**، فـ«من كان يحوزها» لا يضيع ولو تبدّل عشراً. */
-export type CustodyAuditRecord = {
-  readonly tenantId: string
-  readonly at: Date
-  readonly actorPersonId: string
-  readonly action: string
-  readonly scopePath: string
-  readonly targetId: string
-  readonly beforeAr: string
-  readonly afterAr: string
-}
+/**
+ * > **وقيدُ التدقيق ليس هنا عمداً** (CR-027/قب-٤٩). كان في هذا الملفّ `CustodyAuditRecord`
+ * > **أضيقُ من العقد المعلن** `AuditEntry` — وذلك **مصدرا حقيقةٍ لشيءٍ واحد** (المادة ١/٢)،
+ * > وأثرُه أن قيدَ حدثٍ في مسجدٍ لا يظهر في تدقيق ذلك المسجد. فأُلغي السجلُّ المحليُّ ووُحِّد
+ * > على `src/audit/journal.ts`، و**ق-٨٣ لم يُنقص حرفاً**: «قبل/بعد» حقلان في العقد نفسِه
+ * > (`AuditPayload`)، وعمودان في `audit_log` منذ الهجرة الأولى.
+ */
 
 /** رمزُ خطأٍ خاصٌّ بهذه الوحدة — §٩ من عقد الوحدة. */
 export type CustodyErrorCode =
