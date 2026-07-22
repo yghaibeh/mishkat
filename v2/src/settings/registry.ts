@@ -4,7 +4,7 @@
  * هذا الملف هو **الموضع الوحيد المسموح فيه بالأرقام التشغيلية** في v2 (قب-٦):
  * «فيه تعيش الافتراضيات بحكم التعريف» (§١-٩). بوابة G14 تستثنيه وتفشل على ما عداه.
  *
- * عدد الإعدادات: **٨٦ = ٧٤ إعداد عمل + ١٢ إعداد منصة** — منها **٧ مفاتيح تفعيل**.
+ * عدد الإعدادات: **٨٣ = ٧١ إعداد عمل + ١٢ إعداد منصة** — منها **٧ مفاتيح تفعيل**.
  * (المواصفة تسرد ٩٣؛ وقب-١١ أسقط `network.unit_status.done_pct` و`below_pct`
  *  حين اعتُمد تصنيف المسجد بنسبة الهدف ١٠٠٪/٥٠٪ — «يسقط ولا يُنقل إعداداً»؛
  *  وCR-008 شطب `finance.dual_control.exempt_roles` — **الإعداداتُ تضبط قِيَماً لا تُلغي
@@ -13,9 +13,16 @@
  *  (ب-٣٠أ)، وهو مخالفٌ **بحكم الاسم** (§١-٨أ المُوسَّعة) فيُشطب ولو بلا مستهلك؛
  *  وCR-010 شطب `points.free_activity_scores` (ب-٤٢: «بلا نقاط آلية»)؛
  *  وCR-014 شطب `feature.tahfeez` و`feature.alaBaseera` — **إعدادان يُعيدان عَرَضاً
- *  عولج بإعادة تصميم** (ع-٨/ب-٢٨)، انظر سطر النسخ في مجال `feature`.)
+ *  عولج بإعادة تصميم** (ع-٨/ب-٢٨)، انظر سطر النسخ في مجال `feature`؛
+ *  وCR-021 شطب `edu.paid_hours.approved_only` — **مفتاحٌ يُطفئ حارساً يُشغّله اسمُه**،
+ *  وهو الظهورُ الخامسُ للصنف وأخطرُها موضعاً، انظر سطر النسخ في مجال `edu`؛
+ *  وCR-024 شطب `finance.entitlement.approval_required` وCR-025 شطب
+ *  `identity.impersonation.read_only` — **سادسُ الصنف وسابعُه**، انظر سطرَي النسخ في
+ *  مجالَي `finance` و`identity`.)
  *
- * **٩٣ − ٢ (قب-١١) − ١ (CR-008) − ١ (CR-009) − ١ (CR-010) − ٢ (CR-014) = ٨٦.**
+ * **٩٣ − ٢ (قب-١١) − ١ (٠٠٨) − ١ (٠٠٩) − ١ (٠١٠) − ٢ (٠١٤) − ١ (٠٢١) − ١ (٠٢٤) − ١ (٠٢٥) = ٨٣.**
+ * > **وسبعةُ شطباتٍ من صنفٍ واحد ليست صدفة** (قب-٤٦ §٢): *الإعدادُ يُولد من **حاجةِ مسؤولٍ
+ * > إلى التغيير**، لا من **إمكانِ التغيير**؛ وما حُسم قراراً لا يُعرَض خانةَ اختيار.*
  * > **العدّادُ هنا تخلّف يوم CR-010** (بقي ٨٩ وقد صار ٨٨)، فالمواضعُ الخمسة تُعدّ وتُطابَق
  * > في كل شطب: هذا التعليق · ملخّص المواصفة · حاشيةُ العدّ · عنوان §٢-١ · اختبارُ العدّ.
  */
@@ -121,7 +128,29 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   s({ id: "finance.receipt.number_padding", ar: "عدد خانات رقم السند", type: "number", default: 6, level: "global", effect: "immediate", category: "business", source: "ق-٥٦", min: 1 }),
   s({ id: "finance.deductions.display_enabled", ar: "إظهار الخصومات في الشاشات", type: "toggle", default: false, level: "global", effect: "immediate", category: "business", source: "ب-٣١" }),
   s({ id: "finance.penal_deductions_allowed", ar: "السماح بخصمٍ عقابي", type: "toggle", default: false, level: "global", effect: "immediate", category: "business", source: "ق-٣٤، ب-٣١" }),
-  s({ id: "finance.entitlement.approval_required", ar: "إقرار الإدارة الشهري للمستحقات", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ق-٥١" }),
+  // ❌ شُطب `finance.entitlement.approval_required` بـCR-024 (٢٠٢٦-٠٧-٢٢، نُفِّذ في T23-ب):
+  // مفتاحٌ **يُطفئ حارساً يُشغّله اسمُه** — ق-٥١ تقرّر «البرنامجُ يرشّح **والإدارةُ تقرّ آخر
+  // الشهر**»، فالضبطُ الوحيدُ المتاح له هو **إسقاطُ الإقرار الشهريّ نفسِه**. وأثرُه أوسعُ من
+  // إرخاء قاعدة: **ينزع شرطَ الختم** الذي يقوم عليه المبدأ الحاكم لوحدة الرواتب («المستحقُّ
+  // يُشتقّ حتى يُعتمد ثم يُختَم») — فتُصرف خطةٌ **مشتقّةٌ متحرّكة**، ويعود «تعديلُ درسٍ قديم
+  // يُغيّر راتبَ شهرٍ صُرف»: التزويرُ بالإهمال بعينه.
+  // **سادسُ ظهورٍ للصنف** (CR-008/009/010/014/021)، و**صفرُ مستهلك**: لم تقرأه وحدةُ الرواتب
+  // في سطرٍ واحد وأعلنت ذلك نصاً في عقدها، والختمُ **غيرُ مشروطٍ** في الكود ومحروسٌ باختبارَين.
+  // **واصطاده الفحصُ الدلاليُّ الذي وُلد من CR-021** — لا مراجعةٌ بشرية (§١-٨أ/قب-٤٥).
+
+  // ❌ وشُطب `identity.impersonation.read_only` بـCR-025 (٢٠٢٦-٠٧-٢٢، نُفِّذ في T23-ب):
+  // **أخطرُ السبعة**: إطفاؤه لا يُخفي شاشةً ولا يخفّف تقريراً بل **يفتح الفعلَ باسم الغير** —
+  // انتحالٌ **كاتب**. وب-٤٠أ حسمت «الانتحالُ **قراءةً فقط** بتدقيقٍ ظاهر» **حين عُرض عليها
+  // الخياران**، فالمفتاحُ **يشتري ما رُفض عند عرضه**؛ وق-٢٧ («القدرةُ الشخصية فعلٌ على كيان
+  // النفس») حدُّ هويّةٍ لا إجراءٌ يُضبط. **وضررُه يمسّ الحارسَ الذي يكشفه**: الكتابةُ باسم
+  // الغير تُفسد نسبةَ الفعل في سجل التدقيق نفسِه (المادة ٤/٨).
+  // **وصفرُ مستهلك**، ومسارُ الانتحال **لم يُبنَ بعد** — فالشطبُ يسبق أوّلَ بانٍ يجد المفتاح
+  // فيبنيه مساراً ذا وضعين، **فيُولَد الاستثناءُ بنيةً لا حادثة**.
+  //
+  // > **وجذرُ السبعة واحد** (قب-٤٦ §٢): السجلُّ بُذر بسؤال «ما الذي **يمكن** أن يُضبَط؟»
+  // > لا «ما الذي **يحتاج** مسؤولٌ أن يغيّره؟» — فتولّد لكلّ قاعدةٍ محسومةٍ مفتاحُ إطفاء.
+  // > **والقاعدةُ المحسومة لا مفتاحَ لها بحكم كونها محسومة**، وما حُسم قراراً لا يُعرَض
+  // > خانةَ اختيارٍ في شاشة.
   s({ id: "finance.closing.period", ar: "دورية الإقفال الدوري للصناديق", type: "enum", default: "hijri_monthly", level: "global", effect: "forward_dated", category: "business", source: "ق-٦٧، ق-٣٥", allowed: ["hijri_monthly"] }),
 
   // ═══ edu — التعليم والتحفيظ ═══
@@ -136,7 +165,20 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   // معجما أنواعٍ يتباعدان (عين ما عالجه قب-١٦). **والإعدادُ نفسُه حيٌّ المعنى** (ق-٨٦: ساعاتُ
   // منهج «على بصيرة» وحدَها تُحتسب) فلا يُشطب — يُشطب **سردُه** ويُعلَن **مصدرُ قاموسه**.
   s({ id: "edu.paid_hours.curricula", ar: "المناهج التي تُحتسب ساعاتها مالياً", type: "list", default: ["baseera"], level: "global", effect: "forward_dated", category: "business", source: "ق-٨٦ · CR-014", allowedFrom: "circles.typeCatalog" }),
-  s({ id: "edu.paid_hours.approved_only", ar: "احتساب الدروس المعتمدة فقط", type: "toggle", default: true, level: "global", effect: "forward_dated", category: "business", source: "ق-٨٦" }),
+  // ❌ شُطب `edu.paid_hours.approved_only` بـCR-021 (٢٠٢٦-٠٧-٢٢، نُفِّذ في T23): مفتاحٌ
+  // **يَعِد بتعطيل حارسٍ وُلد نصاً «منعاً للغش»** (ق-٨٦: مالية المعلّم من الدروس المعتمَدة
+  // وحدها) — فتعطيلُه **يفتح البابَ الذي وُلدت القاعدةُ لسدّه**، ويصير الغشُّ **إعداداً
+  // إدارياً مشروعاً**. **خامسُ ظهورٍ للصنف** بعد CR-008/009/010/014 — **وأخطرُها موضعاً**:
+  // الأربعةُ السابقة كانت في مجالاتٍ **بلا مستهلك**، وهذا في مجالٍ **حيٍّ** تقرأ أختَه
+  // (`edu.paid_hours.curricula`) وحدةُ «على بصيرة» — فيغري بقراءته «التزاماً بالسجل».
+  // **صفرُ أثرٍ سلوكيّ**: لم يُقرأ قطّ — لا في T19 يوم رُفع (أعلنت وحدتُه ذلك نصاً في عقدها
+  // §٦) ولا في وحدة الرواتب اليوم؛ والحارسُ **غيرُ مشروطٍ** في `education/services/teacherHours.ts`
+  // ومحروسٌ باختبارٍ إلزاميّ. **والخطرُ كان الدعوةَ لا الأثر** — كما في CR-014 حرفياً.
+  // والقاعدةُ المُوسَّعة في `SPEC_settings` §١-٨أ (قب-٤٥): *لا يُعطِّل إعدادٌ حارساً محروساً،
+  // **ولا يُطفئ إعدادٌ حارساً يُشغّله اسمُه**؛ والفحصُ الآليّ يمسك **الأسماء** لا **الدلالة**
+  // — فهذا عَبَر `exempt`/`bypass`/`skip_` الثلاثةَ **باسمٍ بريء**.* وحارسُه الآليّ الموسَّع
+  // (المعرّفُ يُعلن حارساً مُشغَّلاً + `toggle` افتراضُه `true` + مصدرُه قاعدةُ عقد) في
+  // `tests/settings/resolver.test.ts` — وقد **اصطاد بندين آخرين** رُفعا مسوّدتَي CR.
   s({ id: "edu.guardian_token.ttl_days", ar: "عمر رمز وليّ الأمر", type: "duration", default: 365, level: "global", effect: "immediate", category: "business", source: "ب-٣٦أ", min: 1 }),
   s({ id: "edu.guardian_token.renewable", ar: "إتاحة زر «تجديد الرابط»", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ب-٣٦أ" }),
   s({ id: "edu.weekly.max_group_activities", ar: "أقصى عدد أنشطة جماعية في السجل الأسبوعي للحلقة", type: "number", default: 5, level: "global", effect: "immediate", category: "business", source: "services/halaqaWeekly.ts:8", min: 1 }),
@@ -163,7 +205,6 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   s({ id: "identity.registration.honeypot_enabled", ar: "فخّ الطلبات الآلية", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ق-٣٢" }),
   s({ id: "identity.mfa.enabled", ar: "تفعيل مسار التحقق الثنائي", type: "toggle", default: false, level: "global", effect: "immediate", category: "business", source: "ب-٣٦ب" }),
   s({ id: "identity.mfa.required_roles", ar: "الأدوار المُلزَمة بالتحقق الثنائي", type: "list", default: ["admin", "finance_officer"], level: "global", effect: "immediate", category: "business", source: "ب-٣٦ب" }),
-  s({ id: "identity.impersonation.read_only", ar: "حصر الانتحال بالقراءة", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ب-٤٠أ، ق-٢٧" }),
 
   // ═══ retention — الاحتفاظ ═══
   s({ id: "retention.person_records_years", ar: "مدة الاحتفاظ بسجلات الفرد بعد انتهاء عضويته", type: "duration", default: 2, level: "global", effect: "immediate", category: "business", source: "ب-٣٧أ", min: 1 }),
