@@ -30,3 +30,6 @@
 | [CR-023](CR-023-g14-escape-hatch-and-line-numbers.md) | مخرجُ `hard-constant:` معطَّلٌ بالبناء — **وG14 تُبلّغ برقم سطرٍ كاذب** | جوهري | ✅ **مُغلق — منفَّذ (T23-ب)** |
 | [CR-024](CR-024-entitlement-approval-required-setting.md) | `finance.entitlement.approval_required` — **سادسُ** الصنف | جوهري | ✅ **مُغلق — منفَّذ (T23-ب)** |
 | [CR-025](CR-025-impersonation-read-only-setting.md) | `identity.impersonation.read_only` — **سابعُ** الصنف وأخطرُها | جوهري | ✅ **مُغلق — منفَّذ (T23-ب)** |
+| [CR-026](CR-026-sync-repository-contracts.md) | العقودُ المتزامنة — سقفٌ سعويٌّ **صامت** | جوهري (معماريّ) | ✅ معتمد — (أ) `fundBalance` + **G23** في T26-أ · (ب) مؤجَّلٌ بزنادٍ محروس |
+| [CR-027](CR-027-audit-record-width.md) | سجلُّ تدقيقِ الوحدة أضيقُ من العقد المعلن | جوهري | ✅ معتمد — التوحيد على العقد، **في T26-أ قبل نقل الوحدات** |
+
