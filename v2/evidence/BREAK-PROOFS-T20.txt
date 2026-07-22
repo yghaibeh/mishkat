@@ -1,0 +1,74 @@
+# T20 — دليلُ الأحمر: كسرُ الثوابت الستة (وأصنافُها الثمانية)
+# كلُّ سطرٍ هنا نتيجةُ كسرٍ يدويٍّ للثابت ثم تشغيلِ طقمه ثم إعادةِ الحال.
+# التاريخ: ٢٠٢٦-٠٧-٢٢ · الشجرة: worktree/t20-library
+
+── ١) ح-٦: النطاقُ من مدخلٍ ثابتٍ لا من المادة المخزَّنة
+   الكسر: src/features/library/server/endpoints.ts
+   الطقم: tests/features/library/scoped-management.test.ts
+   × **رأسُ قسم الشباب يعدّل مادةَ القسم النسائيّ ⇒ مرفوض** (وهو نصُّ ح-٦) 3ms
+   × **ولا يؤرشف مادةَ غيره** — الأرشفةُ فعلٌ على المادة فنطاقُها نطاقُها 0ms
+   Test Files  1 failed (1)
+   Tests  2 failed | 6 passed (8)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+── ٢) «مكتبتي»: أُلغيَ شرطُ الجمهور (كلُّ مادةٍ تبلغ كلَّ أحد)
+   الكسر: src/features/library/services/reach.ts
+   الطقم: tests/features/library/mine.test.ts
+   × **ومادةُ «المعلّمين» لا تظهر لأمير المسجد** — جمهورٌ ليس جمهورَه 2ms
+   × **والمادةُ التي لا تبلغني لا تُفتح باستدعاءٍ مباشر**: جمهورٌ غيرُ جمهوري ⇒ `NOT_IN_AUDIENCE` 1ms
+   Test Files  1 failed (1)
+   Tests  2 failed | 7 passed (9)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+── ٣) خطُّ الزمن: أُعيد ختمُ v1 الصامت (الإنجازُ يختم الفتحَ نيابةً)
+   الكسر: src/features/library/services/timeline.ts
+   الطقم: tests/features/library/timeline.test.ts
+   × **والإنجازُ قبل الفتح مرفوض** ⇒ `NOT_OPENED_YET` — وهو نصُّ «يستلزم الفتح» 2ms
+   Test Files  1 failed (1)
+   Tests  1 failed | 8 passed (9)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+── ٤) الإلزاميّ: صار المرشّحُ يُسقطه كغيره
+   الكسر: src/features/library/services/mine.ts
+   الطقم: tests/features/library/mandatory.test.ts
+   × مادةٌ إلزاميةٌ تتصدّر «مكتبتي» ولا يُسقطها مرشّحُ الفئة 3ms
+   × **ولا مرشّحَ يُخفي إلزامياً مهما ضاق**: فئةٌ لا مادةَ إلزاميةَ فيها تُبقيه ظاهراً 1ms
+   Test Files  1 failed (1)
+   Tests  2 failed | 4 passed (6)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+── ٥) الرفع: أُلغيَ فحصُ الحجم في الخادم
+   الكسر: src/features/library/services/uploads.ts
+   الطقم: tests/features/library/uploads.test.ts
+   × **والحجمُ فوق السقف مرفوض** — والسقفُ إعدادٌ حيّ لا رقمٌ في الكود (G14/قب-٦) 2ms
+   × **والإنشاءُ يمرّ بالحارس نفسِه** — لا بابَ ثانياً للرفع يلتفّ عليه 0ms
+   Test Files  1 failed (1)
+   Tests  2 failed | 9 passed (11)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+── ٦-أ) قب-٣٨: «مكتبتي» صارت منطاقةً لا شخصية
+   الكسر: src/features/library/server/endpoints.ts
+   الطقم: tests/features/library/personal-capability.test.ts
+   × صاحبُ الدور الحيّ يرى مكتبتَه 3ms
+   × **ولا خَتمَ بالنيابة**: فتحُ مادةٍ باسم غيري مرفوضٌ **قبل جسم الدالة** 0ms
+   Test Files  1 failed (1)
+   Tests  2 failed | 5 passed (7)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+── ٦-ب) عزلُ الشبكة: المستودعُ يقبل شبكةَ المدخل
+   الكسر: src/features/library/data/store.ts
+   الطقم: tests/features/library/tenant-isolation.test.ts
+   × المستودعُ يختم شبكتَه على كل كيان — و`tenantId` لا يأتي من المدخل 3ms
+   Test Files  1 failed (1)
+   Tests  1 failed | 3 passed (4)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+── ٦-ج) مصفوفةُ الشاشات: أُزيل حارسُ شاشة الإدارة
+   الكسر: src/features/library/screens/screens.ts
+   الطقم: tests/screens/library-screen-matrix.test.ts
+   × لكل دورٍ × كل عنصر: الحضور = القدرة على نطاق الشاشة، والغياب مقرونٌ برفض الخادم 5ms
+   × **الإدارةُ ورأسُ القسم وحدهما يريان «إدارة الموادّ»** — وجدولُ الغياب §٣ يحرس المنطقة 1ms
+   Test Files  1 failed (1)
+   Tests  2 failed | 4 passed (6)
+   ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+   FAIL  tests/screens/library-screen-matrix.test.ts > مصفوفةُ شاشات المكتبة — حضورٌ بعدسة الدور، وغيابٌ مقرونٌ برفض الخادم > لكل دورٍ × كل عنصر: الحضور = القدرة على نطاق الشاشة، والغياب مقرونٌ برفض الخادم
