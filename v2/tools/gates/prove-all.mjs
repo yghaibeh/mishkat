@@ -211,6 +211,35 @@ const PROOFS = [
     file: "src/features/org/services/__violation__.ts",
     content: `export const requiredCapability = "box.closing.approve"\n`,
   },
+  {
+    gate: "G22", script: "g22-approval-engine-only.mjs",
+    // **إثباتُ CR-011**: لا يكفي أن تحمرّ البوابةُ على قدرةٍ يعرفها كاتبُها سلفاً؛ المطلوب
+    // أن تحمرّ على قدرةِ **نوعٍ سُجِّل بعدها** — فتثبت أن الحراسة **تتبع النمو تلقائياً**
+    // ولا تنتظر أن يتذكّر أحدٌ تحديثَ قائمة. يُزرع نوعٌ جديد في موضع التسجيل المعلن،
+    // وتُستهلَك قدرتُه في وحدة ميزة: قبل الاشتقاق كانت البوابةُ **خضراء** على هذا الزرع.
+    what: "**قدرةُ اعتمادٍ لنوعٍ سُجِّل حديثاً** تُستهلَك خارج المحرّك (CR-011: الحراسةُ تتبع النمو)",
+    files: [
+      {
+        path: "src/features/approval/registered/__violation__.ts",
+        content: `import { defineApprovalType } from "../registry.js"\n\nexport const PLANTED = defineApprovalType({\n  id: "planted.payout",\n  entityAr: "نوعٌ مزروعٌ للإثبات",\n  scopeKind: "unit",\n  submitCapability: "finance.payout",\n  approveCapability: "finance.approve",\n  overrideCapability: null,\n  retractCapability: null,\n  uniquePerPeriod: true,\n  payloadRequired: true,\n  approvalLocks: true,\n  rejectionReturnsToDraft: true,\n  rejectionRequiresReason: true,\n})\n`,
+      },
+      {
+        path: "src/features/org/services/__violation2__.ts",
+        content: `export const requiredCapability = "finance.approve"\n`,
+      },
+    ],
+  },
+  {
+    gate: "G22", script: "g22-approval-engine-only.mjs",
+    // **الوجهُ الثاني لـCR-011**: بوابةٌ تشتقّ قائمتَها صارت تعتمد على الكود الذي تحرسه —
+    // فالضمانةُ أن **تحمرّ عند الغموض** لا أن تخضرّ. يُغمَّض حقلُ قدرةٍ في إعلان نوعٍ
+    // مسجَّل (لا يبقى نصّاً يُقرأ) ⇒ يجب أن تفشل البوابةُ معلنةً أن الاشتقاق أعمى.
+    what: "**اشتقاقٌ أعمى**: حقلُ قدرةِ بتٍّ لا يُقرأ نصّاً ⇒ تحمرّ ولا تخضرّ عند الغموض (CR-011)",
+    patch: {
+      file: "src/features/approval/registered/supervisionVisit.ts",
+      apply: (src) => src.replace('approveCapability: "visit.approve"', "approveCapability: HIDDEN"),
+    },
+  },
 ]
 
 function runGate(script) {
@@ -230,7 +259,17 @@ for (const p of PROOFS) {
   const before = runGate(p.script)
 
   let restore = null
-  if (p.patch) {
+  if (p.files) {
+    // زرعٌ بأكثر من ملف: المخالفةُ نفسُها قد تحتاج **سياقاً** (نوعٌ يُسجَّل ثم يُستهلَك).
+    const paths = p.files.map((f) => join(ROOT, f.path))
+    for (const [i, f] of p.files.entries()) {
+      mkdirSync(dirname(paths[i]), { recursive: true })
+      writeFileSync(paths[i], f.content, "utf8")
+    }
+    restore = () => {
+      for (const abs of paths) if (existsSync(abs)) unlinkSync(abs)
+    }
+  } else if (p.patch) {
     const abs = join(ROOT, p.patch.file)
     const original = readFileSync(abs, "utf8")
     writeFileSync(abs, p.patch.apply(original), "utf8")
