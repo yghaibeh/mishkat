@@ -1,0 +1,35 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/influential_masjid-T22/v2
+
+ ❯ tests/ui/g20.test.ts (16 tests | 1 failed) 26ms
+     × لا كيانٌ يُعلَن موطنُه القانونيّ في شاشتين 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/g20.test.ts > G20/٢ — موطنٌ واحدٌ لكل كيان (IA §١، سجلّ ز-١…ز-١٣) > لا كيانٌ يُعلَن موطنُه القانونيّ في شاشتين
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "«lesson» موطنُه /mosque/circles/log و/mosque/circles/lessons",
++ ]
+
+ ❯ tests/ui/g20.test.ts:74:21
+     72|       }
+     73|     }
+     74|     expect(clashes).toEqual([])
+       |                     ^
+     75|   })
+     76|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  12:23:25
+   Duration  211ms (transform 101ms, setup 0ms, import 132ms, tests 26ms, environment 0ms)
+

@@ -95,6 +95,10 @@ export default defineConfig({
         // خطؤه يُصيب تقييماً وتقديراً وبياناتِ قاصر ⇒ خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها.
         "src/features/tahfeezLog/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
         "src/features/tahfeezLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والدرسُ يحمل مالَ المعلّم وتقدّمَ الطالب** (ق-٨٦/ق-٩٢، T19): خدماتُ «على بصيرة»
+        // عتبتُها ٩٥٪، وطبقةُ بياناتها معها — فالاشتقاقُ الماليُّ يُختبر كما يُختبر المال.
+        "src/features/education/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/education/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
