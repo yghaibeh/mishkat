@@ -25,5 +25,8 @@
 | [CR-018](CR-018-guardian-token-auth.md) | استيثاق رمز وليّ الأمر | جوهري | ✅ مُغلق — تأجيل واعٍ لسياج الواجهة |
 | [CR-019](CR-019-module-rename-circle-log.md) | تسمية الوحدة `circleLog` — واسمُ نوعٍ واحد كان بقيةً من النموذج المنسوخ | جوهري | ✅ **مُغلق — مُصدَّق بأثرٍ رجعيّ ومنفَّذ (T22)** |
 | [CR-020](CR-020-two-lessons-per-day.md) | أيجوز لحلقةٍ درسان في يومٍ واحد؟ — سعةُ مفتاح الجلسة | جوهري | ✅ معتمد (المالك: **نعم بفترة**) — يُنفَّذ في T24 |
-| [CR-021](CR-021-paid-hours-approved-only-setting.md) | `edu.paid_hours.approved_only` — **خامسُ** إعدادٍ يَعِد بتعطيل حارس (ق-٨٦) | جوهري | ✅ معتمد — الشطب، يُنفَّذ في T23 |
+| [CR-021](CR-021-paid-hours-approved-only-setting.md) | `edu.paid_hours.approved_only` — **خامسُ** إعدادٍ يَعِد بتعطيل حارس (ق-٨٦) | جوهري | ✅ **مُغلق — منفَّذ (T23)** |
 | [CR-022](CR-022-manhaj-public-reader.md) | قارئ المنهاج العامّ — **يُنشَر ولا يُكشَف** | جوهري | ✅ معتمد (المالك) — (ب) في أول مهمة مواصفات · (أ) مهمةٌ لاحقة |
+| [CR-023](CR-023-g14-escape-hatch-and-line-numbers.md) | مخرجُ `hard-constant:` معطَّلٌ بالبناء — **وG14 تُبلّغ برقم سطرٍ كاذب** | جوهري | ✅ **مُغلق — منفَّذ (T23-ب)** |
+| [CR-024](CR-024-entitlement-approval-required-setting.md) | `finance.entitlement.approval_required` — **سادسُ** الصنف | جوهري | ✅ **مُغلق — منفَّذ (T23-ب)** |
+| [CR-025](CR-025-impersonation-read-only-setting.md) | `identity.impersonation.read_only` — **سابعُ** الصنف وأخطرُها | جوهري | ✅ **مُغلق — منفَّذ (T23-ب)** |
