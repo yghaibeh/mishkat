@@ -1,0 +1,61 @@
+
+ RUN  v4.1.10 /Users/muhammad/alraqeem/projects/mishkat-T25/v2
+
+ ❯ tests/migrations/v1-transfer.test.ts (0 test)
+ ❯ tests/migrations/schema.test.ts (0 test)
+ ❯ tests/db/audit-routing.test.ts (0 test)
+ ❯ tests/db/determinism.test.ts (0 test)
+ ❯ tests/db/parity.test.ts (0 test)
+ ❯ tests/db/tenant-isolation.test.ts (0 test)
+ ❯ tests/db/atomicity.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/db/atomicity.test.ts [ tests/db/atomicity.test.ts ]
+Error: Cannot find module '../../src/db/unitOfWork.js' imported from /Users/muhammad/alraqeem/projects/mishkat-T25/v2/tests/db/atomicity.test.ts
+ ❯ tests/db/atomicity.test.ts:15:1
+     13| import { LedgerStore } from "../../src/features/ledger/data/store.js"
+     14| import { OrgStore } from "../../src/features/org/data/store.js"
+     15| import { UnitOfWork } from "../../src/db/unitOfWork.js"
+       | ^
+     16| import { persistentLedger } from "../../src/db/repositories/ledgerRepo…
+     17| import { persistentOrg } from "../../src/db/repositories/orgRepository…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/db/audit-routing.test.ts [ tests/db/audit-routing.test.ts ]
+Error: Cannot find module '../../src/db/repositories/ledgerRepository.js' imported from /Users/muhammad/alraqeem/projects/mishkat-T25/v2/tests/db/audit-routing.test.ts
+ ❯ tests/db/audit-routing.test.ts:13:1
+     11| import { createSettingsResolver } from "../../src/settings/resolver.js"
+     12| import type { Cents } from "../../src/features/ledger/types.js"
+     13| import { AUDIT_ACTIONS_WITHOUT_SCOPE } from "../../src/db/repositories…
+       | ^
+     14| import { MAIN, NOW, freshDb, seedSession, session } from "./_harness.j…
+     15|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/db/determinism.test.ts [ tests/db/determinism.test.ts ]
+Error: Cannot find module '../../src/db/sql/sqliteDriver.js' imported from /Users/muhammad/alraqeem/projects/mishkat-T25/v2/tests/db/_harness.ts
+ ❯ tests/db/_harness.ts:12:1
+     10| import { dirname, join } from "node:path"
+     11| import { fileURLToPath } from "node:url"
+     12| import { openSqliteDriver, type SqliteDriver } from "../../src/db/sql/…
+       | ^
+     13| import { applyMigrations, type Migration } from "../../src/db/migratio…
+     14| import { UnitOfWork, type Scope } from "../../src/db/unitOfWork.js"
+ ❯ tests/db/determinism.test.ts:13:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/db/parity.test.ts [ tests/db/parity.test.ts ]
+Error: Cannot find module '../../src/db/sql/sqliteDriver.js' imported from /Users/muhammad/alraqeem/projects/mishkat-T25/v2/tests/db/_harness.ts
+ ❯ tests/db/_harness.ts:12:1
+     10| import { dirname, join } from "node:path"
+     11| import { fileURLToPath } from "node:url"
+     12| import { openSqliteDriver, type SqliteDriver } from "../../src/db/sql/…
+       | ^
+     13| import { applyMigrations, type Migration } from "../../src/db/migratio…
+     14| import { UnitOfWork, type Scope } from "../../src/db/unitOfWork.js"
+ ❯ tests/db/parity.test.ts:14:1
+--- تُلتقط لقطةُ الأحمر قبل أي كود إنتاج ---
