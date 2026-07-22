@@ -15,6 +15,9 @@ export default defineConfig({
         lines: 85,
         branches: 85,
         "src/authorization/**": { lines: 100, branches: 100, functions: 100, statements: 100 },
+        // **طبقةُ الاستمرار تحت المال كلِّه** (T25): الذرّية ومفتاحُ التوجيه وعزلُ الشبكة
+        // تعيش هنا، وخطؤها لا يظهر إلا بعد أن يُكتب — ⇒ عتبتُها ٩٥٪ (أرضيةٌ تصعد، §٣).
+        "src/db/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
         // **المال لا يُساهَل فيه** (T7): خدماتُ الدفتر عتبتُها ٩٥٪ أسطراً وأفرعاً.
         "src/features/ledger/services/**": {
           lines: 95,

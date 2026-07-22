@@ -83,6 +83,54 @@ const PROOFS = [
     content: `CREATE TABLE x (id TEXT);\n`,
   },
   {
+    /**
+     * **نقطةُ اللاعودة الأولى** (ADR-001 §٦-١): جدولُ بياناتٍ يدخل المخطط بلا مفتاح توجيه.
+     * إن مرّ هذا صامتاً صار إصلاحُه لاحقاً **هجرةَ بياناتٍ على جداول العمليات كلِّها**.
+     * والقائمةُ **مشتقّةٌ من المخطط** (CR-011): الجدولُ المزروع لم يكن معروفاً للبوابة.
+     */
+    gate: "G10", script: "g10-migrations.mjs",
+    what: "**جدولُ بياناتٍ بلا مفتاح توجيه** يدخل المخطط (ع-٥ — نقطةُ اللاعودة)",
+    file: "src/db/migrations/9002_violation.sql",
+    content:
+      `CREATE TABLE IF NOT EXISTS box_handovers (\n` +
+      `  tenant_id TEXT NOT NULL,\n` +
+      `  id        TEXT NOT NULL,\n` +
+      `  entry_id  TEXT NOT NULL,\n` +
+      `  PRIMARY KEY (tenant_id, id)\n` +
+      `);\n`,
+    evidenceMustMatch: /box_handovers ينقصه unit_path/,
+  },
+  {
+    // لا يكفي وجودُ العمود: استعلامُ «كلُّ ما تحت هذه العقدة» أشيعُ استعلامٍ في النظام،
+    // وبلا فهرسٍ مركّبٍ يصير مسحاً كاملاً — والحارسُ يقيس الفهرسَ لا النيّة.
+    gate: "G10", script: "g10-migrations.mjs",
+    what: "مفتاحُ توجيهٍ **بلا فهرسه** — عمودٌ يُرضي الحرفَ ويخون الغرض",
+    file: "src/db/migrations/9003_violation.sql",
+    content:
+      `CREATE TABLE IF NOT EXISTS box_categories (\n` +
+      `  tenant_id TEXT NOT NULL,\n` +
+      `  unit_path TEXT NOT NULL,\n` +
+      `  id        TEXT NOT NULL,\n` +
+      `  PRIMARY KEY (tenant_id, id)\n` +
+      `);\n`,
+    evidenceMustMatch: /box_categories ينقصه فهرسٌ/,
+  },
+  {
+    gate: "G10", script: "g10-migrations.mjs",
+    what: "**مزيةُ محرّكٍ خاصة** في الهجرة (`JSONB`) — تنقض لهجةَ القاسم المشترك (ع-٣)",
+    file: "src/db/migrations/9004_violation.sql",
+    content:
+      `CREATE TABLE IF NOT EXISTS box_payloads (\n` +
+      `  tenant_id TEXT NOT NULL,\n` +
+      `  unit_path TEXT NOT NULL,\n` +
+      `  id        TEXT NOT NULL,\n` +
+      `  body      JSONB NOT NULL,\n` +
+      `  PRIMARY KEY (tenant_id, id)\n` +
+      `);\n` +
+      `CREATE INDEX IF NOT EXISTS idx_box_payloads_routing ON box_payloads (tenant_id, unit_path);\n`,
+    evidenceMustMatch: /JSONB/,
+  },
+  {
     gate: "G11", script: "g11-secrets.mjs",
     what: "سرّ مكتوب نصاً في الكود",
     file: "src/shared/__violation__.ts",
@@ -300,7 +348,9 @@ for (const p of PROOFS) {
     restore = () => {
       if (existsSync(abs)) unlinkSync(abs)
       if (p.file.startsWith("src/features/")) rmSync(join(ROOT, "src/features/points"), { recursive: true, force: true })
-      if (p.file.startsWith("src/db/migrations/")) rmSync(join(ROOT, "src/db/migrations"), { recursive: true, force: true })
+      // **لا يُمحى مجلدُ الهجرات**: كان يُمحى كلُّه عند الاسترجاع لأنه كان فارغاً يوم كُتب
+      // هذا الهيكل — ومنذ T25 فيه هجرةٌ مشحونة، فمحوُه كان سيحذف المخطط نفسَه.
+      // إزالةُ الملفّ المزروع وحدَه تكفي، وخُضرةُ «بعد الإزالة» تُثبت ذلك.
     }
   }
 
