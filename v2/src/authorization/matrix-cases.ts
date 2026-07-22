@@ -27,6 +27,10 @@ export type MatrixCase = {
     | "role_lacks_capability"
     | "role_lacks_and_foreign_scope"
     | "role_holds_foreign_scope"
+    /** CR-012/قب-٣٨ — قدرةٌ شخصيةٌ خارج الحزمة، **على كيان الفاعل نفسِه** ⇒ مرفوضة. */
+    | "personal_lacks_own_entity"
+    /** CR-012/قب-٣٨ — قدرةٌ شخصيةٌ **في** الحزمة، على كيان **غيره** ⇒ مرفوضة. */
+    | "personal_holds_foreign_entity"
     | "override_grant"
     | "override_deny"
 }
@@ -87,7 +91,19 @@ export function generateMatrixCases(): GenerationReport {
 
         // ── السلب: بالقدرة على نطاق آخر ⇒ تُرفض ──
         const foreign = meta.type === "root" ? "/men/" : FOREIGN_SCOPE
-        if (meta.type !== "personal" && !contains(home, foreign)) {
+        if (meta.type === "personal") {
+          // **الشرط الثاني وحدَه** (CR-012): يملكها دورُه، والكيانُ ليس كيانَه ⇒ تُرفض.
+          cases.push({
+            kind: "negative",
+            roleId,
+            capId,
+            assignmentScope: home,
+            requestScope: home,
+            expectAllowed: false,
+            label: `«${ROLES[roleId].ar}» يملك «${meta.ar}» ولا يمارسها على كيان غيره`,
+            variant: "personal_holds_foreign_entity",
+          })
+        } else if (!contains(home, foreign)) {
           cases.push({
             kind: "negative",
             roleId,
@@ -98,11 +114,27 @@ export function generateMatrixCases(): GenerationReport {
             label: `«${ROLES[roleId].ar}» لا يمارس «${meta.ar}» خارج نطاقه`,
             variant: "role_holds_foreign_scope",
           })
-        } else if (meta.type !== "personal") {
+        } else {
           // نطاق الإسناد هو الجذر: لا يوجد نطاقٌ أجنبيّ عنه بنيوياً — وهذا صحيحٌ لا نقص.
           skipped.push(`سلب النطاق الأجنبي متعذّر بنيوياً: ${roleId} × ${capId} (نطاقه الجذر)`)
         }
       } else {
+        // ── **صنفُ السلب الجديد** (CR-012/قب-٣٨): القدرةُ الشخصيةُ خارج الحزمة تُرفض
+        // **على كيان الفاعل نفسِه** — وهو المعنى الحقيقيّ للخلية الفارغة. قبل هذا الطلب
+        // كانت الخلايا العشرُ الشخصية مُختبَرةً بمعنى «ليس كيانك» لا بمعنى «لا تفعلها».
+        if (meta.type === "personal") {
+          cases.push({
+            kind: "negative",
+            roleId,
+            capId,
+            assignmentScope: home,
+            requestScope: home,
+            expectAllowed: false,
+            label: `«${ROLES[roleId].ar}» لا يملك «${meta.ar}» ولو على كيان نفسِه`,
+            variant: "personal_lacks_own_entity",
+          })
+        }
+
         // ── السلب (الأهم): بلا القدرة ⇒ تُرفض، على نطاقه وعلى نطاق آخر ──
         cases.push({
           kind: "negative",

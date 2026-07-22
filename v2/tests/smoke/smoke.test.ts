@@ -58,6 +58,8 @@ describe("الدخان: الصفحة المحروسة تمنع فعلاً وتق
   it("والمدير لا ينشر تغطية — الشمول اطّلاع لا عمل (ق-٢٧)", () => {
     const d = can(person("u-admin"), "media.post", selfScope("u-media", "coverage", "cv1"), CTX)
     expect(d.allowed).toBe(false)
-    expect(d.reason).toBe("DENIED_PERSONAL_NOT_OWNER")
+    // **CR-012/قب-٣٨**: المديرُ يُردّ عند الشرط الأول — `admin × media.post = ·` في المصفوفة
+    // صارت نافذةً، فلا يُردُّ لأنّ الكيان ليس كيانه بل لأنه **لا ينشر أصلاً**.
+    expect(d.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
   })
 })

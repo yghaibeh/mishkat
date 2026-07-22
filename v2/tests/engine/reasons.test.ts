@@ -2,13 +2,15 @@ import { describe, it, expect } from "vitest"
 import { REASON_CODES, REASON_LABELS_AR } from "../../src/authorization/reasons.js"
 
 describe("مجموعة الأسباب المغلقة (SPEC_authorization §٤.١)", () => {
-  it("خمسة عشر رمزاً لا أكثر ولا أقل", () => {
-    expect(REASON_CODES).toHaveLength(15)
+  // **ستة عشر بعد CR-012/قب-٣٨**: `DENIED_PERSONAL_NOT_IN_ROLE` سببٌ **مميِّزٌ جديد**
+  // («دورك لا يمنحها» غيرُ «لست صاحبها») — والتشخيصُ جزءٌ من العقد لا زينةٌ فيه (§٤.١).
+  it("ستة عشر رمزاً لا أكثر ولا أقل", () => {
+    expect(REASON_CODES).toHaveLength(16)
   })
 
-  it("ثلاثة أسباب سماح واثنا عشر سبب رفض", () => {
+  it("ثلاثة أسباب سماح وثلاثة عشر سبب رفض", () => {
     expect(REASON_CODES.filter((r) => r.startsWith("ALLOWED_"))).toHaveLength(3)
-    expect(REASON_CODES.filter((r) => r.startsWith("DENIED_"))).toHaveLength(12)
+    expect(REASON_CODES.filter((r) => r.startsWith("DENIED_"))).toHaveLength(13)
   })
 
   it("لكل رمز رسالة عربية — فلا يرى المستخدم «تعذرت الإضافة» أبداً (ع-٥)", () => {

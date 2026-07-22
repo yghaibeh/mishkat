@@ -137,7 +137,8 @@ describe("ق-٨١ — **خارجَ نطاقك: لا تسلّم ولا ترى**",
       DECISION,
     )
     expect(rejected.ok).toBe(false)
-    if (!rejected.ok) expect(rejected.decision.reason).toBe("DENIED_PERSONAL_NOT_OWNER")
+    // **CR-012/قب-٣٨**: `custody.own` ليست في حزمة المدير — فيُردّ عند الشرط الأول.
+    if (!rejected.ok) expect(rejected.decision.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
   })
 })
 

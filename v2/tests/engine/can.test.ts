@@ -162,7 +162,9 @@ describe("خطوة ٢: مسار القدرة الشخصية لا يلتقي بم
     })
     const d = can(admin, "media.post", selfScope("p-media", "coverage", "cv1"), CTX)
     expect(d.allowed).toBe(false)
-    expect(d.reason).toBe("DENIED_PERSONAL_NOT_OWNER")
+    // **بعد CR-012**: المديرُ يموت عند الشرط الأول لا الثاني — `admin × media.post = ·`
+    // في المصفوفة، فالسببُ «دورك لا يمنحها» وهو أدقُّ تشخيصاً من «لست صاحبها» (§٤.١).
+    expect(d.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
   })
 
   it("القدرة الشخصية بنطاق وحدة تُرفض — لا تُفحص بالشجرة أصلاً", () => {
@@ -197,7 +199,66 @@ describe("خطوة ٢: مسار القدرة الشخصية لا يلتقي بم
     }
     const deputy = actor({ personId: "p-deputy", overrides: [expired] })
     const d = can(deputy, "media.post", selfScope("p-media", "coverage", "cv1"), CTX)
+    expect(d.allowed).toBe(false)
+    // النائبُ بلا إسنادٍ ومنحُه منتهٍ ⇒ **لا حزمةَ ولا منح**: يموت عند الشرط الأول (CR-012).
+    expect(d.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
+  })
+
+  // ═══ CR-012/قب-٣٨ — الشرطان معاً: الدورُ يمنحها **و** أنت صاحبُها ═══
+  it("**دورٌ لا تمنحه حزمتُه القدرةَ الشخصية يُرفض على كيان نفسِه** — لا الملكيةُ وحدها بابٌ", () => {
+    // الأميرُ صاحبُ حسابٍ في الشبكة، و`media.post` ليست في حزمته (المصفوفة: `media` وحده).
+    // قبل CR-012 كان يُنشئ تغطيةً باسمه فيصير «صاحبَها» فيمرّ — والخليةُ معطَّلةُ الأثر.
+    const d = can(actor(), "media.post", selfScope("p-amir", "coverage", "cv1"), CTX)
+    expect(d.allowed).toBe(false)
+    expect(d.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
+    expect(d.deniedBy).toEqual({ requiredCapability: "media.post" })
+  })
+
+  it("وصاحبُ الدور نفسُه لا يمرّ على كيان غيره — الشرطُ الثاني باقٍ بسببه المميِّز", () => {
+    const media = actor({
+      personId: "p-media",
+      assignments: [assignment({ roleId: "media", scopePath: "/" })],
+    })
+    const d = can(media, "media.post", selfScope("p-someone-else", "coverage", "cv1"), CTX)
+    expect(d.allowed).toBe(false)
     expect(d.reason).toBe("DENIED_PERSONAL_NOT_OWNER")
+  })
+
+  it("وحاملُ الدور على كيان نفسِه يمرّ — الشرطان مجتمعان", () => {
+    const media = actor({
+      personId: "p-media",
+      assignments: [assignment({ roleId: "media", scopePath: "/" })],
+    })
+    const d = can(media, "media.post", selfScope("p-media", "coverage", "cv1"), CTX)
+    expect(d.allowed).toBe(true)
+    expect(d.reason).toBe("ALLOWED_PERSONAL_OWNER")
+  })
+
+  it("والإسنادُ المنتهي لا يُبقي القدرةَ الشخصية ولو بقي الكيانُ باسمه", () => {
+    const past = actor({
+      personId: "p-media",
+      assignments: [
+        assignment({
+          roleId: "media",
+          scopePath: "/",
+          endDate: new Date("2026-03-01T00:00:00.000Z"),
+        }),
+      ],
+    })
+    const d = can(past, "media.post", selfScope("p-media", "coverage", "cv1"), CTX)
+    expect(d.allowed).toBe(false)
+    expect(d.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
+  })
+
+  it("والدورُ الموقوف بمفتاحٍ لا يمنح قدرةً شخصية ولو كانت في حزمته", () => {
+    // `bloc_head` موقوفٌ في المصفوفة وحزمتُه تحمل `custody.own` — فالتوقيفُ يُسقطها.
+    const suspended = actor({
+      personId: "p-bloc",
+      assignments: [assignment({ roleId: "bloc_head", scopePath: "/men/" })],
+    })
+    const d = can(suspended, "custody.own", selfScope("p-bloc", "custody", "cu1"), CTX)
+    expect(d.allowed).toBe(false)
+    expect(d.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
   })
 
   it("الحجب يغلب حتى على القدرة الشخصية لصاحبها", () => {

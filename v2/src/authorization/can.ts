@@ -88,6 +88,19 @@ function activeOverrides(actor: Actor, cap: CapId, now: Date, effect: "grant" | 
   )
 }
 
+/**
+ * الإسنادات الفعّالة زمنياً (ق-٢٤، ق-٢٥) — **تعريفٌ واحد** يخدم مسار القدرة الشخصية
+ * (الخطوة ٢) ومسار الأدوار (الخطوة ٤) معاً: تعريفان لـ«الإسناد الفعّال» يتباعدان حتماً.
+ */
+function activeAssignments(actor: Actor, now: Date): Assignment[] {
+  return actor.assignments.filter(
+    (a) =>
+      a.approvalStatus === "approved" &&
+      !a.unitArchived &&
+      isTemporallyActive(a.startDate, a.endDate, now),
+  )
+}
+
 function deny(reason: ReasonCode, deniedBy?: Decision["deniedBy"]): Decision {
   return deniedBy === undefined ? { allowed: false, reason } : { allowed: false, reason, deniedBy }
 }
@@ -117,13 +130,25 @@ export function can(actor: Actor, cap: CapId, scope: Scope, ctx: DecisionContext
   const denies = activeOverrides(actor, cap, ctx.now, "deny")
   const grants = activeOverrides(actor, cap, ctx.now, "grant")
 
-  // ── خطوة ٢: مسار القدرة الشخصية — منفصلٌ تماماً، لا يمرّ بالأدوار ولا بالنطاق ──
-  // لا فرع هنا يقول «إن كان مديراً»: الشمول اطّلاع لا عمل (ق-٢٧).
+  // ── خطوة ٢: مسار القدرة الشخصية — شرطان مجتمعان: دورُك يمنحها **وأنت** صاحبُها ──
+  // لا فرع هنا يقول «إن كان مديراً»: الشمول اطّلاع لا عمل (ق-٢٧). ولا يمرّ بالنطاق:
+  // القدرة الشخصية تتبع الشخصَ لا الشجرة — يُسأل عن الحزمة لا عن موضع التكليف (§١.١).
   if (meta.type === "personal") {
     // الحجب أداة أمان تسبق كل شيء، حتى على الصاحب نفسه (§١.٤).
     const blocking = denies[0]
     if (blocking !== undefined) {
       return deny("DENIED_EXPLICIT_BLOCK", { override: "deny", scope: blocking.scopePath })
+    }
+    // **CR-012/قب-٣٨ — الشرط الأول: أفي حزمة دورِك هذه القدرة؟** بدونه تكون الملكيةُ وحدَها
+    // باباً، فيصير مَن يملك **دعوى الإنشاء** صاحباً فيمارس ما لا تخوّله المصفوفة — وتُعطَّل
+    // عشرُ خلايا شخصية (`admin × media.post = ·` مكتوبةٌ غيرُ نافذة). والسببُ **مميِّزٌ جديد**:
+    // «دورك لا يمنحها» غيرُ «لست صاحبها» — والتشخيص جزءٌ من العقد (§٤.١).
+    const bundleHolds = activeAssignments(actor, ctx.now).some(
+      (a) => ROLES[a.roleId].state === "active" && ROLE_CAPABILITIES[a.roleId].has(cap),
+    )
+    // المخرجُ نفسُه المعلن: منحٌ فرديّ صريح مؤقت عند شغور الدور (§١.٤) — لا مخرجَ سواه.
+    if (!bundleHolds && grants.length === 0) {
+      return deny("DENIED_PERSONAL_NOT_IN_ROLE", { requiredCapability: cap })
     }
     if (scope.kind !== "self") return deny("DENIED_PERSONAL_NOT_OWNER")
     if (scope.ownerPersonId !== actor.personId) {
@@ -145,12 +170,7 @@ export function can(actor: Actor, cap: CapId, scope: Scope, ctx: DecisionContext
   if (scope.kind !== "unit") return deny("DENIED_OUT_OF_SCOPE")
 
   // ── خطوة ٤: الإسنادات الفعّالة زمنياً (ق-٢٤، ق-٢٥) ──────────────────────
-  const temporallyActive = actor.assignments.filter(
-    (a) =>
-      a.approvalStatus === "approved" &&
-      !a.unitArchived &&
-      isTemporallyActive(a.startDate, a.endDate, ctx.now),
-  )
+  const temporallyActive = activeAssignments(actor, ctx.now)
   const hasOverrides = denies.length > 0 || grants.length > 0
   if (temporallyActive.length === 0 && !hasOverrides) return deny("DENIED_NO_ACTIVE_ASSIGNMENT")
 

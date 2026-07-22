@@ -103,7 +103,8 @@ describe("«تغطياتي» — قراءةٌ شخصيةٌ لصاحبها وحد
     )
     expect(r.ok).toBe(false)
     if (r.ok) return
-    expect(r.decision.reason).toBe("DENIED_PERSONAL_NOT_OWNER")
+    // **CR-012/قب-٣٨**: المديرُ لا يحمل `media.post` أصلاً (ق-١٠٥) — فالردُّ عند الشرط الأول.
+    expect(r.decision.reason).toBe("DENIED_PERSONAL_NOT_IN_ROLE")
   })
 
   it("وتصير «منشورةً» حين يصلها ألبومُها (ق-١٠٣: لا تغطيةَ بلا صورةٍ تُعرض)", async () => {
