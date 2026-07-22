@@ -20,6 +20,8 @@ import type { SqlDriver, SqlRow } from "../sql/driver.js"
 import { UnitOfWork } from "../unitOfWork.js"
 import { persistentLedger, type LedgerReferences } from "../repositories/ledgerRepository.js"
 import { persistentOrg } from "../repositories/orgRepository.js"
+import { persistentAudit } from "../repositories/auditRepository.js"
+import { AuditJournal } from "../../audit/journal.js"
 
 /** اصطلاحُ v1: عملةٌ فارغة = الأساس (سجل ٠٠٦٦) — تُترجم صراحةً ولا تعبر فارغة. */
 const V1_BASE_CURRENCY: CurrencyCode = "USD"
@@ -85,8 +87,10 @@ export async function transferV1(
     params: [],
   })
 
-  const org = new OrgStore(tenantId)
-  const ledger = new LedgerStore(tenantId)
+  // سجلٌّ واحدٌ للوحدتين (CR-027) — والنقلُ لا يكتب فيه، لكنه يُحمَّل ويُقذف معهما.
+  const audit = new AuditJournal(tenantId)
+  const org = new OrgStore(tenantId, audit)
+  const ledger = new LedgerStore(tenantId, audit)
   const pathOf = new Map<string, string>()
 
   for (const row of unitRows) {
@@ -192,16 +196,19 @@ export async function transferV1(
   // الطبيعيّ» هنا لأن معرّفات v2 تُولَّد بالعدّاد، فإعادةُ التوليد على قاعدةٍ مملوءة كانت
   // ستُنتج معرّفاتٍ جديدةً لقيودٍ قديمة — فالفحصُ **قبل** الكتابة لا بعدها.
   const probe = new UnitOfWork(target, { tenantId, scopePath: "/" })
-  const probeOrg = new OrgStore(tenantId)
-  const probeLedger = new LedgerStore(tenantId)
+  const probeAudit = new AuditJournal(tenantId)
+  const probeOrg = new OrgStore(tenantId, probeAudit)
+  const probeLedger = new LedgerStore(tenantId, probeAudit)
   probe.enlist(persistentOrg(probeOrg))
   probe.enlist(persistentLedger(probeLedger))
+  probe.enlist(persistentAudit(probeAudit))
   await probe.hydrate()
   if (probeOrg.units.size > 0 || probeLedger.entries().length > 0) return report
 
   const uow = new UnitOfWork(target, { tenantId, scopePath: "/" })
   uow.enlist(persistentOrg(org))
   uow.enlist(persistentLedger(ledger, references))
+  uow.enlist(persistentAudit(audit))
   await uow.hydrate()
   await uow.flush()
   return report

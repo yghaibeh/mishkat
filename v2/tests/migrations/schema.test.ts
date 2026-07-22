@@ -175,7 +175,8 @@ describe("لهجةُ القاسم المشترك — ع-٣", () => {
   })
 
   it("لا مخططَ لوحدةٍ خارج وحدتَي الريادة — الثلاث عشرة الباقية لـT26", () => {
-    const pilot = /^(_migrations|org_|ledger_|journal_|finance_actions|funds|audit_log|active_posting_keys|sequences)/
+    const pilot =
+      /^(_migrations|org_|ledger_|journal_|finance_actions|funds|fund_balances|audit_log|active_posting_keys|sequences)/
     for (const spec of TABLES) expect(`${spec.name}:${pilot.test(spec.name)}`).toBe(`${spec.name}:true`)
   })
 })

@@ -115,10 +115,13 @@ export function proposeAction(
     resultEntryId: null,
     failureCode: null,
   })
-  store.appendAudit({
+  store.audit.append({
     at: ctx.now,
     actorPersonId: input.requestedBy,
     action: "ledger.action.propose",
+    unitPath: unit.path,
+    capability: null,
+    targetType: "financeAction",
     targetId: id,
     reason: null,
   })
@@ -155,10 +158,13 @@ export function decideAction(
       decidedAt: ctx.now,
       reasonAr: reason,
     })
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: input.decidedBy,
       action: "ledger.action.reject",
+      unitPath: action.unitPath,
+      capability: null,
+      targetType: "financeAction",
       targetId: action.id,
       reason,
     })
@@ -176,10 +182,13 @@ export function decideAction(
       reasonAr: reason.length === 0 ? null : reason,
       failureCode: executed.error.code,
     })
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: input.decidedBy,
       action: "ledger.action.failed",
+      unitPath: action.unitPath,
+      capability: null,
+      targetType: "financeAction",
       targetId: action.id,
       reason: executed.error.code,
     })
@@ -194,10 +203,13 @@ export function decideAction(
     reasonAr: reason.length === 0 ? null : reason,
     resultEntryId: executed.value.id,
   })
-  store.appendAudit({
+  store.audit.append({
     at: ctx.now,
     actorPersonId: input.decidedBy,
     action: "ledger.action.approve",
+    unitPath: action.unitPath,
+    capability: null,
+    targetType: "financeAction",
     targetId: action.id,
     reason: reason.length === 0 ? null : reason,
   })

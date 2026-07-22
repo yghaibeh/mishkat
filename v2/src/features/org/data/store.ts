@@ -11,6 +11,7 @@
  * لا SQL ولا مكتبة قاعدة هنا (G17): بِنى JS خالصة — يقفل تسرُّب لهجة القاعدة إلى الخدمات.
  */
 
+import { AuditJournal, type AuditMark } from "../../../audit/journal.js"
 import type {
   Account,
   OrgUnit,
@@ -21,24 +22,13 @@ import type {
 /** الشبكةُ المبذورة الوحيدة اليوم (§١.٠، قب-١٨) — يختمها المستودعُ افتراضاً. */
 export const DEFAULT_TENANT_ID = "t-main"
 
-export type AuditRecord = {
-  readonly tenantId: string
-  readonly at: Date
-  readonly actorPersonId: string
-  readonly action: string
-  readonly capability: string
-  readonly scopePath: string
-  readonly targetType: string
-  readonly targetId: string
-  readonly reason: string | null
-}
-
 type Snapshot = {
   readonly units: Map<string, OrgUnit>
   readonly accounts: Map<string, Account>
   readonly assignments: StoredAssignment[]
   readonly requests: Map<string, RegistrationRequest>
-  readonly audit: AuditRecord[]
+  /** علامةٌ لا نسخة: السجلُّ ملحقٌ فقط فالارتدادُ قصٌّ (`AuditJournal.mark`). */
+  readonly auditMark: AuditMark
   readonly seq: number
 }
 
@@ -52,14 +42,20 @@ export class OrgStore {
   accounts = new Map<string, Account>()
   assignments: StoredAssignment[] = []
   requests = new Map<string, RegistrationRequest>()
-  audit: AuditRecord[] = []
   private seq = 0
 
   /**
    * المستودعُ مقسَّمٌ بالشبكة (§١.٠): يحمل شبكتَه ويختمها على كلِّ كيانٍ يحفظه — فـ`tenantId`
    * **يُشتقّ من سياق المستودع لا من مدخل العميل**، ولا يُبلَغ كيانُ شبكةٍ من مستودع أخرى.
    */
-  constructor(readonly tenantId: string = DEFAULT_TENANT_ID) {}
+  constructor(
+    readonly tenantId: string = DEFAULT_TENANT_ID,
+    /**
+     * **سجلُّ التدقيق الواحد** (CR-027) — يُحقن ولا يُملَك. وسجلُّ الشجرة كان يحمل نطاقاً
+     * أصلاً، فالتوحيدُ لا يُنقصه شيئاً ويُكسبه **جيرةَ سجلّ الدفتر في استعلامٍ واحد**.
+     */
+    readonly audit: AuditJournal = new AuditJournal(tenantId),
+  ) {}
 
   /** معرّفٌ متتابعٌ حتميّ — لا عشوائيّة (TESTING_POLICY §٥). */
   nextId(prefix: string): string {
@@ -112,18 +108,14 @@ export class OrgStore {
     return this.requests.get(id) ?? null
   }
 
-  /** قيدُ التدقيق يُختم بالشبكة كسائر الكيانات — المُنشئُ لا يزوّد `tenantId` (اشتقاقٌ لا مدخل). */
-  appendAudit(entry: Omit<AuditRecord, "tenantId">): void {
-    this.audit.push({ ...entry, tenantId: this.tenantId })
-  }
-
   private snapshot(): Snapshot {
     return {
       units: new Map(structuredClone([...this.units])),
       accounts: new Map(structuredClone([...this.accounts])),
       assignments: structuredClone(this.assignments),
       requests: new Map(structuredClone([...this.requests])),
-      audit: structuredClone(this.audit),
+      // **السجلُّ يرتدّ مع المستودع**: قيدُ تدقيقٍ عن أثرٍ ارتدّ هو شهادةُ زورٍ على النظام.
+      auditMark: this.audit.mark(),
       seq: this.seq,
     }
   }
@@ -133,7 +125,7 @@ export class OrgStore {
     this.accounts = s.accounts
     this.assignments = s.assignments
     this.requests = s.requests
-    this.audit = s.audit
+    this.audit.rollbackTo(s.auditMark)
     this.seq = s.seq
   }
 

@@ -1,8 +1,12 @@
 /**
- * موضعُ سجلّ التدقيق ومفتاحُ توجيهه — `db/README.md` الحسم ٣ (نقطةُ اللاعودة الثانية).
+ * **سجلُّ التدقيق الواحد** — `db/README.md` الحسم ٣ (نقطةُ اللاعودة الثانية) وقرارُ CR-027.
  *
- * السجلُّ **واحدٌ مركزيّ**، ويحمل مفتاحَ التوجيه كسائر الجداول. وما لا يُشتقّ نطاقُه
- * **مُعلنٌ ومحروسٌ بـ`toEqual`** — فلا ينمو صامتاً ولا ينكمش صامتاً (قب-٤٦ §٢ روحاً).
+ * السجلُّ **واحدٌ مركزيّ** لا سجلٌّ لكلِّ وحدة، ويحمل **النطاق صراحةً** لا اشتقاقاً.
+ * وما يستحيل أن يُقال نطاقُه **مُعلنٌ ومحروسٌ بـ`toEqual`** — فلا ينمو صامتاً ولا ينكمش.
+ *
+ * **والأثرُ الذي جاءت من أجله CR-027**: قيدُ تدقيقٍ عن حدثٍ في مسجدٍ بعينه **يظهر في تدقيق
+ * ذلك المسجد** — وهو ما كان ناقصاً، ومسؤولٌ يفتّش سجلَّ مسجده كان يرى صفحةً ناقصةً
+ * **ولا يعلم أنها ناقصة**.
  */
 
 import { describe, expect, it } from "vitest"
@@ -10,7 +14,7 @@ import { postJournal } from "../../src/features/ledger/services/journal.js"
 import { postEventSafely } from "../../src/features/ledger/services/posting.js"
 import { createSettingsResolver } from "../../src/settings/resolver.js"
 import type { Cents } from "../../src/features/ledger/types.js"
-import { AUDIT_ACTIONS_WITHOUT_SCOPE } from "../../src/db/repositories/ledgerRepository.js"
+import { AUDIT_ACTIONS_WITHOUT_SCOPE } from "../../src/audit/journal.js"
 import { MAIN, NOW, freshDb, seedSession, session } from "./_harness.js"
 
 const c = (n: number): Cents => n as Cents
@@ -36,38 +40,50 @@ function donation(sourceId: string): Parameters<typeof postJournal>[2] {
   }
 }
 
-type AuditRow = { source: string; action: string; unit_path: string; scope_exact: number; seq: number }
+type AuditRow = {
+  source: string
+  action: string
+  unit_path: string
+  scope_exact: number
+  seq: number
+  capability: string | null
+  target_type: string | null
+}
 
 async function auditRows(driver: Awaited<ReturnType<typeof freshDb>>): Promise<readonly AuditRow[]> {
   return (await driver.all({
-    sql: "SELECT source, action, unit_path, scope_exact, seq FROM audit_log ORDER BY source, seq",
+    sql:
+      "SELECT source, action, unit_path, scope_exact, seq, capability, target_type " +
+      "FROM audit_log ORDER BY seq",
     params: [],
   })) as unknown as readonly AuditRow[]
 }
 
-describe("سجلُّ التدقيق — جدولٌ واحدٌ مركزيّ", () => {
-  it("سجلُّ الشجرة وسجلُّ الدفتر يسكنان **جدولاً واحداً** يُميَّزان بمصدرهما", async () => {
+describe("سجلُّ التدقيق — **واحدٌ موحَّد** لا سجلٌّ لكلِّ وحدة (CR-027)", () => {
+  it("قيدُ الشجرة وقيدُ الدفتر يسكنان **سجلاً واحداً بتسلسلٍ واحد** — لا مصدرَين", async () => {
     const driver = await freshDb()
     await seedSession(driver, MAIN)
     await session(driver, MAIN, ({ org, ledger }) => {
       expect(postJournal(ledger, CTX, donation("d-1")).ok).toBe(true)
-      org.appendAudit({
+      org.audit.append({
         at: NOW,
         actorPersonId: "u-admin",
         action: "users.provision",
         capability: "user.manage",
-        scopePath: "/men/r1/m1/",
+        unitPath: "/men/r1/m1/",
         targetType: "account",
         targetId: "p-1",
         reason: null,
       })
     })
     const rows = await auditRows(driver)
-    expect(new Set(rows.map((r) => r.source))).toEqual(new Set(["org", "ledger"]))
+    // **مصدرٌ واحد**: العمودُ بقي ضلعاً في المفتاح الطبيعيّ، والتصنيفُ في `action` لا يُكرَّر.
+    expect(new Set(rows.map((r) => r.source))).toEqual(new Set(["audit"]))
+    expect(rows.map((r) => `${r.seq}:${r.action}`)).toEqual(["1:ledger.post", "2:users.provision"])
     driver.close()
   })
 
-  it("مفتاحُ التوجيه: قيدُ تدقيقِ الدفتر يُشتقّ نطاقُه من **الكيان المُدقَّق** لا من فراغ", async () => {
+  it("**النطاقُ يُقال ولا يُشتقّ**: قيدُ تدقيق الدفتر يحمل وحدةَ حدثه", async () => {
     const driver = await freshDb()
     await seedSession(driver, MAIN)
     await session(driver, MAIN, ({ ledger }) => {
@@ -76,30 +92,55 @@ describe("سجلُّ التدقيق — جدولٌ واحدٌ مركزيّ", () 
     const posted = (await auditRows(driver)).find((r) => r.action === "ledger.post")!
     expect(posted.unit_path).toBe("/men/r1/m1/")
     expect(posted.scope_exact).toBe(1)
+    // ونوعُ الهدف صار مذكوراً — كان `NULL` قبل التوحيد (جدولُ CR-027 §١).
+    expect(posted.target_type).toBe("journalEntry")
     driver.close()
   })
 
-  it("مفتاحُ التوجيه: قيدُ تدقيقِ الشجرة ينسخ نطاقَه المعلن ولا يخترعه", async () => {
+  it("**حدثٌ في مسجدٍ يظهر في تدقيق ذلك المسجد** — وهو ما جاءت له CR-027", async () => {
     const driver = await freshDb()
     await seedSession(driver, MAIN)
-    await session(driver, MAIN, ({ org }) => {
-      org.appendAudit({
+    await session(driver, MAIN, ({ org, ledger }) => {
+      expect(postJournal(ledger, CTX, donation("d-1")).ok).toBe(true)
+      org.audit.append({
         at: NOW,
         actorPersonId: "u-admin",
         action: "registration.approve",
-        capability: "user.manage",
-        scopePath: "/men/r1/m2/",
+        capability: "registration.approve",
+        unitPath: "/men/r1/m2/",
         targetType: "account",
         targetId: "p-9",
         reason: null,
       })
+
+      // تدقيقُ المسجد الأول يرى حدثَه **وحدَه** — لا حدثَ جاره.
+      expect(ledger.audit.listInScope("/men/r1/m1/", 50).map((e) => e.action)).toEqual([
+        "ledger.post",
+      ])
+      // وتدقيقُ المسجد الثاني يرى حدثَه هو.
+      expect(org.audit.listInScope("/men/r1/m2/", 50).map((e) => e.action)).toEqual([
+        "registration.approve",
+      ])
+      // والمنطقةُ فوقهما ترى الاثنين **بالاحتواء** لا بالمصادفة.
+      expect(org.audit.listInScope("/men/r1/", 50)).toHaveLength(2)
     })
-    const rows = await auditRows(driver)
-    expect(rows.map((r) => `${r.unit_path}|${r.scope_exact}`)).toEqual(["/men/r1/m2/|1"])
     driver.close()
   })
 
-  it("ما لا يُشتقّ نطاقُه يُوجَّه إلى جذر الشبكة **موسوماً** لا مُموَّهاً", async () => {
+  it("والقراءةُ بالنطاق تصمد **بعد عبور القاعدة** لا في الذاكرة فقط", async () => {
+    const driver = await freshDb()
+    await seedSession(driver, MAIN)
+    await session(driver, MAIN, ({ ledger }) => {
+      expect(postJournal(ledger, CTX, donation("d-1")).ok).toBe(true)
+    })
+    await session(driver, MAIN, ({ audit }) => {
+      expect(audit.listInScope("/men/r1/m1/", 50).map((e) => e.action)).toEqual(["ledger.post"])
+      expect(audit.listInScope("/men/r1/m2/", 50)).toEqual([])
+    })
+    driver.close()
+  })
+
+  it("ما لا يُقال نطاقُه يُوجَّه إلى جذر الشبكة **موسوماً** لا مُموَّهاً", async () => {
     const driver = await freshDb()
     await seedSession(driver, MAIN)
     await session(driver, MAIN, ({ ledger }) => {
@@ -121,12 +162,12 @@ describe("سجلُّ التدقيق — جدولٌ واحدٌ مركزيّ", () 
   })
 })
 
-describe("حَجْرُ الأفعال التي لا يُشتقّ نطاقُها — لا ينمو ولا ينكمش صامتاً", () => {
+describe("حَجْرُ الأفعال التي لا يُقال نطاقُها — لا ينمو ولا ينكمش صامتاً", () => {
   it("القائمةُ المعلنة تطابق ما يقع فعلاً — `toEqual` لا `toContain`", () => {
     expect([...AUDIT_ACTIONS_WITHOUT_SCOPE]).toEqual(["ledger.post.failed"])
   })
 
-  it("كلُّ فعلٍ في القائمة **يعجز فعلاً** عن الاشتقاق — فلا يبقى فيها ميت", async () => {
+  it("كلُّ فعلٍ في القائمة **يعجز فعلاً** عن قول نطاقه — فلا يبقى فيها ميت", async () => {
     const driver = await freshDb()
     await seedSession(driver, MAIN)
     await session(driver, MAIN, ({ ledger }) => {
@@ -146,20 +187,96 @@ describe("حَجْرُ الأفعال التي لا يُشتقّ نطاقُها 
     driver.close()
   })
 
-  it("فعلُ تدقيقٍ خارج القائمة لا يُشتقّ نطاقُه ⟵ **يُرمى** ولا يُوجَّه إلى الجذر صامتاً", async () => {
+  it("فعلٌ خارج القائمة يُوجَّه إلى الجذر ⟵ **يُرمى** ولا يمرّ صامتاً", async () => {
     const driver = await freshDb()
     await seedSession(driver, MAIN)
     await expect(
       session(driver, MAIN, ({ ledger }) => {
-        ledger.appendAudit({
+        ledger.audit.append({
           at: NOW,
           actorPersonId: "u-finance",
           action: "ledger.فعلٌ-مستحدث",
+          unitPath: "/",
+          capability: null,
+          targetType: "مجهول",
           targetId: "هدفٌ-لا-يُعرف",
           reason: null,
         })
       }),
     ).rejects.toThrow(/ledger\.فعلٌ-مستحدث/)
+    driver.close()
+  })
+
+  it("ومسارٌ مخالفٌ لثابت التمثيل يُرمى — لا يُقبل «نطاقٌ» ليس نطاقاً (§١.٥)", async () => {
+    const driver = await freshDb()
+    await seedSession(driver, MAIN)
+    await expect(
+      session(driver, MAIN, ({ ledger }) => {
+        ledger.audit.append({
+          at: NOW,
+          actorPersonId: "u-finance",
+          action: "ledger.post",
+          unitPath: "men/r1",
+          capability: null,
+          targetType: "journalEntry",
+          targetId: "je-1",
+          reason: null,
+        })
+      }),
+    ).rejects.toThrow(/ثابت التمثيل/)
+    driver.close()
+  })
+})
+
+describe("التسلسلُ ملكُ السجلّ — والنطاقُ الجزئيُّ لا يدهس ما لم يره", () => {
+  it("قيدٌ جديدٌ في نطاقٍ ضيّق **لا يكتب فوق** قيدِ وحدةٍ خارجه", async () => {
+    const driver = await freshDb()
+    await seedSession(driver, MAIN)
+    await session(driver, MAIN, ({ org }) => {
+      for (const [unit, target] of [
+        ["/men/r1/m1/", "p-1"],
+        ["/men/r1/m2/", "p-2"],
+      ]) {
+        org.audit.append({
+          at: NOW,
+          actorPersonId: "u-admin",
+          action: "users.provision",
+          capability: "user.manage",
+          unitPath: unit!,
+          targetType: "account",
+          targetId: target!,
+          reason: null,
+        })
+      }
+    })
+
+    // جلسةٌ **لا ترى إلا المسجد الأول** ثم تُلحق قيداً جديداً فيه.
+    await session(
+      driver,
+      MAIN,
+      ({ org }) => {
+        expect(org.audit.all().map((e) => e.targetId)).toEqual(["p-1"])
+        org.audit.append({
+          at: NOW,
+          actorPersonId: "u-admin",
+          action: "users.provision",
+          capability: "user.manage",
+          unitPath: "/men/r1/m1/",
+          targetType: "account",
+          targetId: "p-3",
+          reason: null,
+        })
+      },
+      "/men/r1/m1/",
+    )
+
+    // **قيدُ المسجد الثاني باقٍ**: التسلسلُ استُؤنف من المحفوظ لا من موضع القائمة.
+    const rows = await auditRows(driver)
+    expect(rows.map((r) => `${r.seq}:${r.unit_path}`)).toEqual([
+      "1:/men/r1/m1/",
+      "2:/men/r1/m2/",
+      "3:/men/r1/m1/",
+    ])
     driver.close()
   })
 })
@@ -204,5 +321,19 @@ describe("التدرّجُ بالعمر — مصمَّمٌ اليوم وغيرُ
       expect(`${name}:${String(column["type"])}`).toBe(`${name}:TEXT`)
     }
     driver.close()
+  })
+})
+
+describe("لا سجلَّ محليّاً بعد اليوم — الجذرُ لا العَرَض (المادة ١/٢)", () => {
+  it("`AuditRecord` المحليُّ لم يعد له وجودٌ في وحدتَي الريادة", async () => {
+    const { readFileSync } = await import("node:fs")
+    const { dirname, join } = await import("node:path")
+    const { fileURLToPath } = await import("node:url")
+    const src = join(dirname(fileURLToPath(import.meta.url)), "../../src")
+    for (const unit of ["ledger", "org"]) {
+      const store = readFileSync(join(src, `features/${unit}/data/store.ts`), "utf8")
+      expect(`${unit}:${/type AuditRecord/.test(store)}`).toBe(`${unit}:false`)
+      expect(`${unit}:${/auditList|audit:\s*AuditRecord/.test(store)}`).toBe(`${unit}:false`)
+    }
   })
 })

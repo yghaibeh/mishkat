@@ -14,7 +14,7 @@ import { LedgerStore } from "../../src/features/ledger/data/store.js"
 import { OrgStore } from "../../src/features/org/data/store.js"
 import { UnitOfWork } from "../../src/db/unitOfWork.js"
 import { persistentLedger } from "../../src/db/repositories/ledgerRepository.js"
-import { MAIN, NOW, freshDb, rowsOf, seedSession, session, unitOfWorkFor } from "./_harness.js"
+import { MAIN, NOW, freshDb, freshStores, rowsOf, seedSession, session, unitOfWorkFor } from "./_harness.js"
 
 const c = (n: number): Cents => n as Cents
 const CTX = { now: NOW, actorPersonId: "u-finance", settings: createSettingsResolver([]) }
@@ -41,12 +41,12 @@ function donation(sourceId: string): Parameters<typeof postJournal>[2] {
 
 /** «سجلُّ التسليم» في وحدتَي الريادة: قيدُ التدقيق المرافق للقيد الماليّ (المادة ٤/٨). */
 function appendHandoverRecord(org: OrgStore, targetId: string): void {
-  org.appendAudit({
+  org.audit.append({
     at: NOW,
     actorPersonId: "u-finance",
     action: "box.handover",
     capability: "finance.entry",
-    scopePath: "/men/r1/m1/",
+    unitPath: "/men/r1/m1/",
     targetType: "entry",
     targetId,
     reason: null,
@@ -58,9 +58,8 @@ describe("الذرّية العابرة للمستودعين — على الأث
     const driver = await freshDb()
     await seedSession(driver, MAIN)
 
-    const org = new OrgStore(MAIN)
-    const ledger = new LedgerStore(MAIN)
-    const uow = unitOfWorkFor(driver, { org, ledger }, { tenantId: MAIN, scopePath: "/" })
+    const { org, ledger, audit } = freshStores(MAIN)
+    const uow = unitOfWorkFor(driver, { org, ledger, audit }, { tenantId: MAIN, scopePath: "/" })
     await uow.hydrate()
 
     expect(() =>
@@ -105,9 +104,8 @@ describe("الذرّية العابرة للمستودعين — على الأث
     const driver = await freshDb()
     await seedSession(driver, MAIN)
 
-    const org = new OrgStore(MAIN)
-    const ledger = new LedgerStore(MAIN)
-    const uow = unitOfWorkFor(driver, { org, ledger }, { tenantId: MAIN, scopePath: "/" })
+    const { org, ledger, audit } = freshStores(MAIN)
+    const uow = unitOfWorkFor(driver, { org, ledger, audit }, { tenantId: MAIN, scopePath: "/" })
     await uow.hydrate()
 
     expect(() =>
@@ -193,6 +191,7 @@ describe("الذرّية: لا إخفاقَ صامت", () => {
     uow.enlist(persistentLedger(new LedgerStore(MAIN)))
     uow.enlist({
       name: "box",
+      rowBudget: 1_000,
       tables: ["box_handovers"],
       project: () => new Map(),
       load: () => undefined,

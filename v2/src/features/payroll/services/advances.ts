@@ -91,10 +91,13 @@ export function grantAdvance(
       closedAt: null,
     };
     stores.payroll.saveAdvance(advance);
-    stores.ledger.appendAudit({
+    stores.ledger.audit.append({
       at: ctx.now,
       actorPersonId: ctx.actorPersonId,
       action: "payroll.advance.grant",
+      unitPath: advance.unitPath,
+      capability: null,
+      targetType: "payrollAdvance",
       targetId: advance.id,
       reason: null,
     });

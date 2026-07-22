@@ -19,10 +19,12 @@
  * (الساعة تُحقن). ولا SQL ولا مكتبة قاعدة هنا (G17): بِنى JS خالصة.
  */
 
+import { AuditJournal, type AuditMark } from "../../../audit/journal.js"
 import {
   LedgerStorageError,
   type Cents,
   type Fund,
+  type FundRollupRow,
   type JournalEntry,
   type JournalLine,
   type LedgerAccount,
@@ -30,25 +32,29 @@ import {
   type PendingAction,
 } from "../types.js"
 
+/**
+ * فاصلُ مفتاح الرولّ-أب — محرفٌ **لا يظهر في معرّفٍ ولا في مسارٍ ولا في رمز عملة**، فلا
+ * يلتبس `zakat|USD` بصندوقٍ اسمُه `zakat|USD`. يُكتب هروباً لا حرفاً خاماً (نظيرُ
+ * `unitOfWork.naturalKey`): المحرفُ غيرُ المرئيّ في المصدر يُنسَخ خطأً ولا يُرى.
+ */
+const ROLLUP_SEPARATOR = "\u0000"
+
+function rollupKey(fundId: string, currency: string): string {
+  return `${fundId}${ROLLUP_SEPARATOR}${currency}`
+}
+
 /** رأسُ القيد قبل التسجيل — المعرّفُ والشبكةُ وربطُ العكس من المستودع لا من المدخل. */
 export type EntryDraft = Omit<JournalEntry, "tenantId" | "id" | "reversedBy">
 export type LineDraft = Omit<JournalLine, "tenantId" | "id" | "entryId">
-
-export type AuditRecord = {
-  readonly tenantId: string
-  readonly at: Date
-  readonly actorPersonId: string
-  readonly action: string
-  readonly targetId: string
-  readonly reason: string | null
-}
 
 type Snapshot = {
   readonly entryMap: Map<string, JournalEntry>
   readonly lineList: JournalLine[]
   readonly postingKeyMap: Map<string, string>
   readonly actionMap: Map<string, PendingAction>
-  readonly auditList: AuditRecord[]
+  /** علامةٌ لا نسخة: السجلُّ ملحقٌ فقط فالارتدادُ قصٌّ (`AuditJournal.mark`). */
+  readonly auditMark: AuditMark
+  readonly fundRollup: Map<string, Map<string, number>>
   readonly seq: number
   readonly voucherSeq: number
 }
@@ -62,7 +68,12 @@ export class LedgerStore {
   /** مفتاحُ التكرار النشط ⟵ القيد الحامل له (§٣.٢). */
   private postingKeyMap = new Map<string, string>()
   private actionMap = new Map<string, PendingAction>()
-  private auditList: AuditRecord[] = []
+  /**
+   * **الرولّ-أب** (ع-٦): (صندوق × عملة) ⟵ (مسارُ الوحدة ⟵ رصيدٌ بالسنت).
+   * لا يُقرأ بالمفتاح ولا يُكتب إلا في `appendLine` — والقراءةُ العامّة `fundRollupRows()`
+   * و`fundBalance()` تمرّان على البنية ولا تبلغانها بمفتاح. **الباب واحدٌ ومقيسٌ بحارس.**
+   */
+  private fundRollup = new Map<string, Map<string, number>>()
   private seq = 0
   private voucherSeq = 0
 
@@ -70,7 +81,15 @@ export class LedgerStore {
    * المستودعُ **مقسَّمٌ بالشبكة** (§٨.١): يحمل شبكتَه ويختمها على كلِّ كيانٍ يحفظه — فـ`tenantId`
    * يُشتقّ من سياق المستودع لا من مدخل العميل، ولا يُبلَغ كيانُ شبكةٍ من مستودع أخرى.
    */
-  constructor(readonly tenantId: string) {}
+  constructor(
+    readonly tenantId: string,
+    /**
+     * **سجلُّ التدقيق الواحد** (CR-027) — يُحقن ولا يُملَك: الدفترُ ينادي المِرفقَ العابر
+     * ولا يحمل سجلاً خاصاً به. والافتراضُ سجلٌّ مستقلٌّ للاستعمال المنفرد؛ ومَن يجمع
+     * مستودعين في وحدة عملٍ واحدة **يمرّر السجلَّ نفسَه** فيسكنان جدولاً واحداً.
+     */
+    readonly audit: AuditJournal = new AuditJournal(tenantId),
+  ) {}
 
   /** معرّفٌ متتابعٌ حتميّ — لا عشوائيّة (TESTING_POLICY §٥). */
   nextId(prefix: string): string {
@@ -130,19 +149,47 @@ export class LedgerStore {
   }
 
   /**
-   * رصيدُ صندوقٍ شرعيٍّ بعملةٍ — مشتقٌّ من الأسطر لا مخزَّناً (ق-٦٠، §٦.٣).
-   * يُحسب على **أسطر الأصول** الموسومة بالصندوق: هي حركةُ ماله الفعليّة. ولولا ذلك لألغى
-   * وسمُ الطرفين (نقدٌ وإيراد) أثرَ الرصيد فصار صفراً دائماً — فالقاعدةُ بنيويةٌ هنا لا
-   * انضباطُ مُستدعٍ يتذكّر أيَّ سطرٍ يسم.
+   * رصيدُ صندوقٍ شرعيٍّ بعملةٍ — **تجميعٌ مسبق لا مجموعٌ حيّ** (ADR-001 ع-٦، CR-026 أ).
+   *
+   * يُقرأ من الرولّ-أب المبنيِّ سطراً سطراً، لا بمسحٍ على الأسطر: الأسطرُ تنمو بلا سقف
+   * (~٤٣ مليوناً عند ١٠٠×) والرولّ-أب محدودٌ بـ(صناديق × عملات × وحدات محمَّلة).
+   * والجمعُ هنا على **الوحدات المحمَّلة لهذا الصندوق** — وهو المدى نفسُه الذي كان يمسحه
+   * المجموعُ الحيّ، **فسلوكُ ق-٥٥ لا يتغيّر حرفاً**: النطاقُ المحمَّل هو النطاقُ المحسوب.
+   *
+   * ويُحسب على **أسطر الأصول** الموسومة بالصندوق: هي حركةُ ماله الفعليّة. ولولا ذلك لألغى
+   * وسمُ الطرفين (نقدٌ وإيراد) أثرَ الرصيد فصار صفراً دائماً — والفلترةُ تقع عند **الكتابة**
+   * في `appendLine` لا عند القراءة، فلا يبقى مُستدعٍ يتذكّر أيَّ سطرٍ يسم.
    */
   fundBalance(fundId: string, currency: string): Cents {
+    const wanted = rollupKey(fundId, currency)
     let net = 0
-    for (const l of this.lineList) {
-      if (l.fundId !== fundId || l.currency !== currency) continue
-      if (this.getAccount(l.accountId)?.kind !== "asset") continue
-      net += l.debit - l.credit
+    for (const [key, byUnit] of this.fundRollup) {
+      if (key !== wanted) continue
+      for (const balance of byUnit.values()) net += balance
     }
     return net as Cents
+  }
+
+  /**
+   * صفوفُ الرولّ-أب — **السطحُ المعلن الوحيد** الذي يُبنى منه صفُّ القاعدة، ومدخلُ المطابقة.
+   * قراءةٌ مجمَّدة لا تفتح باب تعديل (نظيرُ `entries()`/`lines()`).
+   */
+  fundRollupRows(): readonly FundRollupRow[] {
+    const rows: FundRollupRow[] = []
+    for (const [key, byUnit] of this.fundRollup) {
+      const [fundId, currency] = key.split(ROLLUP_SEPARATOR)
+      for (const [unitPath, balance] of byUnit) {
+        rows.push(
+          Object.freeze({
+            unitPath,
+            fundId: fundId!,
+            currency: currency!,
+            balance: balance as Cents,
+          }),
+        )
+      }
+    }
+    return Object.freeze(rows)
   }
 
   // ── الكتابة: مسارٌ واحدٌ فتحاً وإلحاقاً وختماً ──────────────────────────────
@@ -183,6 +230,17 @@ export class LedgerStore {
     this.lineList.push(
       Object.freeze({ ...line, tenantId: this.tenantId, id: this.nextId("jl"), entryId }),
     )
+
+    // ── الرولّ-أب: **مسارُ الكتابة الوحيد** (ع-٦، CR-026 أ) ────────────────────
+    // لا دالّةَ تُحدّثه على حدة ولا مسارَ يقبل رقماً من مُستدعٍ: الرقمُ **دالّةُ السطر
+    // الذي يُكتب الآن** لا غير — فمن لا يستطيع كتابةَ سطرٍ لا يستطيع تحريكَ الرصيد.
+    // وحركةُ مال الصندوق هي **أسطرُ الأصول** الموسومة (نظيرُ ق-٦٠ حرفياً).
+    if (line.fundId !== null && this.getAccount(line.accountId)?.kind === "asset") {
+      const key = rollupKey(line.fundId, line.currency)
+      const byUnit = this.fundRollup.get(key) ?? new Map<string, number>()
+      byUnit.set(line.unitPath, (byUnit.get(line.unitPath) ?? 0) + line.debit - line.credit)
+      this.fundRollup.set(key, byUnit)
+    }
   }
 
   /**
@@ -232,14 +290,6 @@ export class LedgerStore {
     return Object.freeze([...this.actionMap.values()])
   }
 
-  // ── التدقيق (§٨.٢) ─────────────────────────────────────────────────────────
-  appendAudit(entry: Omit<AuditRecord, "tenantId">): void {
-    this.auditList.push(Object.freeze({ ...entry, tenantId: this.tenantId }))
-  }
-  audit(): readonly AuditRecord[] {
-    return Object.freeze([...this.auditList])
-  }
-
   // ── المعاملة الذرّية ───────────────────────────────────────────────────────
   private snapshot(): Snapshot {
     // نسخٌ سطحيٌّ يكفي لأن كل كيانٍ مخزَّنٍ **مجمَّدٌ ويُستبدل ولا يُعدَّل في مكانه**.
@@ -248,7 +298,11 @@ export class LedgerStore {
       lineList: [...this.lineList],
       postingKeyMap: new Map(this.postingKeyMap),
       actionMap: new Map(this.actionMap),
-      auditList: [...this.auditList],
+      // **السجلُّ يرتدّ مع المستودع**: قيدُ تدقيقٍ عن أثرٍ ارتدّ هو شهادةُ زورٍ على النظام.
+      auditMark: this.audit.mark(),
+      // الرولّ-أب يُنسخ **بمستويين**: خريطتُه الداخلية تُعدَّل في مكانها عند كتابة السطر،
+      // فنسخٌ سطحيٌّ كان سيُبقي الرصيدَ متحرّكاً بعد الارتداد — **وهذا أخطرُ من فقدِ سطر**.
+      fundRollup: new Map([...this.fundRollup].map(([key, byUnit]) => [key, new Map(byUnit)])),
       seq: this.seq,
       voucherSeq: this.voucherSeq,
     }
@@ -259,7 +313,8 @@ export class LedgerStore {
     this.lineList = s.lineList
     this.postingKeyMap = s.postingKeyMap
     this.actionMap = s.actionMap
-    this.auditList = s.auditList
+    this.audit.rollbackTo(s.auditMark)
+    this.fundRollup = s.fundRollup
     this.seq = s.seq
     this.voucherSeq = s.voucherSeq
   }

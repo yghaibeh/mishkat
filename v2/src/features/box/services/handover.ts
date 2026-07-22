@@ -112,10 +112,15 @@ export function handoverDown(
         acknowledgedBy: null,
         acknowledgedAt: null,
       })
-      stores.ledger.appendAudit({
+      stores.ledger.audit.append({
         at: ctx.now,
         actorPersonId: ctx.actorPersonId,
         action: "box.handover",
+        // **هذا هو ما تنبّأت به CR-027**: هدفُه سجلُّ تسليمٍ لا يعرفه الدفتر، فكان اشتقاقُ
+        // نطاقه مستحيلاً. وبعد التوحيد **يُقال**: نطاقُه الوحدةُ المستلِمة (بها يُقرّ).
+        unitPath: to.path,
+        capability: null,
+        targetType: "boxHandover",
         targetId: id,
         reason: null,
       })
@@ -148,10 +153,13 @@ export function acknowledgeHandover(
     acknowledgedBy: input.personId,
     acknowledgedAt: ctx.now,
   })
-  stores.ledger.appendAudit({
+  stores.ledger.audit.append({
     at: ctx.now,
     actorPersonId: input.personId,
     action: "box.handover.acknowledge",
+    unitPath: handover.toUnitPath,
+    capability: null,
+    targetType: "boxHandover",
     targetId: handover.id,
     reason: null,
   })

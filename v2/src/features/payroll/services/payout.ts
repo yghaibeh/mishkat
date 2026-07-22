@@ -166,10 +166,13 @@ export function disburse(
     }
 
     // المادة ٤/٨ — كلُّ عمليةٍ مالية تُدوَّن: مَن ولمن ومتى.
-    stores.ledger.appendAudit({
+    stores.ledger.audit.append({
       at: ctx.now,
       actorPersonId: ctx.actorPersonId,
       action: "payroll.payout.record",
+      unitPath: payout.payingUnitPath,
+      capability: null,
+      targetType: "payrollPayout",
       targetId: payout.id,
       reason: null,
     })

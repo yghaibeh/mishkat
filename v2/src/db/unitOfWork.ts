@@ -45,9 +45,52 @@ export type TableClaim = {
 
 export type PersistentStore = {
   readonly name: string
+  /**
+   * **ميزانيةُ التحميل** (G23 · CR-026 ب · قب-٤٨) — سقفُ الصفوف التي تُحمَّل لهذا المصدر
+   * في وحدة عملٍ واحدة.
+   *
+   * **ولماذا حقلٌ إلزاميّ لا قائمةٌ في البوابة؟** لأن *«كلَّ بوابةٍ تحرس بقائمةٍ يجب أن
+   * تشتقّ قائمتها من مصدر الحقيقة؛ وبوابةٌ تُسرد لها الحقيقةُ ستتخلّف عن الواقع حتماً»*
+   * (CR-011/قب-٣٦). فالسقفُ يُعلن **حيث يُعلَن المستودع**، والبوابةُ تشتقّه ولا تحفظه —
+   * ومستودعٌ جديدٌ بلا سقفٍ **لا يُترجم أصلاً**.
+   *
+   * **وما يحرسه**: العقودُ متزامنة، فكلُّ ما يقرؤه المنطق يجب أن يكون محمَّلاً سلفاً
+   * (CR-026 §٣أ). وثمنُ ذلك أن **كلَّ قراءةٍ جديدةٍ قد توسّع النطاق صامتاً حتى يُبلَغ سقفُ
+   * الذاكرة في الميدان لا في CI**. فالسقفُ هنا **يُنزع الصمت لا يقلب المعمار**: تجاوزُه
+   * بناءٌ أحمرُ في الدقيقة التي تتوسّع فيها القراءة، لا مفاجأةٌ بعد سنة.
+   */
+  readonly rowBudget: number
   readonly tables: readonly (string | TableClaim)[]
   project: () => RowSet
   load: (rows: RowSet) => void
+}
+
+/**
+ * **رميةُ الميزانية** — رسالتُها تُعلّم: أيُّ وحدة عملٍ، وكم حمّلت، وما سقفُها، وأيُّ
+ * جدولٍ التهم النصيبَ الأكبر. حارسٌ يقول «تجاوزٌ» ولا يقول **أين** يُكلّف مطاردةً في غير
+ * موضعها (CR-023/قب-٤٦ §٣).
+ *
+ * **والزنادُ مكتوبٌ لا شفويّ** (قب-٤٨ · `db/README.md`): أولُ إخفاقٍ **يتعذّر إصلاحُه
+ * بتضييق النطاق** ⟵ CR-026 يُعاد فتحه والتحويلُ إلى `async` يُنفَّذ.
+ */
+export class LoadBudgetExceededError extends Error {
+  constructor(
+    readonly source: string,
+    readonly loaded: number,
+    readonly budget: number,
+    readonly byTable: ReadonlyMap<string, number>,
+  ) {
+    super(
+      `ميزانيةُ التحميل (G23): وحدةُ عمل «${source}» حمّلت ${loaded} صفّاً وسقفُها ${budget}. ` +
+        `التفصيل: ${[...byTable]
+          .sort((a, b) => b[1] - a[1])
+          .map(([table, count]) => `${table}=${count}`)
+          .join(" · ")}. ` +
+        `ضيّق النطاق أو ارفع السقف بدليل؛ وإن تعذّر تضييقُه فهذا **زنادُ CR-026**: ` +
+        `يُعاد فتحه ويُنفَّذ التحويلُ إلى عقودٍ غيرِ متزامنة (قب-٤٨).`,
+    )
+    this.name = "LoadBudgetExceededError"
+  }
 }
 
 /**
@@ -78,6 +121,23 @@ function sameRow(a: SqlRow, b: SqlRow): boolean {
 /** بادئةٌ آمنة لـ`LIKE`: المسارُ قد يحمل `_` وهو محرفُ بدلٍ في اللهجة القياسية. */
 function likePrefix(path: string): string {
   return `${path.replace(/[\\%_]/g, (ch) => `\\${ch}`)}%`
+}
+
+/**
+ * **مُرشِّحُ النطاق — مصدرُ حقيقةٍ واحد** (المادة ١/٢): كلُّ قارئٍ للنطاق يستعمله، فلا
+ * يقرأ التحميلُ مدىً وتقرأ المطابقةُ مدىً آخر ⟵ **تفاوتٌ يُتَّهم به الرولّ-أب وهو بريء**.
+ * وما ليس نطاقُه وحدةً (المراجعُ والعدّادات) يسكن جذرَ الشبكة فيُضمّ صراحةً.
+ */
+export function scopePredicate(prefix = ""): string {
+  const at = prefix === "" ? "" : `${prefix}.`
+  return (
+    `${at}${TENANT_COLUMN} = ? AND ` +
+    `(${at}${ROUTING_COLUMN} LIKE ? ESCAPE '\\' OR ${at}${ROUTING_COLUMN} = ?)`
+  )
+}
+
+export function scopeParams(scope: Scope): readonly string[] {
+  return [scope.tenantId, likePrefix(scope.scopePath), TENANT_ROOT_PATH]
 }
 
 function upsert(spec: TableSpec, row: SqlRow): SqlStatement {
@@ -158,6 +218,7 @@ export class UnitOfWork {
         }
       }
       const rows = new Map<string, Map<string, SqlRow>>()
+      const byTable = new Map<string, number>()
       for (const claim of claims) {
         const spec = tableSpec(claim.table)
         let all = cache.get(claim.table)
@@ -171,6 +232,13 @@ export class UnitOfWork {
           owned.set(primaryKeyOf(spec, row), row)
         }
         rows.set(claim.table, owned)
+        byTable.set(claim.table, owned.size)
+      }
+      // **ميزانيةُ التحميل تُقاس قبل أن تُبنى الحالة** (G23): الرميةُ قبل `load` لا بعدها،
+      // فلا يُبنى في الذاكرة ما نقول إنه لا يُبنى — والقياسُ على **ما يملكه المصدر فعلاً**.
+      const loaded = [...byTable.values()].reduce((sum, count) => sum + count, 0)
+      if (loaded > source.rowBudget) {
+        throw new LoadBudgetExceededError(source.name, loaded, source.rowBudget, byTable)
       }
       source.load(rows)
       this.baselines.set(source.name, rows)
@@ -180,10 +248,8 @@ export class UnitOfWork {
   private async read(spec: TableSpec): Promise<readonly SqlRow[]> {
     const columns = spec.columns.map((column) => column.name).join(", ")
     return this.driver.all({
-      sql:
-        `SELECT ${columns} FROM ${spec.name} ` +
-        `WHERE ${TENANT_COLUMN} = ? AND (${ROUTING_COLUMN} LIKE ? ESCAPE '\\' OR ${ROUTING_COLUMN} = ?)`,
-      params: [this.scope.tenantId, likePrefix(this.scope.scopePath), TENANT_ROOT_PATH],
+      sql: `SELECT ${columns} FROM ${spec.name} WHERE ${scopePredicate()}`,
+      params: scopeParams(this.scope),
     })
   }
 

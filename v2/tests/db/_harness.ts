@@ -12,6 +12,8 @@ import { fileURLToPath } from "node:url"
 import { openSqliteDriver, type SqliteDriver } from "../../src/db/sql/sqliteDriver.js"
 import { applyMigrations, type Migration } from "../../src/db/migrations/runner.js"
 import { UnitOfWork, type Scope } from "../../src/db/unitOfWork.js"
+import { AuditJournal } from "../../src/audit/journal.js"
+import { persistentAudit } from "../../src/db/repositories/auditRepository.js"
 import { persistentOrg } from "../../src/db/repositories/orgRepository.js"
 import { persistentLedger } from "../../src/db/repositories/ledgerRepository.js"
 import { OrgStore } from "../../src/features/org/data/store.js"
@@ -41,7 +43,20 @@ export async function freshDb(): Promise<SqliteDriver> {
   return driver
 }
 
-export type Stores = { readonly org: OrgStore; readonly ledger: LedgerStore }
+/**
+ * **سجلُّ تدقيقٍ واحدٌ تتقاسمه الوحدتان** (CR-027): هذا هو التوحيدُ عملياً — لا سجلَّ
+ * لكلِّ وحدة، بل مِرفقٌ واحدٌ يُحقن فيهما فيسكن قيدُهما جدولاً واحداً بتسلسلٍ واحد.
+ */
+export type Stores = {
+  readonly org: OrgStore
+  readonly ledger: LedgerStore
+  readonly audit: AuditJournal
+}
+
+export function freshStores(tenantId: string): Stores {
+  const audit = new AuditJournal(tenantId)
+  return { org: new OrgStore(tenantId, audit), ledger: new LedgerStore(tenantId, audit), audit }
+}
 
 export const CHART: readonly { id: string; ar: string; kind: AccountKind }[] = [
   { id: "cash", ar: "النقد", kind: "asset" },
@@ -58,8 +73,7 @@ export const UNITS: readonly { id: string; path: string; type: string; labelAr: 
 
 /** يبذر المراجعَ في مستودعين طازجين — **لا يكتب في القاعدة** (البذرُ عبر `flush` كغيره). */
 export function seedStores(tenantId: string): Stores {
-  const org = new OrgStore(tenantId)
-  const ledger = new LedgerStore(tenantId)
+  const { org, ledger, audit } = freshStores(tenantId)
   for (const u of UNITS) {
     org.saveUnit({
       tenantId,
@@ -76,7 +90,7 @@ export function seedStores(tenantId: string): Stores {
   for (const a of CHART) ledger.saveAccount({ tenantId, id: a.id, ar: a.ar, kind: a.kind })
   ledger.saveFund({ tenantId, id: "general", ar: "الصندوق العام", restricted: false })
   ledger.saveFund({ tenantId, id: "zakat", ar: "صندوق الزكاة", restricted: true })
-  return { org, ledger }
+  return { org, ledger, audit }
 }
 
 /** المراجعُ (شجرةُ الحسابات والصناديق) تُمرَّر صراحةً عند البذر — انظر `LedgerReferences`. */
@@ -97,6 +111,7 @@ export function unitOfWorkFor(
   const uow = new UnitOfWork(driver, scope)
   uow.enlist(persistentOrg(stores.org))
   uow.enlist(persistentLedger(stores.ledger, withReferences ? REFERENCES : null))
+  uow.enlist(persistentAudit(stores.audit))
   return uow
 }
 
@@ -110,7 +125,7 @@ export async function session<T>(
   fn: (stores: Stores) => T,
   scopePath = "/",
 ): Promise<T> {
-  const stores = { org: new OrgStore(tenantId), ledger: new LedgerStore(tenantId) }
+  const stores = freshStores(tenantId)
   const uow = unitOfWorkFor(driver, stores, { tenantId, scopePath })
   await uow.hydrate()
   const value = fn(stores)

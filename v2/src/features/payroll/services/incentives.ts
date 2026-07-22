@@ -73,10 +73,13 @@ export function grantIncentive(
       at: ctx.now,
     }
     stores.payroll.appendIncentive(incentive)
-    stores.ledger.appendAudit({
+    stores.ledger.audit.append({
       at: ctx.now,
       actorPersonId: ctx.actorPersonId,
       action: "payroll.incentive.grant",
+      unitPath: incentive.unitPath,
+      capability: null,
+      targetType: "payrollIncentive",
       targetId: incentive.id,
       reason: null,
     })

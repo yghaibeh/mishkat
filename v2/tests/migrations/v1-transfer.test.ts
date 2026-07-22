@@ -13,10 +13,8 @@ import { describe, expect, it } from "vitest"
 import { applyMigrations } from "../../src/db/migrations/runner.js"
 import { openSqliteDriver, type SqliteDriver } from "../../src/db/sql/sqliteDriver.js"
 import { transferV1 } from "../../src/db/transfer/v1.js"
-import { LedgerStore } from "../../src/features/ledger/data/store.js"
-import { OrgStore } from "../../src/features/org/data/store.js"
 import { balanceProof } from "../../src/features/ledger/services/journal.js"
-import { MAIN, freshDb, shippedMigrations, unitOfWorkFor } from "../db/_harness.js"
+import { MAIN, freshDb, freshStores, shippedMigrations, unitOfWorkFor } from "../db/_harness.js"
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const V1_SQL = readFileSync(join(HERE, "fixtures/v1-sample.sql"), "utf8")
@@ -104,9 +102,8 @@ describe("نقلُ بيانات v1 — ما يعبر وما يُردّ", () => {
 describe("الثوابتُ تصمد بعد النقل", () => {
   it("نزاهةُ الدفتر: Σمدين = Σدائن لكل عملةٍ على البيانات المنقولة", async () => {
     const { target } = await transferred()
-    const ledger = new LedgerStore(MAIN)
-    const org = new OrgStore(MAIN)
-    const uow = unitOfWorkFor(target, { org, ledger }, { tenantId: MAIN, scopePath: "/" })
+    const { org, ledger, audit } = freshStores(MAIN)
+    const uow = unitOfWorkFor(target, { org, ledger, audit }, { tenantId: MAIN, scopePath: "/" })
     await uow.hydrate()
     const proof = balanceProof(ledger)
     expect(proof.balanced).toBe(true)
