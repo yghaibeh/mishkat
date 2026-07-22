@@ -12,10 +12,11 @@ import { SUPERVISION } from "../../features/supervision/text.js"
 import { COMMITTEES } from "../../features/committees/text.js"
 import { MEDIA } from "../../features/media/text.js"
 import { CIRCLES } from "../../features/circles/text.js"
+import { LIBRARY } from "../../features/library/text.js"
 
 const DOMAINS = [
   COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG,
-  CUSTODY, SUPERVISION, COMMITTEES, MEDIA, CIRCLES,
+  CUSTODY, SUPERVISION, COMMITTEES, MEDIA, CIRCLES, LIBRARY,
 ] as const
 
 const SOURCE = {
@@ -32,6 +33,7 @@ const SOURCE = {
   ...COMMITTEES,
   ...MEDIA,
   ...CIRCLES,
+  ...LIBRARY,
 } as const
 
 

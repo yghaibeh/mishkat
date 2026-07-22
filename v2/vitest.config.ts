@@ -72,6 +72,11 @@ export default defineConfig({
         // اشتقاقٌ لا عدّاد ⇒ خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها (والعتبةُ أرضيةٌ تصعد).
         "src/features/circles/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
         "src/features/circles/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والمكتبةُ توجيهٌ وخطُّ زمنٍ يُتابَع عليه إنسان** (ق-٩٦، T20): جمهورُ المادة
+        // وبلوغُها وخَتماتُها الثلاث — خطؤها يُطالِب بريئاً أو يُعفي مقصّراً ⇒ عتبتُها ٩٥٪،
+        // وطبقةُ بياناتها معها (والعتبةُ أرضيةٌ تصعد ولا تهبط — TESTING_POLICY §٣).
+        "src/features/library/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/library/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
