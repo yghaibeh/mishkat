@@ -4,13 +4,20 @@
  * هذا الملف هو **الموضع الوحيد المسموح فيه بالأرقام التشغيلية** في v2 (قب-٦):
  * «فيه تعيش الافتراضيات بحكم التعريف» (§١-٩). بوابة G14 تستثنيه وتفشل على ما عداه.
  *
- * عدد الإعدادات: ٨٩ = ٧٧ إعداد عمل + ١٢ إعداد منصة.
+ * عدد الإعدادات: **٨٦ = ٧٤ إعداد عمل + ١٢ إعداد منصة** — منها **٧ مفاتيح تفعيل**.
  * (المواصفة تسرد ٩٣؛ وقب-١١ أسقط `network.unit_status.done_pct` و`below_pct`
  *  حين اعتُمد تصنيف المسجد بنسبة الهدف ١٠٠٪/٥٠٪ — «يسقط ولا يُنقل إعداداً»؛
  *  وCR-008 شطب `finance.dual_control.exempt_roles` — **الإعداداتُ تضبط قِيَماً لا تُلغي
  *  ثوابت** (§١-٨أ): إعفاءٌ بالدور من الاعتماد الثنائي ينقض ق-٥٣ وتُفشله G6؛
  *  وCR-009 شطب `approval.draft_bypass_enabled` — **إعدادٌ يُحيي قاعدةً نسخها المالك**
- *  (ب-٣٠أ)، وهو مخالفٌ **بحكم الاسم** (§١-٨أ المُوسَّعة) فيُشطب ولو بلا مستهلك.)
+ *  (ب-٣٠أ)، وهو مخالفٌ **بحكم الاسم** (§١-٨أ المُوسَّعة) فيُشطب ولو بلا مستهلك؛
+ *  وCR-010 شطب `points.free_activity_scores` (ب-٤٢: «بلا نقاط آلية»)؛
+ *  وCR-014 شطب `feature.tahfeez` و`feature.alaBaseera` — **إعدادان يُعيدان عَرَضاً
+ *  عولج بإعادة تصميم** (ع-٨/ب-٢٨)، انظر سطر النسخ في مجال `feature`.)
+ *
+ * **٩٣ − ٢ (قب-١١) − ١ (CR-008) − ١ (CR-009) − ١ (CR-010) − ٢ (CR-014) = ٨٦.**
+ * > **العدّادُ هنا تخلّف يوم CR-010** (بقي ٨٩ وقد صار ٨٨)، فالمواضعُ الخمسة تُعدّ وتُطابَق
+ * > في كل شطب: هذا التعليق · ملخّص المواصفة · حاشيةُ العدّ · عنوان §٢-١ · اختبارُ العدّ.
  */
 
 export type SettingType =
@@ -45,7 +52,16 @@ export type SettingDefinition = {
   readonly source: string
   /** مفتاح تفعيل (§١-٧): عالمي حصراً، وله إجراء مرافق معلن لا يُقبل بدونه. */
   readonly featureFlag?: { readonly companionAction: string }
+  /** قاموسٌ **مغلقٌ مسرودٌ في الكود** (§١-٢) — لِما قيمُه ثابتةٌ لا تتوسّع بالبيانات. */
   readonly allowed?: readonly string[]
+  /**
+   * قاموسٌ **مغلقٌ يعيش بياناتٍ مرجعية** (قب-٢٢) — يُعلَن **مصدرُه** ولا تُسرد قيمُه.
+   * وُلد بـCR-014: `edu.paid_hours.curricula` كان يسرد أنواع الحلقات الأربعة يدوياً، فكان
+   * نوعٌ خامس يُضاف **صفّاً** يعمل في الحلقات ولا يُختار هنا — **قائمةٌ تُسرد بدل أن تُشتقّ**
+   * (نظير CR-011). والتحقّقُ من العضوية عند **المستهلك** الذي يملك المستأجر والمستودع،
+   * لا هنا: السجلُّ وحدةٌ ساكنة بلا مستأجرٍ ولا مستودع (§١-٨: يُحقن ولا يستورد).
+   */
+  readonly allowedFrom?: string
   readonly min?: number
   readonly max?: number
 }
@@ -114,7 +130,12 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   s({ id: "edu.circle_ranking.window_days", ar: "نافذة التقييم الدوري", type: "duration", default: 30, level: "section", effect: "immediate", category: "business", source: "ق-٩١ · tahfeez.server.ts:296", min: 1 }),
   s({ id: "edu.circle_ranking.hide_all_zero", ar: "إخفاء الترتيب إن كانت كل درجاته أصفاراً", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ق-٩١، ق-١١٢" }),
   s({ id: "edu.grade.max", ar: "الحد الأعلى لعلامة الطالب", type: "number", default: 10, level: "global", effect: "immediate", category: "business", source: "ع-٩ / ب-١٣", min: 1 }),
-  s({ id: "edu.paid_hours.curricula", ar: "المناهج التي تُحتسب ساعاتها مالياً", type: "list", default: ["baseera"], level: "global", effect: "forward_dated", category: "business", source: "ق-٨٦", allowed: ["baseera", "tahfeez", "scientific", "rashidi"] }),
+  // ⚠️ `edu.paid_hours.curricula`: **قائمتُه `allowed` شُطبت بـCR-014** (٢٠٢٦-٠٧-٢٢). كانت
+  // تسرد أنواع الحلقات الأربعة يدوياً — و**الأنواعُ بياناتٌ مرجعية قابلة للتوسّع** (ب-٢٨/قب-٢٢):
+  // نوعٌ خامس يُضاف صفّاً **يعمل في الحلقات ولا يكون قابلاً للاختيار هنا**، فيصير في النظام
+  // معجما أنواعٍ يتباعدان (عين ما عالجه قب-١٦). **والإعدادُ نفسُه حيٌّ المعنى** (ق-٨٦: ساعاتُ
+  // منهج «على بصيرة» وحدَها تُحتسب) فلا يُشطب — يُشطب **سردُه** ويُعلَن **مصدرُ قاموسه**.
+  s({ id: "edu.paid_hours.curricula", ar: "المناهج التي تُحتسب ساعاتها مالياً", type: "list", default: ["baseera"], level: "global", effect: "forward_dated", category: "business", source: "ق-٨٦ · CR-014", allowedFrom: "circles.typeCatalog" }),
   s({ id: "edu.paid_hours.approved_only", ar: "احتساب الدروس المعتمدة فقط", type: "toggle", default: true, level: "global", effect: "forward_dated", category: "business", source: "ق-٨٦" }),
   s({ id: "edu.guardian_token.ttl_days", ar: "عمر رمز وليّ الأمر", type: "duration", default: 365, level: "global", effect: "immediate", category: "business", source: "ب-٣٦أ", min: 1 }),
   s({ id: "edu.guardian_token.renewable", ar: "إتاحة زر «تجديد الرابط»", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ب-٣٦أ" }),
@@ -154,8 +175,21 @@ export const SETTINGS: readonly SettingDefinition[] = Object.freeze([
   s({ id: "feature.competition_public_registration", ar: "التسجيل العام في المسابقة بموافقة الأمير", type: "toggle", default: false, level: "global", effect: "immediate", category: "business", source: "ب-٤٤", featureFlag: { companionAction: "التفعيل يفتح الرابط العام؛ والتعطيل يُغلقه ولا يمسّ المشتركين القائمين." } }),
   s({ id: "feature.manual_journal_entry", ar: "القيد المحاسبي اليدوي بواجهة", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "ب-٣٩أ", featureFlag: { companionAction: "التعطيل يمنع قيوداً جديدة ولا يمسّ المرحَّل." } }),
   s({ id: "feature.relief_committee", ar: "بيانات لجنة الإغاثة (حالات إنسانية)", type: "toggle", default: false, level: "global", effect: "immediate", category: "business", source: "ب-٣٧ج", featureFlag: { companionAction: "لا يُفعَّل قبل مواصفة أمنية مستقلة بعد القطع." } }),
-  s({ id: "feature.alaBaseera", ar: "وحدة «على بصيرة»", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "settings.server.ts:12", featureFlag: { companionAction: "التعطيل يُخفي الوحدة ولا يحذف بياناتها." } }),
-  s({ id: "feature.tahfeez", ar: "وحدة التحفيظ", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "settings.server.ts:13", featureFlag: { companionAction: "التعطيل يُخفي الوحدة ولا يحذف بياناتها." } }),
+  // ❌ شُطب `feature.alaBaseera` و`feature.tahfeez` بـCR-014 (٢٠٢٦-٠٧-٢٢، نُفِّذا في T17):
+  // **مفهومُ «وحدةٍ تُخفى» سقط بب-٢٨** — «الحلقةُ كيانٌ واحد ابنٌ للمسجد، ونوعُها صفةٌ عليه،
+  // بلا جسرٍ ولا تفعيلِ أقسام». فلم يعد «التحفيظ» و«على بصيرة» **وحدتين** بل **نوعين من أربعةٍ
+  // في كتالوجٍ واحد**، والبديلُ المبنيّ في T16 هو **كتالوجُ الأنواع بياناتٍ** (قب-٢٢):
+  // **نوعٌ لا يُراد لا يُضاف** أصلاً، **ولا «تعطيل» يمنع إدارة نوعٍ قائم** — و`CircleType`
+  // ثلاثةُ حقولٍ لا رابعَ لها ولا حقلَ تفعيل، فالبابُ الثاني للمنع **غيرُ موجود بالبنية**.
+  // **وهذا أخطرُ من CR-008/CR-009/CR-010 الثلاثة**: تلك تَعِد بتعطيل حارسٍ أو إحياء قاعدةٍ
+  // منسوخة، وهذان **يَعِدان بإحياء عَرَضٍ شكاه العميل بلسانه** — ع-٨: «لم أقدر على إدارة حلقة
+  // الرشيدي لأن قسمها غير مفعّل»، وهو البلاغ الذي وُلدت T16 كلُّها لقتله. **صفر مستهلك**:
+  // لا قارئَ لهما في `v2/src` قبل الشطب ولا بعده (مسحٌ مثبت)، فالأثرُ السلوكيّ صفر —
+  // والخطرُ كان **الدعوة** لا الأثر: أولُ بانٍ لسجل التحفيظ (ق-٩٠) يجد مفتاحاً باسم وحدته
+  // فيربطه به، فيُولَد الانفصالُ من جديد بعد أن قُتل بنيوياً.
+  // والقاعدةُ المُوسَّعة في `SPEC_settings` §١-٨أ (قب-٤٠): *لا يُعطِّل إعدادٌ حارساً محروساً،
+  // ولا يُعيد إعدادٌ عَرَضاً عولج بإعادة تصميم؛ والذي يفترض نموذجاً سابقاً يُشطب يوم يُنسخ
+  // النموذج لا يوم يُكتشف.* وحارسُها الآليّ في `tests/settings/resolver.test.ts`.
   s({ id: "feature.meetings", ar: "وحدة الاجتماعات", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "settings.server.ts:14", featureFlag: { companionAction: "التعطيل يُخفي الوحدة ولا يحذف بياناتها." } }),
   s({ id: "feature.committees", ar: "وحدة اللجان", type: "toggle", default: true, level: "global", effect: "immediate", category: "business", source: "settings.server.ts:15", featureFlag: { companionAction: "التعطيل يُخفي الوحدة ولا يحذف بياناتها." } }),
 

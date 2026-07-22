@@ -6,9 +6,9 @@ import type { SettingOverride } from "../../src/settings/resolver.js"
 const AT = new Date("2026-07-20T00:00:00.000Z")
 
 describe("سلامة السجل (SPEC_settings §١-١)", () => {
-  it("٨٨ إعداداً: ٧٦ عمل + ١٢ منصة (بعد شطبات CR-008 وCR-009 وCR-010)", () => {
-    expect(SETTINGS).toHaveLength(88)
-    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(76)
+  it("٨٦ إعداداً: ٧٤ عمل + ١٢ منصة (بعد شطبات CR-008 وCR-009 وCR-010 وCR-014)", () => {
+    expect(SETTINGS).toHaveLength(86)
+    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(74)
     expect(SETTINGS.filter((d) => d.category === "platform")).toHaveLength(12)
   })
 
@@ -33,8 +33,62 @@ describe("سلامة السجل (SPEC_settings §١-١)", () => {
     expect(offenders.map((d) => d.id), "إعدادٌ يشتري إعفاءً من قاعدة").toEqual([])
   })
 
-  it("تسعة مفاتيح تفعيل (قب-٧)", () => {
-    expect(SETTINGS.filter((d) => d.featureFlag !== undefined)).toHaveLength(9)
+  /**
+   * **الصنفُ الثالث — «إعدادٌ يفترض نموذجاً مَنسوخاً»** (CR-014/قب-٤٠، ٢٠٢٦-٠٧-٢٢).
+   *
+   * الصنفان السابقان يُقاسان بفعلٍ في الاسم (`exempt`/`bypass`/`skip_`) — وهذا يُقاس
+   * **بمفردةٍ من معجم النموذج المنسوخ**: كانت في v1 **أسماءَ أنظمةٍ منفصلة**
+   * (`tahfeez_*` × `/ala-baseera` × `halaqa`) وصارت بب-٢٨ **قيمَ صفوفٍ في كتالوجٍ واحد**.
+   * فظهورُها في **معرّف إعدادٍ** أو في **قائمة قيمه المسرودة** دليلٌ محتوائيّ على أن السجل
+   * ما زال يفترض النموذجَ القديم: إمّا مفتاحُ تفعيلٍ لكيانٍ صار نوعاً (`feature.tahfeez`)،
+   * وإمّا قائمةٌ تسرد الأنواعَ بدل أن تشتقّها (`edu.paid_hours.curricula.allowed`).
+   * **والمعجمُ نفسُه** الذي يحرس به T16 وحدةَ الحلقات (`tests/features/circles/single-entity.test.ts`)
+   * — مصدرُ قياسٍ واحد لا اثنان (المادة ١/٢).
+   *
+   * **حدُّ هذا القياس معلَنٌ لا مخفيّ**: يمسك النموذجَ المنسوخ **المعروف** بمعجمه، ولا يمسك
+   * كياناً يصير نوعاً في كتالوجٍ **مستقبلاً** باسمٍ خارج المعجم — فذاك لا قياسَ محتوائيّاً
+   * موثوقاً له اليوم (الأنواعُ **بياناتٌ** لا ثوابتُ كودٍ تُقارَن بها، وهو عينُ المطلوب).
+   * فيُوسَّع المعجمُ يومَ يُنسخ نموذجٌ آخر — ولا يُخترع حارسٌ شكليّ يوهم بما لا يحرسه (المادة ٠).
+   *
+   * **المُستثنى بعلّة**: حقلُ `source` وحدَه يجوز أن يحمل مفردةً منها، لأنه **استشهادٌ عكسيّ
+   * بموضع v1** (`tahfeez.server.ts:325`) — توثيقُ أصلٍ لا إعلانُ نموذجٍ عامل. والمُدان
+   * ما **يعمل به الأدمن**: المعرّفُ وقائمةُ القيم.
+   */
+  it("**ولا إعدادَ يفترض نموذجاً نُسخ بإعادة تصميم** (§١-٨أ المُوسَّعة بـCR-014 — ب-٢٨/ع-٨)", () => {
+    // معجمُ الأنظمة الثلاثة المنسوخة بب-٢٨ — نفسُ قائمة حارس T16 المحتوائيّ.
+    const REVOKED_MODEL = ["tahfeez", "alabaseera", "baseera", "halaqa", "halaqat", "rashidi"]
+    const hit = (text: string): string | null =>
+      REVOKED_MODEL.find((token) => text.toLowerCase().includes(token)) ?? null
+
+    const offenders: string[] = []
+    for (const d of SETTINGS) {
+      const inId = hit(d.id)
+      if (inId !== null) offenders.push(`${d.id} ⟵ معرّفٌ يحمل «${inId}»`)
+      for (const value of d.allowed ?? []) {
+        const inValue = hit(value)
+        if (inValue !== null) offenders.push(`${d.id}.allowed ⟵ يسرد «${inValue}»`)
+      }
+    }
+    expect(
+      offenders,
+      "إعدادٌ يفترض «وحدةً تُخفى» أو يسرد أنواعاً صارت بياناتٍ — يُشطب يوم يُنسخ النموذج",
+    ).toEqual([])
+  })
+
+  /**
+   * **الوجهُ المُنتِج للشطب** (CR-014 بند ٢): القاموسُ المغلق باقٍ، ومصدرُه هو الذي تبدّل —
+   * من **سردٍ في الكود** إلى **إعلانِ كتالوجٍ بياناتٍ**. فلو عاد أحدٌ يسرد الأنواع سقط
+   * الاختبارُ السابق، ولو حُذف القاموسُ صمتاً فصار الحقلُ نصّاً حرّاً سقط هذا (§١-٢).
+   */
+  it("و`edu.paid_hours.curricula` يُعلن **مصدرَ** قاموسه ولا يسرده (قب-٢٢/CR-011)", () => {
+    const d = SETTINGS_BY_ID.get("edu.paid_hours.curricula")
+    expect(d, "الإعدادُ حيٌّ المعنى (ق-٨٦) فلا يُشطب").toBeDefined()
+    expect(d?.allowed, "قائمةٌ تُسرد تتخلّف عن أي نوعٍ خامس").toBeUndefined()
+    expect(d?.allowedFrom, "قاموسٌ بلا مصدرٍ معلن = نصٌّ حرّ").toBe("circles.typeCatalog")
+  })
+
+  it("سبعة مفاتيح تفعيل (قب-٧) — بعد شطب مفتاحَي «الوحدة» بـCR-014", () => {
+    expect(SETTINGS.filter((d) => d.featureFlag !== undefined)).toHaveLength(7)
   })
 
   it("لا معرّف مكرر — والمعرّف فريد عالمياً", () => {
