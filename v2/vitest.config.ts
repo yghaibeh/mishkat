@@ -99,6 +99,11 @@ export default defineConfig({
         // عتبتُها ٩٥٪، وطبقةُ بياناتها معها — فالاشتقاقُ الماليُّ يُختبر كما يُختبر المال.
         "src/features/education/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
         "src/features/education/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والراتبُ مالٌ يصل يدَ إنسان** (ب-١٠، T23): اشتقاقُ المستحق وختمُه وصرفُه —
+        // خطؤه إمّا يُجوّع مستحقّاً وإمّا يدفع مرتين ⇒ خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته
+        // معها (والعتبةُ أرضيةٌ تصعد ولا تهبط — TESTING_POLICY §٣).
+        "src/features/payroll/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/payroll/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },

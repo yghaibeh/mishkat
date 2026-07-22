@@ -6,10 +6,73 @@ import type { SettingOverride } from "../../src/settings/resolver.js"
 const AT = new Date("2026-07-20T00:00:00.000Z")
 
 describe("سلامة السجل (SPEC_settings §١-١)", () => {
-  it("٨٦ إعداداً: ٧٤ عمل + ١٢ منصة (بعد شطبات CR-008 وCR-009 وCR-010 وCR-014)", () => {
-    expect(SETTINGS).toHaveLength(86)
-    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(74)
+  it("٨٥ إعداداً: ٧٣ عمل + ١٢ منصة (بعد شطبات CR-008 وCR-009 وCR-010 وCR-014 وCR-021)", () => {
+    expect(SETTINGS).toHaveLength(85)
+    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(73)
     expect(SETTINGS.filter((d) => d.category === "platform")).toHaveLength(12)
+  })
+
+  /**
+   * **CR-021/قب-٤٥ — الفحصُ يتوسّع من الأسماء إلى الدلالة.**
+   *
+   * الأصنافُ الثلاثة السابقة تُقاس **بفعلٍ صريحٍ في الاسم** (`exempt`/`bypass`/`skip_`) أو
+   * **بمفردةٍ من نموذجٍ منسوخ**. و`edu.paid_hours.approved_only` **عَبَرها كلَّها باسمٍ بريء**:
+   * لا يَعِد بإعفاءٍ ولا يذكر نموذجاً — بل **يَعِد بإطفاء حارسٍ يُشغّله اسمُه**.
+   *
+   * **القياسُ المحتوائيّ المعتمد** — ثلاثةُ شروطٍ مجتمعة، كلُّها تُقرأ من السجل نفسِه:
+   *  ١. المعرّفُ **يُعلن حارساً مُشغَّلاً**: `*_only` أو `*_required` أو `*_enforced`.
+   *  ٢. النوعُ `toggle` **وافتراضُه `true`** — أي أن الحارس **يعمل اليوم**، فالضبطُ الوحيد
+   *     المتاح هو **إطفاؤه**: إعدادٌ قيمتُه الوحيدة المفيدة هي تعطيلُ قاعدة.
+   *  ٣. ومصدرُه **قاعدةٌ في العقد** (`ق-` أو `ب-`) لا موضعُ كودٍ تقنيّ — فالمُطفَأُ قاعدةٌ
+   *     محسومة لا تفصيلُ تنفيذ.
+   *
+   * > **وحدُّ القياس مُصرَّحٌ به** (المادة ٠ — سابقة T17): الشطرُ الرابع في نصّ CR-021
+   * > («والقاعدةُ **معلَّلةٌ بمنع الغش**») **لا يُقاس هنا** — نصوصُ القواعد تعيش في
+   * > `rebuild/inventory/C_business_rules.md` خارج حزمة `v2`، وقراءتُها من اختبارٍ تقلب
+   * > اتجاه الاعتماد وتُنتج حارساً هشّاً. فالمقيسُ **بنيةُ الإعداد** لا **تعليلُ قاعدته**،
+   * > وهو أضيقُ من النصّ عمداً: يمسك الصنفَ ولا يدّعي ما لا يقيس.
+   *
+   * **وقد أثمر القياسُ فوراً**: بعد شطب `edu.paid_hours.approved_only` بقي **بندان** يستوفيان
+   * الشروطَ الثلاثة، **ولم يكن أيٌّ منهما مرصوداً قبل هذا الفحص**. وهما **ليسا من نصيب هذا
+   * التسليم** (`v2/src/settings/**` مُجمَّد — `PARALLEL_WORK` §٢)، فرُفعا مسوّدتَي طلبِ تغييرٍ
+   * ووُضعا في **حَجْرٍ مُعلَن** على نمط `allowlist.any.json` الذي أقرّته المادة ٢/٢:
+   * **العددُ لا ينمو** — بندٌ جديدٌ من الصنف يُفشل هذا الاختبار فوراً.
+   */
+  it("**ولا إعدادَ يُطفئ حارساً يُشغّله اسمُه** (§١-٨أ المُوسَّعة بـCR-021 — القياس الدلاليّ)", () => {
+    const DECLARES_ACTIVE_GUARD = /(_only|_required|_enforced)$/
+    const FROM_CONTRACT_RULE = /(^|[^\w])(ق|ب)-/u
+
+    const offenders = SETTINGS.filter(
+      (d) =>
+        DECLARES_ACTIVE_GUARD.test(d.id) &&
+        d.type === "toggle" &&
+        d.default === true &&
+        FROM_CONTRACT_RULE.test(d.source),
+    ).map((d) => d.id)
+
+    /**
+     * **حَجْرٌ مُعلَنٌ لا قائمةُ حقيقة** (المادة ٢/٢، ونظيرُ `tools/gates/allowlist.any.json`):
+     * بندان اكتشفهما هذا الفحصُ نفسُه ورُفعا مسوّدتين — **والقرارُ لصاحبه** (§٩/§١٠):
+     *  · `identity.impersonation.read_only` ⟵ `CR-DRAFT-payroll-impersonation-read-only`
+     *    (ب-٤٠أ حسم «الانتحالُ قراءةً فقط»؛ وإطفاؤه يفتح الفعلَ باسم الغير — ق-٢٧).
+     *  · `finance.entitlement.approval_required` ⟵ `CR-DRAFT-payroll-entitlement-approval-required`
+     *    (ق-٥١: «الإدارة تقرّ آخر الشهر»؛ وإطفاؤه يُسقط الإقرارَ الشهريَّ نفسَه).
+     * **ولم تُقرأ واحدةٌ منهما في وحدة الرواتب** — الختمُ غيرُ مشروطٍ في الكود (عقدُ الوحدة §٢).
+     */
+    const QUARANTINED_PENDING_DECISION = [
+      "finance.entitlement.approval_required",
+      "identity.impersonation.read_only",
+    ]
+
+    expect(
+      offenders.sort(),
+      "إعدادٌ جديدٌ يَعِد بإطفاء حارسٍ يُشغّله اسمُه — يُشطب أو يُرفع بـCR قبل أن يُدمج",
+    ).toEqual(QUARANTINED_PENDING_DECISION.sort())
+
+    expect(
+      offenders,
+      "CR-021: `edu.paid_hours.approved_only` مشطوبٌ فلا يبقى في الحصيلة",
+    ).not.toContain("edu.paid_hours.approved_only")
   })
 
   /**

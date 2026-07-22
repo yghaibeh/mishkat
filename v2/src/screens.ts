@@ -19,5 +19,6 @@ import "./features/library/screens/screens.js"
 import "./features/notifications/screens/screens.js"
 import "./features/circleLog/screens/screens.js"
 import "./features/education/screens/screens.js"
+import "./features/payroll/screens/screens.js"
 
 export { registeredScreens } from "./ui/screens/registry.js"
