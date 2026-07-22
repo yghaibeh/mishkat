@@ -30,6 +30,7 @@
     "gate:g19": "node tools/gates/g19-spec-matrix-table.mjs",
     "gate:g20": "node tools/gates/g20-ui-contract.mjs",
     "gate:g22": "node tools/gates/g22-approval-engine-only.mjs",
+    "gate:g23": "node tools/gates/g23-load-budget.mjs",
     "gates": "node tools/gates/run-all.mjs",
     "gates:prove": "node tools/gates/prove-all.mjs"
   },

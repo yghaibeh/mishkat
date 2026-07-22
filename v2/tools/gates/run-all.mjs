@@ -1,4 +1,4 @@
-/** تشغيل البوابات الـ٢١ بالترتيب — المادة ١٠ (G21 حارسُ الميزانية مؤجَّلٌ بقب-٢٦). */
+/** تشغيل البوابات الـ٢٢ بالترتيب — المادة ١٠ (G21 حارسُ ميزانية الواجهة مؤجَّلٌ بقب-٢٦). */
 import { execFileSync } from "node:child_process"
 import { join } from "node:path"
 import { ROOT } from "./_lib.mjs"
@@ -12,6 +12,7 @@ const GATES = [
   ["G16", "g16-public-routes-ceiling.mjs"], ["G17", "g17-db-import-boundary.mjs"],
   ["G18", "g18-query-params-ceiling.mjs"], ["G19", "g19-spec-matrix-table.mjs"],
   ["G20", "g20-ui-contract.mjs"], ["G22", "g22-approval-engine-only.mjs"],
+  ["G23", "g23-load-budget.mjs"],
 ]
 
 let failed = []

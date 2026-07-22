@@ -30,10 +30,19 @@ import { TENANT_ROOT_PATH } from "../schema.js"
 import type { SqlRow } from "../sql/driver.js"
 import { naturalKey, primaryKeyOf, type PersistentStore, type RowSet } from "../unitOfWork.js"
 import { tableSpec } from "../schema.js"
-import { auditRow, readAuditInto, sequenceRow, suffixOf } from "./shared.js"
+import { sequenceRow, suffixOf } from "./shared.js"
 
 const SOURCE = "org"
 const SEQUENCE = "org.seq"
+
+/**
+ * سقفُ صفوف وحدة العمل (G23 · CR-026 ب) — **مشتقٌّ من أرقامٍ مقيسة**: ADR-001 §١-٥ يقيس
+ * ~٨٦٠ وحدةً تنظيمية للشبكة كلِّها اليوم، ومسوّدةُ CR-026 §٢ تضع سقف ١٠٠× عند ~٨٦٬٠٠٠.
+ * والشجرةُ تُحمَّل غالباً **بالشبكة كلِّها** (محرّك `can()` يحتاج المسارات)، ومعها الحسابات
+ * والتكاليف والطلبات. فالسقفُ **٢٠٬٠٠٠** يسع الشبكةَ الحالية عشرين ضعفاً — ودونه بكثير
+ * تصير الشجرةُ نفسُها موضعَ القرار لا موضعَ المفاجأة.
+ */
+const ROW_BUDGET = 20_000
 
 function table(rows: RowSet, name: string): ReadonlyMap<string, SqlRow> {
   return rows.get(name) ?? new Map<string, SqlRow>()
@@ -76,12 +85,12 @@ export function persistentOrg(store: OrgStore): PersistentStore {
 
   return {
     name: SOURCE,
+    rowBudget: ROW_BUDGET,
     tables: [
       "org_units",
       "org_accounts",
       "org_assignments",
       "org_requests",
-      { table: "audit_log", owns: (r) => r["source"] === SOURCE },
       { table: "sequences", owns: (r) => r["name"] === SEQUENCE },
     ],
 
@@ -140,25 +149,6 @@ export function persistentOrg(store: OrgStore): PersistentStore {
           })),
           "org_requests",
         ),
-        collect(
-          store.audit.map((record, index) =>
-            auditRow({
-              tenantId,
-              source: SOURCE,
-              seq: index + 1,
-              unitPath: record.scopePath,
-              scopeExact: true,
-              at: record.at,
-              actorPersonId: record.actorPersonId,
-              action: record.action,
-              capability: record.capability,
-              targetType: record.targetType,
-              targetId: record.targetId,
-              reason: record.reason,
-            }),
-          ),
-          "audit_log",
-        ),
         collect([sequenceRow(tenantId, SEQUENCE, derivedSeq())], "sequences"),
       ]),
 
@@ -209,19 +199,6 @@ export function persistentOrg(store: OrgStore): PersistentStore {
           origin: readText(row, "origin") as RegistrationRequest["origin"],
         })
       }
-      readAuditInto(table(rows, "audit_log"), (record) =>
-        store.appendAudit({
-          at: record.at,
-          actorPersonId: record.actorPersonId,
-          action: record.action,
-          capability: record.capability ?? "",
-          scopePath: record.unitPath,
-          targetType: record.targetType ?? "",
-          targetId: record.targetId,
-          reason: record.reason,
-        }),
-      )
-
       const stored = table(rows, "sequences").get(naturalKey(tenantId, SEQUENCE))
       hydratedSeq = Math.max(derivedSeq(), stored === undefined ? 0 : readInt(stored, "value"))
       // العدّادُ يُستأنف ولا يعود صفراً — وإلا دهس معرّفٌ جديدٌ معرّفاً محفوظاً.

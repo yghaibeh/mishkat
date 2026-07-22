@@ -70,7 +70,7 @@ function observe(stores: Stores): Observation {
     activeKeys: ["donation:d-1", "donation:d-2", "donation:d-3"].map(
       (k) => `${k}=${stores.ledger.activePostingEntryId(k) ?? "لا"}`,
     ),
-    auditActions: stores.ledger.audit().map((a) => a.action),
+    auditActions: stores.audit.all().map((a) => a.action),
     reversedBy: stores.ledger.entries().map((e) => `${e.id}⟵${e.reversedBy ?? "لا"}`),
     unitIds: [...stores.org.units.values()].map((u) => u.id).sort(),
   }

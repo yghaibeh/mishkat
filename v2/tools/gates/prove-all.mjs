@@ -297,6 +297,57 @@ const PROOFS = [
     ],
   },
   {
+    /**
+     * **الوجهُ الأول لـG23**: السقفُ يُقاس على تحميلٍ حقيقيّ لا يُدَّعى. يُضيَّق سقفُ الشجرة
+     * إلى صفٍّ واحد، فيجب أن تحمرّ البوابةُ **مسمّيةً وحدةَ العمل** — لا «تجاوزٌ» مجهول.
+     */
+    gate: "G23", script: "g23-load-budget.mjs",
+    what: "**وحدةُ عملٍ تتجاوز سقفَها** ⟵ بناءٌ أحمر يُسمّيها ويقول كم حمّلت (CR-026 ب)",
+    patch: {
+      file: "src/db/repositories/orgRepository.ts",
+      apply: (src) => src.replace("const ROW_BUDGET = 20_000", "const ROW_BUDGET = 1"),
+    },
+    evidenceMustMatch: /وحدةُ عمل «org»/,
+  },
+  {
+    /**
+     * **الوجهُ الثاني — CR-011 مطبَّقاً**: القائمةُ **مشتقّةٌ من مجلد المستودعات**، فمستودعٌ
+     * جديد (وهو ما ستفعله T26-ب **ثلاث عشرة مرّة**) بلا سقفٍ يحمرّ **بلا أن يتذكّر أحدٌ
+     * تحديثَ قائمة**. وقبل الاشتقاق كانت البوابةُ ستخضرّ على هذا الزرع.
+     */
+    gate: "G23", script: "g23-load-budget.mjs",
+    what: "**مستودعٌ سُجِّل حديثاً بلا سقف** ⟵ تحمرّ تلقائياً (CR-011: الحراسةُ تتبع النمو)",
+    file: "src/db/repositories/__violation__.ts",
+    content:
+      `import type { PersistentStore } from "../unitOfWork.js"\n\n` +
+      `export function persistentPlanted(): Omit<PersistentStore, "rowBudget"> {\n` +
+      `  return {\n` +
+      `    name: "planted",\n` +
+      `    tables: ["org_units"],\n` +
+      `    project: () => new Map(),\n` +
+      `    load: () => undefined,\n` +
+      `  }\n` +
+      `}\n`,
+    evidenceMustMatch: /«persistentPlanted» لا يُعلن/,
+  },
+  {
+    /**
+     * **الوجهُ الثالث**: سقفٌ بلا إسنادٍ رقمٌ مُقدَّر لا مقيس — ومَن لا يعرف من أين جاء
+     * السقفُ لا يستطيع أن يقرّر عند بلوغه (نظيرُ «مواصفةٌ بلا إسناد قرار» في G13).
+     */
+    gate: "G23", script: "g23-load-budget.mjs",
+    what: "**سقفٌ بلا إسناد** — رقمٌ مُقدَّرٌ لا مشتقٌّ من قياس (ADR/CR/قب-)",
+    patch: {
+      file: "src/db/repositories/orgRepository.ts",
+      apply: (src) =>
+        src.replace(
+          /\/\*\*[\s\S]*?\*\/\nconst ROW_BUDGET = 20_000/,
+          "const ROW_BUDGET = 20_000",
+        ),
+    },
+    evidenceMustMatch: /بلا إسناد/,
+  },
+  {
     gate: "G22", script: "g22-approval-engine-only.mjs",
     // **الوجهُ الثاني لـCR-011**: بوابةٌ تشتقّ قائمتَها صارت تعتمد على الكود الذي تحرسه —
     // فالضمانةُ أن **تحمرّ عند الغموض** لا أن تخضرّ. يُغمَّض حقلُ قدرةٍ في إعلان نوعٍ

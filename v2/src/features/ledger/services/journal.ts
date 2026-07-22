@@ -251,10 +251,14 @@ export function postJournal(
         })
         for (const line of prepared.value) store.appendLine(entryId, line)
         const sealed = store.sealEntry(entryId)
-        store.appendAudit({
+        store.audit.append({
           at: ctx.now,
           actorPersonId: ctx.actorPersonId,
           action: "ledger.post",
+          // النطاقُ **يُقال ولا يُشتقّ** (CR-027): وحدةُ القيد معروفةٌ هنا فتُصرَّح.
+          unitPath: unit.path,
+          capability: null,
+          targetType: "journalEntry",
           targetId: entryId,
           reason: input.reasonAr ?? null,
         })
@@ -316,10 +320,13 @@ export function reverseEntry(
         }
         const sealed = store.sealEntry(reversalId)
         store.linkReversal(original.id, reversalId)
-        store.appendAudit({
+        store.audit.append({
           at: ctx.now,
           actorPersonId: ctx.actorPersonId,
           action: "ledger.reverse",
+          unitPath: original.unitPath,
+          capability: null,
+          targetType: "journalEntry",
           targetId: original.id,
           reason: reasonAr,
         })

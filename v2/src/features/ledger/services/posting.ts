@@ -6,6 +6,7 @@
  * فمصدرُ الحقيقة واحد. ومفتاحُ التكرار **طبيعيٌّ معلَن** (`النوع:المعرّف`) لا رقمٌ عشوائيّ.
  */
 
+import { ROOT_PATH } from "../../../authorization/scope.js"
 import { postJournal, reverseEntry, type LedgerContext } from "./journal.js"
 import { ok } from "../types.js"
 import type {
@@ -115,10 +116,16 @@ export function postEventSafely(
     code = "POSTING_FAILED"
   }
   try {
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: ctx.actorPersonId,
       action: "ledger.post.failed",
+      // **الاستثناءُ المُعلَنُ الوحيد**: هدفُه مفتاحُ ترحيلٍ لا كيان، والترحيلُ لم يقع
+      // فلا وحدةَ تُقال (§٣.٤). يُوجَّه إلى جذر الشبكة **موسوماً** لا مُموَّهاً، وقائمتُه
+      // محروسةٌ بـ`toEqual` فلا تنمو صامتةً — والصمتُ هو الثغرة لا الاستثناء.
+      unitPath: ROOT_PATH,
+      capability: null,
+      targetType: "postingKey",
       targetId: postingKeyOf(event),
       reason: code,
     })

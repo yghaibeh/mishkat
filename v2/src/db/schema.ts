@@ -178,6 +178,21 @@ export const TABLES: readonly TableSpec[] = [
     infrastructure: false,
   },
   {
+    /**
+     * **الرولّ-أب** (ADR-001 ع-٦، CR-026 أ) — رصيدُ صندوقٍ بعملةٍ في وحدة، **تجميعاً مسبقاً**.
+     * مفتاحُه (الشبكة × مفتاح التوجيه × الصندوق × العملة)، ومسوّغُ كلِّ ضلعٍ في `README.md`.
+     *
+     * **ملحقٌ فقط** (`appendOnly`) رغم أنه مشتقّ: أسطرُ القيد لا تُمحى، فصفٌّ ظهر مرّةً لا
+     * يختفي أبداً. واختفاؤه من الإسقاط **عطبٌ برمجيّ يُرمى** لا `DELETE` يُكتب صامتاً —
+     * وهو نظيرُ «الاختلافُ يُرمى ولا يُصلَح» على وجهه الآخر.
+     */
+    name: "fund_balances",
+    columns: [...routing(), text("fund_id"), text("currency"), int("balance")],
+    primaryKey: [TENANT_COLUMN, ROUTING_COLUMN, "fund_id", "currency"],
+    appendOnly: true,
+    infrastructure: false,
+  },
+  {
     name: "finance_actions",
     columns: [
       ...routing(),

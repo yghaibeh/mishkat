@@ -10,6 +10,7 @@
  * الدفتر يُعاد برهانُه عند كل تحميل**، فقيدٌ مختلٌّ في القاعدة **لا يُقرأ صامتاً** بل يُرمى.
  */
 
+import { verifyLoadedRollup } from "../../features/ledger/data/rollup.js"
 import { LedgerStore } from "../../features/ledger/data/store.js"
 import type {
   AccountKind,
@@ -38,22 +39,24 @@ import {
 import { TENANT_ROOT_PATH, tableSpec } from "../schema.js"
 import type { SqlRow } from "../sql/driver.js"
 import { naturalKey, primaryKeyOf, type PersistentStore, type RowSet } from "../unitOfWork.js"
-import { auditRow, readAuditInto, sequenceRow, suffixOf } from "./shared.js"
+import { sequenceRow, suffixOf } from "./shared.js"
 
 const SOURCE = "ledger"
 const SEQUENCE = "ledger.seq"
 const VOUCHER_SEQUENCE = "ledger.voucher"
 
 /**
- * **حَجْرٌ معلن**: أفعالُ تدقيقٍ لا يُشتقّ نطاقُها من كيانٍ مخزَّن، فتُوجَّه إلى جذر الشبكة
- * **موسومةً** `scope_exact = 0`. وحيدُها اليوم `ledger.post.failed`: هدفُه **مفتاحُ ترحيلٍ**
- * لا كيان، والترحيلُ لم يقع أصلاً فلا قيدَ يُشتقّ منه (§٣.٤).
+ * سقفُ صفوف وحدة العمل (G23 · CR-026 ب) — **مشتقٌّ من أرقامٍ مقيسة لا مُقدَّر**:
+ * ADR-001 ملحق أ يقيس ~٤٣٢٬٠٠٠ سطرَ قيدٍ في السنة لشبكةٍ من ٤٠٠ مسجد، أي **~١٬٠٨٠ سطراً
+ * للمسجد الواحد في السنة**. ونطاقُ التحميل العمليّ **نطاقُ وحدة** (مسجدٌ أو منطقة)، وأوسعُ
+ * منطقةٍ في الشبكة اليوم دون العشرين مسجداً ⟵ ~٢٢٬٠٠٠ سطرٍ في السنة، ومعها رؤوسُها
+ * وأرصدتُها وأفعالُها. فالسقفُ **٦٠٬٠٠٠** يترك فائضاً معلوماً ويبقى **دون سقف الذاكرة
+ * بمراحل** (١٢٨ م.ب — ADR §١-٤).
  *
- * القائمةُ محروسةٌ بـ`toEqual` في `tests/db/audit-routing.test.ts`: **لا تنمو صامتةً**
- * (فعلٌ جديدٌ بلا نطاقٍ يُرمى ويُفشل الطقم) **ولا تنكمش صامتةً**. وجذرُها أن نوعَ سجلّ
- * الدفتر أضيقُ من عقد `AuditEntry` المعلن ⟵ `CR-DRAFT-persistence-002`.
+ * **وهو سقفٌ يُقاس لا يُتوقَّع**: تجاوزُه لا يعني «تضخّمَ البيانات» بل أن قراءةً جديدةً
+ * وسّعت النطاق — وهذا بعينه ما أراد قب-٤٨ أن يُسمعه.
  */
-export const AUDIT_ACTIONS_WITHOUT_SCOPE: readonly string[] = ["ledger.post.failed"]
+const ROW_BUDGET = 60_000
 
 function table(rows: RowSet, name: string): ReadonlyMap<string, SqlRow> {
   return rows.get(name) ?? new Map<string, SqlRow>()
@@ -96,21 +99,6 @@ export function persistentLedger(
   let loadedAccounts: readonly SqlRow[] = []
   let loadedFunds: readonly SqlRow[] = []
 
-  /** نطاقُ قيد التدقيق **يُشتقّ من الكيان المُدقَّق** — أو يُرمى (لا اختراعَ مسار). */
-  const auditScope = (targetId: string, action: string): { path: string; exact: boolean } => {
-    const entry = store.getEntry(targetId)
-    if (entry !== null) return { path: entry.unitPath, exact: true }
-    const pending = store.getAction(targetId)
-    if (pending !== null) return { path: pending.unitPath, exact: true }
-    if (AUDIT_ACTIONS_WITHOUT_SCOPE.includes(action)) {
-      return { path: TENANT_ROOT_PATH, exact: false }
-    }
-    throw new Error(
-      `مفتاحُ توجيهٍ لا يُشتقّ لقيد تدقيق: ${action} ⟵ ${targetId}. ` +
-        `إن كان الفعلُ بلا كيانٍ مخزَّنٍ فأدرجه في AUDIT_ACTIONS_WITHOUT_SCOPE صراحةً`,
-    )
-  }
-
   const derivedSeq = (): number => {
     let max = hydratedSeq
     for (const entry of store.entries()) max = Math.max(max, suffixOf(entry.id))
@@ -131,15 +119,16 @@ export function persistentLedger(
 
   return {
     name: SOURCE,
+    rowBudget: ROW_BUDGET,
     tables: [
       "ledger_accounts",
       "funds",
       "ledger_units",
       "journal_entries",
       "journal_lines",
+      "fund_balances",
       "active_posting_keys",
       "finance_actions",
-      { table: "audit_log", owns: (r) => r["source"] === SOURCE },
       { table: "sequences", owns: (r) => String(r["name"] ?? "").startsWith(`${SOURCE}.`) },
     ],
 
@@ -180,6 +169,19 @@ export function persistentLedger(
           })),
           "journal_lines",
         ),
+        // **الرولّ-أب** (ع-٦): صفوفُه تُبنى من السطح المعلن `fundRollupRows()` وحدَه —
+        // لا حسابَ هنا ولا تجميع. طبقةُ الاستمرار **تنقل الرقم ولا تصنعه**؛ ومَن يصنع
+        // الرقم في موضعين يصنع مصدرَي حقيقةٍ لشيءٍ واحد (المادة ١/٢).
+        collect(
+          store.fundRollupRows().map((row) => ({
+            tenant_id: tenantId,
+            unit_path: row.unitPath,
+            fund_id: row.fundId,
+            currency: row.currency,
+            balance: row.balance,
+          })),
+          "fund_balances",
+        ),
         collect(
           activeKeys().map((entry) => ({
             tenant_id: tenantId,
@@ -216,26 +218,6 @@ export function persistentLedger(
           "finance_actions",
         ),
         collect(
-          store.audit().map((record, index) => {
-            const scope = auditScope(record.targetId, record.action)
-            return auditRow({
-              tenantId,
-              source: SOURCE,
-              seq: index + 1,
-              unitPath: scope.path,
-              scopeExact: scope.exact,
-              at: record.at,
-              actorPersonId: record.actorPersonId,
-              action: record.action,
-              capability: null,
-              targetType: null,
-              targetId: record.targetId,
-              reason: record.reason,
-            })
-          }),
-          "audit_log",
-        ),
-        collect(
           [
             sequenceRow(tenantId, SEQUENCE, derivedSeq()),
             sequenceRow(tenantId, VOUCHER_SEQUENCE, derivedVoucher()),
@@ -269,6 +251,9 @@ export function persistentLedger(
       ]),
 
     load: (rows) => {
+      // **خطُّ أساس الرولّ-أب قبل التحميل** — فيُقاس أثرُ التحميل وحدَه (انظر ٤ أدناه).
+      const rollupBefore = store.fundRollupRows()
+
       // ١) المراجعُ أولاً: التكاملُ المرجعيّ يُفحص عند كل سطرٍ يُلحق.
       loadedAccounts = [...table(rows, "ledger_accounts").values()]
       loadedFunds = [...table(rows, "funds").values()]
@@ -376,7 +361,23 @@ export function persistentLedger(
         if (reversalOf !== null) store.linkReversal(reversalOf, id)
       }
 
-      // ٤) العدّادات: الأعلى بين المشتقّ والمحفوظ — فالنطاقُ الجزئيّ لا يُنقص عدّاداً.
+      // ٤) **الرولّ-أب يُتحقَّق منه ولا يُحمَّل** (ع-٦، القيدُ الأول): إعادةُ تشغيل الأسطر
+      //    أعادت بناءَه للتوّ، فيُقارَن بالمحفوظ. ولو حُمِّل حَملاً لصار للقاعدة **مِقبضٌ
+      //    يكتب الرصيدَ في الذاكرة** — ومن يكتب الرقم يزوّره. والاختلافُ **يُرمى**: لا
+      //    `UPDATE` صامتٌ يُخفي أن مصدراً ما كان يُفسد الرقم.
+      //    وهي مطابقةٌ تجري **على كل جلسة** لا ليلياً فقط — أرخصُ مطابقةٍ وأكثرُها تكراراً.
+      verifyLoadedRollup(
+        rollupBefore,
+        store.fundRollupRows(),
+        [...table(rows, "fund_balances").values()].map((row) => ({
+          unitPath: readText(row, "unit_path"),
+          fundId: readText(row, "fund_id"),
+          currency: readText(row, "currency"),
+          balance: readInt(row, "balance") as Cents,
+        })),
+      )
+
+      // ٥) العدّادات: الأعلى بين المشتقّ والمحفوظ — فالنطاقُ الجزئيّ لا يُنقص عدّاداً.
       const sequences = table(rows, "sequences")
       const storedValue = (name: string): number => {
         const row = sequences.get(naturalKey(tenantId, name))
@@ -388,15 +389,6 @@ export function persistentLedger(
       hydratedVoucher = Math.max(derivedVoucher(), storedValue(VOUCHER_SEQUENCE))
       for (let i = 0; i < hydratedVoucher; i += 1) store.allocateVoucherSeq()
 
-      readAuditInto(table(rows, "audit_log"), (record) =>
-        store.appendAudit({
-          at: record.at,
-          actorPersonId: record.actorPersonId,
-          action: record.action,
-          targetId: record.targetId,
-          reason: record.reason,
-        }),
-      )
     },
   }
 }

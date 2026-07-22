@@ -160,7 +160,7 @@ describe("الذرّية: عطبٌ جزئيّ يُرجع كل شيء (ع-٣٣، 
     const accountsBefore = w.store.accounts.size
     const assignmentsBefore = w.store.assignments.length
     // نحقن فشلاً في آخر خطوةٍ من الدفعة الذرّية.
-    w.store.appendAudit = () => {
+    w.store.audit.append = () => {
       throw new Error("عطبٌ مُحقَن أثناء الدفعة")
     }
     expect(() =>
@@ -177,13 +177,13 @@ describe("الذرّية: عطبٌ جزئيّ يُرجع كل شيء (ع-٣٣، 
 
   it("التوفير الناجح يترك قيدَ تدقيقٍ واحداً على الأقل", () => {
     const w = seedWorld()
-    const before = w.store.audit.length
+    const before = w.store.audit.all().length
     provision(w.store, w.actor("u-amir"), CTX, {
       targetUnitId: "khalid",
       targetRoleId: "teacher",
       username: "audited",
     })
-    expect(w.store.audit.length).toBeGreaterThan(before)
+    expect(w.store.audit.all().length).toBeGreaterThan(before)
   })
 
   it("الحساب المُوفَّر يدخل بلقطته فوراً ويعمل بقدرات دوره", () => {

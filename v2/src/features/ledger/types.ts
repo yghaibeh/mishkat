@@ -82,6 +82,20 @@ export type JournalLine = {
   readonly deductionKind: DeductionKind | null
 }
 
+/**
+ * صفُّ الرولّ-أب — **تجميعٌ مسبق** لرصيد صندوقٍ بعملةٍ في وحدة (ADR-001 ع-٦، CR-026 أ).
+ *
+ * مفتاحُه **الصندوق × العملة × مفتاح التوجيه**، ومسوّغُ كلِّ ضلعٍ في `db/README.md`.
+ * وهو **ليس رقماً في تقرير** بل مدخلُ الحارس الشرعيّ ق-٥٥ — فثابتُه أنه يساوي مجموعَ
+ * الأسطر دائماً، ولا يُكتب إلا من كتابة السطر نفسِه.
+ */
+export type FundRollupRow = {
+  readonly unitPath: string
+  readonly fundId: string
+  readonly currency: CurrencyCode
+  readonly balance: Cents
+}
+
 export type JournalEntry = {
   readonly tenantId: string
   readonly id: string

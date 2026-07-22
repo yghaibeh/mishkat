@@ -87,12 +87,14 @@ export function provision(
       ctx.now,
     )
     store.addAssignment(assignment)
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: provisioner.personId,
       action: "users.provision",
+      // سجلُّ الشجرة كان يحمل النطاقَ أصلاً — والتوحيدُ لا يُنقصه شيئاً: الحقلُ نفسُه
+      // باسم العقد المعلن (`unitPath`) بدل اسمٍ محليّ، وفي جدولٍ واحدٍ مع سجلّ الدفتر.
+      unitPath: unit.path,
       capability: "users.provision",
-      scopePath: unit.path,
       targetType: "account",
       targetId: account.personId,
       reason: null,
@@ -172,12 +174,14 @@ export function approveRegistration(
     )
     store.addAssignment(assignment)
     store.saveRequest({ ...request, status: "approved" })
-    store.appendAudit({
+    store.audit.append({
       at: ctx.now,
       actorPersonId: approver.personId,
       action: "registration.approve",
+      // سجلُّ الشجرة كان يحمل النطاقَ أصلاً — والتوحيدُ لا يُنقصه شيئاً: الحقلُ نفسُه
+      // باسم العقد المعلن (`unitPath`) بدل اسمٍ محليّ، وفي جدولٍ واحدٍ مع سجلّ الدفتر.
+      unitPath: unit.path,
       capability: "registration.approve",
-      scopePath: unit.path,
       targetType: "account",
       targetId: account.personId,
       reason: null,
