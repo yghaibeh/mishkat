@@ -6,17 +6,17 @@
  */
 
 import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG } from "./domains.js"
-// قاموسُ وحدةٍ يعيش **في وحدتها** ويُدمج هنا (قب-٣١ §٣-أ: سطرُ تسجيلٍ لا نصوص).
-import { CUSTODY } from "../../features/custody/text.js"
-import { SUPERVISION } from "../../features/supervision/text.js"
-import { COMMITTEES } from "../../features/committees/text.js"
-import { MEDIA } from "../../features/media/text.js"
+// قاموسُ وحدةٍ يعيش في وحدتها ويُدمج هنا (قب-٣١ §٣-أ: سطرُ تسجيلٍ لا نصوص).
 import { CIRCLES } from "../../features/circles/text.js"
+import { COMMITTEES } from "../../features/committees/text.js"
+import { CUSTODY } from "../../features/custody/text.js"
 import { LIBRARY } from "../../features/library/text.js"
+import { MEDIA } from "../../features/media/text.js"
+import { NOTIFY } from "../../features/notifications/text.js"
+import { SUPERVISION } from "../../features/supervision/text.js"
 
 const DOMAINS = [
-  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG,
-  CUSTODY, SUPERVISION, COMMITTEES, MEDIA, CIRCLES, LIBRARY,
+  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, CIRCLES, COMMITTEES, CUSTODY, LIBRARY, MEDIA, NOTIFY, SUPERVISION,
 ] as const
 
 const SOURCE = {
@@ -28,13 +28,15 @@ const SOURCE = {
   ...LEDGER,
   ...BOX,
   ...DAILY_LOG,
-  ...CUSTODY,
-  ...SUPERVISION,
-  ...COMMITTEES,
-  ...MEDIA,
   ...CIRCLES,
+  ...COMMITTEES,
+  ...CUSTODY,
   ...LIBRARY,
+  ...MEDIA,
+  ...NOTIFY,
+  ...SUPERVISION,
 } as const
+
 
 
 

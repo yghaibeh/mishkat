@@ -16,5 +16,6 @@ import "./features/committees/screens/screens.js"
 import "./features/media/screens/screens.js"
 import "./features/circles/screens/screens.js"
 import "./features/library/screens/screens.js"
+import "./features/notifications/screens/screens.js"
 
 export { registeredScreens } from "./ui/screens/registry.js"
