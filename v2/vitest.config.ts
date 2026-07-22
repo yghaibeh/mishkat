@@ -68,6 +68,10 @@ export default defineConfig({
         // وتحقّقُ الرفع — عتبتُها ٩٥٪، وطبقةُ بياناتها معها.
         "src/features/media/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
         "src/features/media/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والحلقةُ قلبُ عمل المسجد** (ب-٢٨، T16): كيانٌ واحدٌ نوعُه صفة، وكلُّ عددٍ فيه
+        // اشتقاقٌ لا عدّاد ⇒ خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها (والعتبةُ أرضيةٌ تصعد).
+        "src/features/circles/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/circles/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
