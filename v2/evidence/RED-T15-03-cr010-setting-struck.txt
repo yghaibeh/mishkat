@@ -1,0 +1,44 @@
+════ RED — CR-010 ════
+الإعادة: أُعيد `src/settings/registry.ts` إلى ما قبل T15 (البند قائم) والاختباراتُ المحدَّثة كما هي.
+الأمر: npx vitest run tests/settings tests/features/dailyLog/eligibility.test.ts
+
+- []
++ [
++   "points.free_activity_scores",
++ ]
+
+ ❯ tests/settings/resolver.test.ts:33:72
+     31|     ]
+     32|     const offenders = SETTINGS.filter((d) => suspicious.some((re) => r…
+     33|     expect(offenders.map((d) => d.id), "إعدادٌ يشتري إعفاءً من قاعدة")…
+       |                                                                        ^
+     34|   })
+     35|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/features/dailyLog/eligibility.test.ts > ب-٤٢ — النشاطُ الحرّ: توثيقٌ بلا نقاطٍ آلية، ويظهر لمعتمِد السجل > **النشاطُ الحرّ صفرُ نقاطٍ ولا مفتاحَ يشتري غيرَ ذلك** — `points.free_activity_scores` مشطوبٌ من السجل (CR-010/ب-٤٢)
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/features/dailyLog/eligibility.test.ts:274:63
+    272|   // البابُ **غيرُ مُسجَّلٍ فلا يُضبط**، والنشاطُ الحرُّ صفرُ نقاطٍ بن…
+    273|   it("**النشاطُ الحرّ صفرُ نقاطٍ ولا مفتاحَ يشتري غيرَ ذلك** — `points…
+    274|     expect(SETTINGS_BY_ID.has("points.free_activity_scores")).toBe(fal…
+       |                                                               ^
+    275|
+    276|     const store = seedDailyLogStore()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 41 passed (44)
+   Start at  05:03:02
+   Duration  120ms (transform 67ms, setup 0ms, import 85ms, tests 26ms, environment 0ms)
+

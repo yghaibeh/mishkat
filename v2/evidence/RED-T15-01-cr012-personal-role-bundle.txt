@@ -1,0 +1,64 @@
+════ RED — CR-012 ════
+الإعادة: أُعيد `src/authorization/can.ts` إلى ما قبل T15 (b7cb8a3) والاختباراتُ الجديدة كما هي.
+الأمر: npx vitest run tests/engine/can.test.ts tests/generated/golden-matrix.test.ts
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/generated/golden-matrix.test.ts:103:72
+    101|       const decision = can(actor, c.capId, scope, CTX)
+    102|
+    103|       expect(decision.allowed, `${title} · السبب: ${decision.reason}`)…
+       |                                                                        ^
+    104|       // التوكيد على **السبب الصحيح** لا على «رُفض» وحدها.
+    105|       if (!decision.allowed) expect(decision.reason).toMatch(/^DENIED_…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[138/140]⎯
+
+ FAIL  tests/generated/golden-matrix.test.ts > المصفوفة الذهبية دور×قدرة — كل خلية مُختبَرة > ✘ «طالب» لا يملك «نشر تغطية وحذفها» ولو على نطاقه [role_lacks_capability]
+AssertionError: ✘ «طالب» لا يملك «نشر تغطية وحذفها» ولو على نطاقه [role_lacks_capability] · السبب: ALLOWED_PERSONAL_OWNER: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/generated/golden-matrix.test.ts:103:72
+    101|       const decision = can(actor, c.capId, scope, CTX)
+    102|
+    103|       expect(decision.allowed, `${title} · السبب: ${decision.reason}`)…
+       |                                                                        ^
+    104|       // التوكيد على **السبب الصحيح** لا على «رُفض» وحدها.
+    105|       if (!decision.allowed) expect(decision.reason).toMatch(/^DENIED_…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[139/140]⎯
+
+ FAIL  tests/generated/golden-matrix.test.ts > المصفوفة الذهبية دور×قدرة — كل خلية مُختبَرة > ✘ «طالب» لا يملك «نشر تغطية وحذفها» ولا خارج نطاقه [role_lacks_and_foreign_scope]
+AssertionError: ✘ «طالب» لا يملك «نشر تغطية وحذفها» ولا خارج نطاقه [role_lacks_and_foreign_scope] · السبب: ALLOWED_PERSONAL_OWNER: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/generated/golden-matrix.test.ts:103:72
+    101|       const decision = can(actor, c.capId, scope, CTX)
+    102|
+    103|       expect(decision.allowed, `${title} · السبب: ${decision.reason}`)…
+       |                                                                        ^
+    104|       // التوكيد على **السبب الصحيح** لا على «رُفض» وحدها.
+    105|       if (!decision.allowed) expect(decision.reason).toMatch(/^DENIED_…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[140/140]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  140 failed | 1818 passed (1958)
+   Start at  05:02:43
+   Duration  214ms (transform 55ms, setup 0ms, import 81ms, tests 48ms, environment 0ms)
+
