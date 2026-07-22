@@ -15,10 +15,10 @@ import { MEDIA } from "../../features/media/text.js"
 import { NOTIFY } from "../../features/notifications/text.js"
 import { SUPERVISION } from "../../features/supervision/text.js"
 import { EDUCATION } from "../../features/education/text.js"
-import { TAHFEEZ_LOG } from "../../features/tahfeezLog/text.js"
+import { CIRCLE_LOG } from "../../features/circleLog/text.js"
 
 const DOMAINS = [
-  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, CIRCLES, COMMITTEES, CUSTODY, EDUCATION, LIBRARY, MEDIA, NOTIFY, SUPERVISION, TAHFEEZ_LOG,
+  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, CIRCLES, COMMITTEES, CUSTODY, EDUCATION, LIBRARY, MEDIA, NOTIFY, SUPERVISION, CIRCLE_LOG,
 ] as const
 
 const SOURCE = {
@@ -38,7 +38,7 @@ const SOURCE = {
   ...MEDIA,
   ...NOTIFY,
   ...SUPERVISION,
-  ...TAHFEEZ_LOG,
+  ...CIRCLE_LOG,
 } as const
 
 

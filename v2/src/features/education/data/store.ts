@@ -8,6 +8,8 @@
  *  ١. **لا كيانَ حلقةٍ ولا التحاقٍ**: ليس في هذا السطح مِقبضٌ يكتب حلقةً أو طالباً — فلا
  *     سجلَّ ثانيَ يتباعد عن سجلّ `circles` (ع-١٩/ع-٢٩).
  *  ٢. **لا حالةَ اعتمادٍ**: ليس فيه حقلٌ ولا مِقبضٌ لحالة اعتماد — موطنُها مستودعُ المحرّك وحده (G22).
+ *  ٢-ب. **ولا جلسةً يومية** (CR-016): موطنُها مستودعُ وحدة السجل اليوميّ — **مستودعان لكيانٍ
+ *     واحدٍ هو الازدواجُ بعينه**، ولو تطابقا اليومَ لتباعدا غداً.
  *  ٣. **لا عدّادَ مخزَّن**: كلُّ رقمٍ استعلامٌ لحظةَ السؤال (ق-٩٢).
  *  ٤. **الشبكةُ من المستودع لا من المدخل** (قب-١٨): يحمل شبكتَه ويختمها على كل كيان.
  *
@@ -20,9 +22,6 @@ import type {
   CurriculumBook,
   CurriculumLevel,
   CurriculumSession,
-  Lesson,
-  LessonAttendance,
-  LessonPhoto,
   ProgressCorrection,
 } from "../types.js"
 
@@ -31,9 +30,6 @@ export class EducationStore {
   private levelMap = new Map<string, CurriculumLevel>()
   private bookMap = new Map<string, CurriculumBook>()
   private sessionMap = new Map<string, CurriculumSession>()
-  private lessonMap = new Map<string, Lesson>()
-  private attendanceMap = new Map<string, LessonAttendance>()
-  private photoMap = new Map<string, LessonPhoto>()
   private correctionList: ProgressCorrection[] = []
   private seq = 0
 
@@ -86,48 +82,11 @@ export class EducationStore {
     return Object.freeze([...this.sessionMap.values()])
   }
 
-  // ── الدرسُ وحضورُه وصورُه ────────────────────────────────────────────────────
-  saveLesson(l: Lesson): void {
-    this.lessonMap.set(l.id, Object.freeze({ ...l, tenantId: this.tenantId }))
-  }
-  getLesson(id: string): Lesson | null {
-    return this.lessonMap.get(id) ?? null
-  }
-  lessons(): readonly Lesson[] {
-    return Object.freeze([...this.lessonMap.values()])
-  }
-  /** المفتاحُ الطبيعيّ `(الحلقة، المجلس)` — دالةٌ واحدةٌ لا اجتهادُ مستدعٍ. */
-  findLesson(circleId: string, sessionId: string): Lesson | null {
-    for (const l of this.lessonMap.values()) {
-      if (l.circleId === circleId && l.sessionId === sessionId) return l
-    }
-    return null
-  }
-
-  /** حضورُ الدرس يُستبدَل كتلةً واحدة — فلا يبقى صفٌّ يتيمٌ من تسجيلٍ سابق. */
-  saveAttendance(lessonId: string, rows: readonly LessonAttendance[]): void {
-    for (const [key, row] of [...this.attendanceMap]) {
-      if (row.lessonId === lessonId) this.attendanceMap.delete(key)
-    }
-    for (const row of rows) {
-      this.attendanceMap.set(row.id, Object.freeze({ ...row, tenantId: this.tenantId }))
-    }
-  }
-  attendance(): readonly LessonAttendance[] {
-    return Object.freeze([...this.attendanceMap.values()])
-  }
-
-  savePhotos(lessonId: string, rows: readonly LessonPhoto[]): void {
-    for (const [key, row] of [...this.photoMap]) {
-      if (row.lessonId === lessonId) this.photoMap.delete(key)
-    }
-    for (const row of rows) {
-      this.photoMap.set(row.id, Object.freeze({ ...row, tenantId: this.tenantId }))
-    }
-  }
-  photos(): readonly LessonPhoto[] {
-    return Object.freeze([...this.photoMap.values()])
-  }
+  // ── الدرسُ **ليس هنا** (CR-016) ──────────────────────────────────────────────
+  //
+  // كان هذا السطحُ يحمل مقابضَ الدرس وحضورِه وصورِه، فكان **مستودعاً ثانياً لكيانٍ واحد**.
+  // وبعد التوحيد: **صفر مِقبضٍ يكتب جلسةً هنا** — الكتابةُ بكاتبها في موطنها، والقراءةُ
+  // بمنفذ. وهذا الغيابُ **هو الحارس**: ما لا مقبضَ له لا يُكتب من أيّ مسار.
 
   // ── بصماتُ التصحيح: **إلحاقٌ لا استبدال** (المادة ٤/٨: سجلٌّ لا يُمحى) ───────
   saveCorrection(c: ProgressCorrection): void {

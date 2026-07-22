@@ -31,7 +31,7 @@ import {
   SESSION_A,
   SESSION_B,
   seedWorld,
-} from "./_seed.js"
+  BOOK_ID,} from "./_seed.js"
 
 const UNIT_DIR = fileURLToPath(new URL("../../../src/features/education", import.meta.url))
 
@@ -201,5 +201,43 @@ describe("ع-٨ — **مفتاحُ تفعيلِ المنهاج مستحيلٌ ب
   it("**وكتالوجُ المنهاج لا يُرشَّح بحالة**: `allCurricula` تعيد كلَّ صفٍّ في المستودع", () => {
     const catalog = code(join(UNIT_DIR, "services/curriculum.ts"))
     expect(/\.filter\s*\(\s*\(?\w+\)?\s*=>\s*\w+\.(?:active|enabled)/.test(catalog)).toBe(false)
+  })
+
+  /**
+   * **صفٌّ يتيمٌ لا يُسقط الشجرةَ ولا يُخضِرّ الغموض** — بياناتٌ مرجعيةٌ يكتبها إنسانٌ تحتمل
+   * الحلقةَ المقطوعة (مجلسٌ بلا كتاب، أو كتابٌ بلا مستوى): فالجوابُ **«لا منهاج»** صريحاً،
+   * لا تخمينٌ لأقرب منهاج. (نظيرُ قاعدة CR-011 على مستهلِك بيانات.)
+   */
+  it("**والحلقةُ المقطوعة تُجيب «لا منهاج»**: مجلسٌ بلا كتابٍ أو كتابٌ بلا مستوىً أو مستوىً بلا منهاج", () => {
+    const w = seedWorld()
+    const tenantId = w.education.tenantId
+
+    w.education.saveSession({ tenantId, id: "orphan-session", bookId: "no-such-book", ar: "مجلسٌ يتيم", ordinal: 1 })
+    expect(curriculumOfSession(w.education, "orphan-session")).toBe(null)
+
+    w.education.saveBook({ tenantId, id: "orphan-book", levelId: "no-such-level", ar: "كتابٌ يتيم", ordinal: 1 })
+    w.education.saveSession({ tenantId, id: "session-of-orphan-book", bookId: "orphan-book", ar: "مجلس", ordinal: 1 })
+    expect(curriculumOfSession(w.education, "session-of-orphan-book")).toBe(null)
+
+    w.education.saveLevel({ tenantId, id: "orphan-level", curriculumId: "no-such-curriculum", ar: "مستوىً يتيم", ordinal: 1 })
+    w.education.saveBook({ tenantId, id: "book-of-orphan-level", levelId: "orphan-level", ar: "كتاب", ordinal: 1 })
+    w.education.saveSession({ tenantId, id: "session-of-orphan-level", bookId: "book-of-orphan-level", ar: "مجلس", ordinal: 1 })
+    expect(curriculumOfSession(w.education, "session-of-orphan-level")).toBe(null)
+
+    // ومجلسٌ لا وجودَ له أصلاً ⇒ `null` كذلك — **لا رميَ ولا تخمين**.
+    expect(curriculumOfSession(w.education, "no-such-session")).toBe(null)
+  })
+
+  it("**والترتيبُ حتميٌّ عند تساوي الرتب**: المعرّفُ يفصل — فلا يتقلّب العرضُ بين تشغيلين", () => {
+    const w = seedWorld()
+    const tenantId = w.education.tenantId
+    // **رتبةٌ واحدةٌ لمجلسين** — بياناتٌ يكتبها إنسان، فالتساوي وارد.
+    w.education.saveSession({ tenantId, id: "ses-tie-b", bookId: BOOK_ID, ar: "مجلسٌ ب", ordinal: 5 })
+    w.education.saveSession({ tenantId, id: "ses-tie-a", bookId: BOOK_ID, ar: "مجلسٌ أ", ordinal: 5 })
+
+    const ordered = sessionsOfCurriculum(w.education, CURRICULUM_ID).map((s) => s.id)
+    expect(ordered.slice(-2)).toEqual(["ses-tie-a", "ses-tie-b"])
+    // والتشغيلُ الثاني يُعطي الترتيبَ نفسَه.
+    expect(sessionsOfCurriculum(w.education, CURRICULUM_ID).map((s) => s.id)).toEqual(ordered)
   })
 })

@@ -35,7 +35,8 @@ import {
   seedWorld,
   WRITE,
   type EduWorld,
-} from "../education/_seed.js"
+  circleDays,
+  NOW,} from "../education/_seed.js"
 import type { Actor } from "../../../src/authorization/can.js"
 
 type Chain = {
@@ -68,7 +69,7 @@ function chain(input: { readonly people?: readonly Actor[]; readonly circleId?: 
     world,
     approval,
     ep: makeEducationLessonEndpoints(
-      { approval, education: world.education },
+      { approval, days: circleDays(world)("u-teacher", NOW) },
       ports,
       SETTINGS,
       input.people ?? canonicalPeople(),
@@ -275,7 +276,7 @@ describe("**ق-٣/ق-٨٥ ذيلاً — كسرُ الزجاج عند شغور �
       world,
       approval,
       ep: makeEducationLessonEndpoints(
-        { approval, education: world.education },
+        { approval, days: circleDays(world)("u-teacher", NOW) },
         ports,
         SETTINGS,
         canonicalPeople(),

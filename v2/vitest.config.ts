@@ -93,8 +93,8 @@ export default defineConfig({
         },
         // **وسجلُّ الحلقة اليوميّ يحمل علامةَ طالبٍ ورمزَ وليّ أمرِه** (ق-٩٠…ق-٩٣، T18):
         // خطؤه يُصيب تقييماً وتقديراً وبياناتِ قاصر ⇒ خدماتُه عتبتُها ٩٥٪، وطبقةُ بياناته معها.
-        "src/features/tahfeezLog/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
-        "src/features/tahfeezLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        "src/features/circleLog/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
+        "src/features/circleLog/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
         // **والدرسُ يحمل مالَ المعلّم وتقدّمَ الطالب** (ق-٨٦/ق-٩٢، T19): خدماتُ «على بصيرة»
         // عتبتُها ٩٥٪، وطبقةُ بياناتها معها — فالاشتقاقُ الماليُّ يُختبر كما يُختبر المال.
         "src/features/education/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },

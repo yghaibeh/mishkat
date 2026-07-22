@@ -19,14 +19,21 @@ import {
   seedWorld,
   WRITE,
   type EduWorld,
-} from "./_seed.js"
+  circleDays,} from "./_seed.js"
 import { recordLesson } from "../../../src/features/education/services/lessons.js"
 
 type Ep = ReturnType<typeof makeEducationEndpoints>
 
 function endpointsOf(w: EduWorld, approved: readonly string[] = []): Ep {
   const set = new Set(approved)
-  return makeEducationEndpoints(w.education, educationPorts(w), SETTINGS, (lessonId) => set.has(lessonId))
+  const isLessonApproved = (lessonId: string): boolean => set.has(lessonId)
+  return makeEducationEndpoints(
+    w.education,
+    educationPorts(w),
+    SETTINGS,
+    isLessonApproved,
+    circleDays(w, { isLessonApproved }),
+  )
 }
 
 function recordInput(w: EduWorld, sessionId: string = SESSION_A) {

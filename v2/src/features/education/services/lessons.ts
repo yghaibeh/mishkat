@@ -1,25 +1,22 @@
 /**
- * **الكاتبُ الوحيد** لكيان الدرس وحضورِه وصورِه (عقدُ الوحدة §٣).
+ * **قواعدُ درس المنهاج فوق الجلسة الواحدة** (عقدُ الوحدة §٣، CR-016).
  *
- * وهو واحدٌ **بالقياس لا بالنيّة**: `single-circle-entity.test.ts` يمسح الوحدةَ فيفشل عند
- * كاتبٍ ثانٍ. ولذلك بابا الإدخال في `server/endpoints.ts` (المعلّمُ المالك وأميرُ المكان —
- * ق-٨٤) **يفوّضان هذه الدالةَ نفسَها**: بابان للصلاحية، ومنطقٌ واحدٌ لا يتباعد.
+ * **ما تغيّر بالتوحيد وما لم يتغيّر**:
+ *  - **لم يتغيّر**: ق-٨٤ بابان (المعلّمُ المالك وأميرُ المكان) يفوّضان **دالةً واحدة**؛ والمجلسُ
+ *    من قائمةٍ مغلقة (ق-٨٩)؛ والمعتمَدُ لا يُكتب عليه (ق-٨)؛ والحضورُ لكل ملتحقٍ صفٌّ.
+ *  - **تغيّر**: هذه الدالةُ **لم تعد تكتب كياناً**. تتحقّق من **قواعدها هي** (المنهاجُ والمجلسُ
+ *    ونوعُ الحلقة) ثم **تفوّض الكتابةَ إلى كاتب الجلسة في موطنها** عبر المنفذ. فالكاتبُ واحدٌ
+ *    في النظام كلِّه لا واحدٌ في كل وحدة.
  *
- * وترتيبُ الحرّاس **مقصودٌ ويُختبر بترتيبه**: الحلقةُ ⟵ منهاجُ نوعها ⟵ المجلسُ ⟵ القفلُ ⟵
- * الشكلُ ⟵ الحضورُ ⟵ الصور. فالتشخيصُ الأدقُّ يسبق الأعمّ (ق-١١٢ روحاً).
+ * **وترتيبُ الحرّاس محفوظٌ ويُختبر بترتيبه**: الحلقةُ ⟵ منهاجُ نوعها ⟵ المجلسُ ⟵ (ثم عند
+ * صاحب الكيان) الشكلُ ⟵ القفلُ ⟵ المدةُ ⟵ الحضورُ ⟵ الصور. فالتشخيصُ الأدقُّ يسبق الأعمّ.
  */
 
 import type { EducationStore } from "../data/store.js"
 import type { EducationContext } from "./context.js"
 import { curriculumForCircleType, curriculumOfSession } from "./curriculum.js"
-import {
-  educationErr,
-  educationOk,
-  type EducationResult,
-  type Lesson,
-  type LessonAttendance,
-  type LessonPhoto,
-} from "../types.js"
+import { educationErr, type EducationResult } from "../types.js"
+import type { CircleDay } from "./ports.js"
 
 export type RecordLessonInput = {
   readonly circleId: string
@@ -34,14 +31,15 @@ export type RecordLessonInput = {
 }
 
 /**
- * **تسجيلُ الدرس** — `upsert` بمفتاح `(الحلقة، المجلس)` فإعادةُ الإرسال آمنة (ق-٩٠)،
- * **والمعتمَدُ لا يُكتب عليه** (ق-٨): الحالُ يُسأل عنه **منفذاً** لا يُقرأ من حقلٍ هنا.
+ * **تسجيلُ درس المنهاج** — `upsert` بمفتاح **(الحلقة، اليوم)** عند صاحب الكيان (ق-٩٠)،
+ * فإعادةُ الإرسال آمنة. و**المعتمَدُ لا يُكتب عليه** (ق-٨): القفلُ يُسأل عنه **منفذاً**
+ * ولا يُقرأ من حقلٍ هنا.
  */
 export function recordLesson(
   store: EducationStore,
   ctx: EducationContext,
   input: RecordLessonInput,
-): EducationResult<Lesson> {
+): EducationResult<CircleDay> {
   const circle = ctx.circleOf(input.circleId)
   if (circle === null) return educationErr("UNKNOWN_CIRCLE", input.circleId)
   if (circle.archivedAt !== null) return educationErr("CIRCLE_ARCHIVED", input.circleId)
@@ -56,98 +54,31 @@ export function recordLesson(
     return educationErr("SESSION_TYPE_MISMATCH", session.id)
   }
 
-  const existing = store.findLesson(circle.id, session.id)
-  if (existing !== null && ctx.isLessonApproved(existing.id)) {
-    return educationErr("LESSON_LOCKED", existing.id)
-  }
-
-  if (!Number.isInteger(input.durationMinutes) || input.durationMinutes <= 0) {
-    return educationErr("INVALID_DURATION", String(input.durationMinutes))
-  }
-
-  const roster = ctx.rosterOf(circle.id)
-  if (roster.length === 0) return educationErr("EMPTY_ATTENDANCE", circle.id)
-
-  const present = input.presentEnrollmentIds
-  if (new Set(present).size !== present.length) {
-    return educationErr("DUPLICATE_ATTENDANCE", circle.id)
-  }
-  const rosterIds = new Set(roster.map((m) => m.id))
-  const stranger = present.find((id) => !rosterIds.has(id))
-  if (stranger !== undefined) return educationErr("NOT_ENROLLED", stranger)
-
-  const photoKeys = input.photoKeys ?? []
-  if (photoKeys.some((k) => k.trim().length === 0)) return educationErr("EMPTY_PHOTO_KEY")
-  if (new Set(photoKeys.map((k) => k.trim())).size !== photoKeys.length) {
-    return educationErr("DUPLICATE_PHOTO_KEY")
-  }
-
-  const lesson: Lesson = {
-    tenantId: store.tenantId,
-    id: existing?.id ?? store.nextId("lesson"),
+  // **الكتابةُ في موطن الكيان** — لا مستودعَ ثانٍ هنا، ولا مزامنةَ بين سجلّين (CR-016).
+  // (الاختياريُّ **يُحذف ولا يُمرَّر `undefined`** — `exactOptionalPropertyTypes` مُفعَّل.)
+  return ctx.days.record({
     circleId: circle.id,
-    sessionId: session.id,
     heldAt: input.heldAt,
+    curriculumSessionId: session.id,
     durationMinutes: input.durationMinutes,
-    venueAr: input.venueAr === undefined || input.venueAr.trim().length === 0 ? null : input.venueAr.trim(),
-    // **معلّمُ الحلقة المخزَّن** لا مدخلُ العميل — فلا يُنسَب درسٌ لمن لم يُسنَد (ق-٨٦).
-    teacherPersonId: circle.teacherPersonId,
-    recordedBy: ctx.actorPersonId,
-    recordedAt: ctx.now,
-  }
-  store.saveLesson(lesson)
-
-  const presentSet = new Set(present)
-  store.saveAttendance(
-    lesson.id,
-    roster.map<LessonAttendance>((member) => ({
-      tenantId: store.tenantId,
-      id: `${lesson.id}:${member.id}`,
-      lessonId: lesson.id,
-      enrollmentId: member.id,
-      present: presentSet.has(member.id),
-    })),
-  )
-  store.savePhotos(
-    lesson.id,
-    photoKeys.map<LessonPhoto>((mediaKey, index) => ({
-      tenantId: store.tenantId,
-      id: `${lesson.id}:p${index}`,
-      lessonId: lesson.id,
-      mediaKey: mediaKey.trim(),
-    })),
-  )
-
-  return educationOk(lesson)
+    ...(input.venueAr === undefined ? {} : { venueAr: input.venueAr }),
+    presentEnrollmentIds: input.presentEnrollmentIds,
+    ...(input.photoKeys === undefined ? {} : { photoKeys: input.photoKeys }),
+  })
 }
 
-// ── القراءاتُ المشتقّة (صفر عدّادٍ مخزَّن) ─────────────────────────────────────
+// ── القراءاتُ المشتقّة (صفر عدّادٍ مخزَّن، وصفر نسخةٍ ثانية) ──────────────────────
 
-export function lessonsOfCircle(store: EducationStore, circleId: string): readonly Lesson[] {
-  return store
-    .lessons()
-    .filter((l) => l.circleId === circleId)
-    .sort((a, b) => a.id.localeCompare(b.id))
+export function lessonsOfCircle(ctx: EducationContext, circleId: string): readonly CircleDay[] {
+  return ctx.days.ofCircle(circleId)
 }
 
-/** دروسُ معلّمٍ — **من الإسناد المخزَّن في الدرس** لا من عدّادٍ يُحدَّث (ع-٢٩ نظيراً). */
-export function lessonsOfTeacher(store: EducationStore, personId: string): readonly Lesson[] {
-  return store
-    .lessons()
-    .filter((l) => l.teacherPersonId === personId)
-    .sort((a, b) => a.id.localeCompare(b.id))
-}
-
-export function attendanceOf(store: EducationStore, lessonId: string): readonly LessonAttendance[] {
-  return store
-    .attendance()
-    .filter((a) => a.lessonId === lessonId)
-    .sort((a, b) => a.id.localeCompare(b.id))
-}
-
-export function photosOf(store: EducationStore, lessonId: string): readonly LessonPhoto[] {
-  return store
-    .photos()
-    .filter((p) => p.lessonId === lessonId)
-    .sort((a, b) => a.id.localeCompare(b.id))
+/**
+ * دروسُ معلّمٍ — **من إسناد الحلقة المخزَّن لحظةَ السؤال** لا من نسخةٍ في الدرس.
+ *
+ * وهذا **إصلاحٌ كشفه التوحيد**: كان الدرسُ يحمل `teacherPersonId` منسوخاً من الحلقة، وهو
+ * **نسخةُ حقلٍ من كيانٍ آخر** — عينُ ما يحرسه ب-٢٨. فصار الإسنادُ يُسأل عنه في موطنه.
+ */
+export function lessonsOfTeacher(ctx: EducationContext, personId: string): readonly CircleDay[] {
+  return ctx.days.ofTeacher(personId)
 }

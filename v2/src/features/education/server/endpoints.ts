@@ -21,12 +21,10 @@ import type { SettingsResolver } from "../../../settings/resolver.js"
 import type { EducationStore } from "../data/store.js"
 import type { EducationPorts } from "../services/bindings.js"
 import type { EducationContext } from "../services/context.js"
-import type { LessonApprovalCheck } from "../services/ports.js"
+import type { CircleDay, CircleDayPort, LessonApprovalCheck } from "../services/ports.js"
 import {
-  attendanceOf,
   lessonsOfCircle,
   lessonsOfTeacher,
-  photosOf,
   recordLesson,
   type RecordLessonInput,
 } from "../services/lessons.js"
@@ -44,11 +42,13 @@ import {
   upsertSession,
   type ManhajCurriculum,
 } from "../services/curriculum.js"
-import type { EducationResult, Lesson, ProgressCorrection } from "../types.js"
+import type { EducationResult, ProgressCorrection } from "../types.js"
 
 /** سطرُ درسٍ كما تعرضه الشاشة — **كلُّ حقلٍ فيه مشتقٌّ** من المصدر الواحد (ق-١١١). */
 export type LessonRow = {
   readonly lessonId: string
+  /** يومُ انعقاده — **مفتاحُ الجلسة الطبيعيّ** عند صاحب الكيان (CR-016). */
+  readonly dayKey: string
   readonly sessionId: string
   readonly sessionAr: string
   readonly heldAt: Date
@@ -89,6 +89,11 @@ export function makeEducationEndpoints(
   settings: SettingsResolver,
   /** ق-٨٥: منفذُ حال الاعتماد — يُحقن من مُركِّب النظام، فلا تعرف الوحدةُ السلسلة (G22). */
   isLessonApproved: LessonApprovalCheck,
+  /**
+   * CR-016 — **منفذُ الجلسة اليومية**: كيانٌ واحدٌ موطنُه وحدةُ السجل اليوميّ، يُبنى لكل طلبٍ
+   * بساعته وفاعله (`services/dayLogPort.ts` هو ملفُّ الوصل الوحيد الذي يُنفّذه).
+   */
+  daysFor: (actorPersonId: string, now: Date) => CircleDayPort,
 ) {
   const contextOf = (actor: Actor, request: DecisionContext): EducationContext => ({
     ...ports,
@@ -96,6 +101,7 @@ export function makeEducationEndpoints(
     actorPersonId: actor.personId,
     settings,
     isLessonApproved,
+    days: daysFor(actor.personId, request.now),
   })
 
   /** نطاقٌ من **موطن الحلقة المخزَّن** — لا من مسارٍ يمرّره العميل (يقتل صنف خ). */
@@ -111,21 +117,20 @@ export function makeEducationEndpoints(
     return selfScope(circle.teacherPersonId, "lesson", circle.id)
   }
 
-  const rowOf = (lesson: Lesson): LessonRow => {
-    const attendance = attendanceOf(store, lesson.id)
-    return {
-      lessonId: lesson.id,
-      sessionId: lesson.sessionId,
-      sessionAr: store.getSession(lesson.sessionId)?.ar ?? "",
-      heldAt: lesson.heldAt,
-      durationMinutes: lesson.durationMinutes,
-      venueAr: lesson.venueAr,
-      presentCount: attendance.filter((a) => a.present).length,
-      rosterCount: attendance.length,
-      photoCount: photosOf(store, lesson.id).length,
-      approved: isLessonApproved(lesson.id),
-    }
-  }
+  /** **كلُّ رقمٍ في السطر مشتقٌّ** من الجلسة في موطنها — ولا حقلَ يحفظ عدداً (ق-١١١). */
+  const rowOf = (lesson: CircleDay): LessonRow => ({
+    lessonId: lesson.id,
+    dayKey: lesson.dayKey,
+    sessionId: lesson.curriculumSessionId,
+    sessionAr: store.getSession(lesson.curriculumSessionId)?.ar ?? "",
+    heldAt: lesson.heldAt,
+    durationMinutes: lesson.durationMinutes,
+    venueAr: lesson.venueAr,
+    presentCount: lesson.presentEnrollmentIds.length,
+    rosterCount: lesson.rosterEnrollmentIds.length,
+    photoCount: lesson.photoKeys.length,
+    approved: isLessonApproved(lesson.id),
+  })
 
   // ① بابُ المعلّم المالك (ق-٨٤ · قب-٣٨) ─────────────────────────────────────
   const recordFn = defineServerFn({
@@ -137,7 +142,7 @@ export function makeEducationEndpoints(
     handler: async (
       input: RecordLessonInput,
       { actor, request },
-    ): Promise<EducationResult<Lesson>> =>
+    ): Promise<EducationResult<CircleDay>> =>
       recordLesson(store, contextOf(actor, request), input),
   })
 
@@ -151,7 +156,7 @@ export function makeEducationEndpoints(
     handler: async (
       input: RecordLessonInput,
       { actor, request },
-    ): Promise<EducationResult<Lesson>> =>
+    ): Promise<EducationResult<CircleDay>> =>
       recordLesson(store, contextOf(actor, request), input),
   })
 
@@ -187,7 +192,7 @@ export function makeEducationEndpoints(
         circleId: circle.id,
         unitPath: circle.unitPath,
         curriculumAr: progress.ok ? progress.value.curriculumAr : "",
-        lessons: lessonsOfCircle(store, circle.id).map(rowOf),
+        lessons: lessonsOfCircle(ctx, circle.id).map(rowOf),
         progress: progress.ok
           ? progress.value
           : {
@@ -210,10 +215,13 @@ export function makeEducationEndpoints(
     scope: (input: { personId: string }) => selfScope(input.personId, "lesson", input.personId),
     intent: "read",
     audit: "education.mine.lessons.view",
-    handler: async (_input: { personId: string }, { actor }): Promise<MyLessonsView> => ({
+    handler: async (
+      _input: { personId: string },
+      { actor, request },
+    ): Promise<MyLessonsView> => ({
       // والقراءةُ **بمعرّف الجلسة** لا بالمدخل — فلا تُقرأ دروسُ غيرك ولو مرّ الفحص.
       personId: actor.personId,
-      lessons: lessonsOfTeacher(store, actor.personId).map(rowOf),
+      lessons: lessonsOfTeacher(contextOf(actor, request), actor.personId).map(rowOf),
     }),
   })
 

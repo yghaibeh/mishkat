@@ -12,6 +12,10 @@ import { enroll } from "../../../src/features/circles/services/enrollment.js"
 import { makeScopeReach } from "../../../src/features/circles/services/directory.js"
 import type { CirclesContext } from "../../../src/features/circles/services/context.js"
 import { EducationStore } from "../../../src/features/education/data/store.js"
+import { CircleLogStore } from "../../../src/features/circleLog/data/store.js"
+import { circleModelFrom } from "../../../src/features/circleLog/services/circlesPort.js"
+import { circleDaysFrom, sessionShapeFrom } from "../../../src/features/education/services/dayLogPort.js"
+import type { SessionContext } from "../../../src/features/circleLog/services/context.js"
 import type { EducationContext } from "../../../src/features/education/services/context.js"
 import {
   makeCirclePorts,
@@ -28,6 +32,8 @@ export const SECOND_TENANT_ID = "t-aleppo"
 /** لحظةُ العالم المثبَّتة — كلُّ تاريخٍ في الاختبارات مشتقٌّ منها. */
 export const NOW = new Date("2026-07-22T09:00:00.000Z")
 export const HELD_AT = new Date("2026-07-20T09:00:00.000Z")
+/** اليومُ التالي — **الكيانُ «جلسةٌ يومية»** فمفتاحُه (حلقة × يوم): درسان ⇒ يومان (ق-٩٠). */
+export const NEXT_DAY = new Date("2026-07-21T09:00:00.000Z")
 
 export const KHALID_PATH = "/men/homs/sq2/khalid/"
 export const OMAR_PATH = "/men/homs/sq7/omar/"
@@ -97,6 +103,11 @@ export function settingsWith(overrides: readonly SettingOverride[]) {
 export type EduWorld = {
   readonly circles: CirclesStore
   readonly education: EducationStore
+  /**
+   * **مستودعُ الجلسة اليومية** (CR-016) — الكيانُ الواحدُ في موطنه: تكتب فيه وحدةُ التعليم
+   * **بكاتبه هو** عبر المنفذ، وتقرأ منه؛ فلا مستودعَ درسٍ ثانٍ في هذه البذرة أصلاً.
+   */
+  readonly log: CircleLogStore
   readonly circleId: string
   readonly enrollmentIds: readonly string[]
   /** حلقةٌ ثانيةٌ نوعُها `tahfeez` — بلا منهاجٍ اليوم (يُثبت `NO_CURRICULUM_FOR_TYPE`). */
@@ -141,6 +152,7 @@ export function seedWorld(tenantId: string = MAIN_TENANT_ID): EduWorld {
   return {
     circles,
     education: seedEducationStore(tenantId),
+    log: new CircleLogStore(tenantId),
     circleId,
     enrollmentIds,
     tahfeezCircleId: second.value.id,
@@ -178,11 +190,60 @@ export function educationContext(
   } = {},
 ): EducationContext {
   const approved = new Set(input.approvedLessonIds ?? [])
+  const now = input.now ?? NOW
+  const actorPersonId = input.actorPersonId ?? "u-teacher"
+  const settings = input.settings ?? SETTINGS
+  const isLessonApproved = (lessonId: string): boolean => approved.has(lessonId)
+  return {
+    now,
+    actorPersonId,
+    settings,
+    ...makeCirclePorts(world.circles),
+    isLessonApproved,
+    days: circleDays(world, { settings, isLessonApproved })(actorPersonId, now),
+  }
+}
+
+/**
+ * **سياقُ صاحب الكيان** — كما يبنيه المُركِّبُ في الإنتاج: منفذُ الشكل موصولٌ **بكتالوج
+ * مناهجنا**، ومنفذُ القفل بمنفذ الاعتماد. فاختبارُ الشكلين يجري على **التركيب الحقيقيّ**.
+ */
+export function logContextOf(
+  world: EduWorld,
+  input: {
+    readonly actorPersonId?: string
+    readonly now?: Date
+    readonly settings?: ReturnType<typeof createSettingsResolver>
+    readonly approvedLessonIds?: readonly string[]
+  } = {},
+): SessionContext {
+  const approved = new Set(input.approvedLessonIds ?? [])
   return {
     now: input.now ?? NOW,
     actorPersonId: input.actorPersonId ?? "u-teacher",
     settings: input.settings ?? SETTINGS,
-    ...makeCirclePorts(world.circles),
-    isLessonApproved: (lessonId) => approved.has(lessonId),
+    circles: circleModelFrom(world.circles),
+    shape: sessionShapeFrom(world.education),
+    isSessionLocked: (sessionId) => approved.has(sessionId),
   }
+}
+
+/**
+ * **منفذُ الجلسة اليومية** موصولاً بموطن الكيان — لا ببديلٍ في الاختبار:
+ * فالاختبارُ يمرّ على **الكاتب الحقيقيّ** ولو أخطأ التوحيدُ لسقط هنا لا في الإنتاج.
+ */
+export function circleDays(
+  world: EduWorld,
+  input: {
+    readonly settings?: ReturnType<typeof createSettingsResolver>
+    readonly isLessonApproved?: (lessonId: string) => boolean
+  } = {},
+) {
+  return circleDaysFrom({
+    logStore: world.log,
+    education: world.education,
+    circles: circleModelFrom(world.circles),
+    settings: input.settings ?? SETTINGS,
+    isLessonApproved: input.isLessonApproved ?? (() => false),
+  })
 }

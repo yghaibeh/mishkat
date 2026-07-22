@@ -18,7 +18,9 @@
 import type { EducationStore } from "../data/store.js"
 import { settingList, type EducationContext } from "./context.js"
 import { curriculumForCircleType } from "./curriculum.js"
-import { educationErr, educationOk, type EducationResult, type Lesson } from "../types.js"
+import { lessonsOfTeacher } from "./lessons.js"
+import { educationErr, educationOk, type EducationResult } from "../types.js"
+import type { CircleDay } from "./ports.js"
 
 /** معرّفُ الإعداد — من السجل المركزيّ، والقيمةُ منه لا من هنا (قب-٦). */
 const PAID_CURRICULA_SETTING = "edu.paid_hours.curricula"
@@ -64,9 +66,9 @@ export function approvedTeachingLoad(
   if (stray !== undefined) return educationErr("UNKNOWN_PAID_CURRICULUM", stray)
   const paid = new Set(paidTypeIds)
 
-  const byCircle = new Map<string, { typeId: string; curriculumId: string; lessons: Lesson[] }>()
-  for (const lesson of store.lessons()) {
-    if (lesson.teacherPersonId !== input.teacherPersonId) continue
+  const byCircle = new Map<string, { typeId: string; curriculumId: string; lessons: CircleDay[] }>()
+  // **حلقاتُ المعلّم من الإسناد المخزَّن** (لا من نسخةٍ في الدرس — CR-016): مصدرُ الإسناد واحد.
+  for (const lesson of lessonsOfTeacher(ctx, input.teacherPersonId)) {
     // **الاعتمادُ شرطٌ غيرُ مشروط** — لا إعدادَ يُرخّص تجاوزَه (ق-٨٦ «منعاً للغش»).
     if (!ctx.isLessonApproved(lesson.id)) continue
     if (lesson.heldAt.getTime() < input.from.getTime()) continue

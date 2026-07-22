@@ -8,7 +8,7 @@
 
 import type { SettingsResolver } from "../../../settings/resolver.js"
 import type { EducationPorts } from "./bindings.js"
-import type { LessonApprovalCheck } from "./ports.js"
+import type { CircleDayPort, LessonApprovalCheck } from "./ports.js"
 
 export type EducationContext = EducationPorts & {
   readonly now: Date
@@ -16,6 +16,8 @@ export type EducationContext = EducationPorts & {
   readonly actorPersonId: string
   readonly settings: SettingsResolver
   readonly isLessonApproved: LessonApprovalCheck
+  /** CR-016 — **الجلسةُ اليومية تُسأل ولا تُبنى**: كيانٌ واحدٌ موطنُه وحدةُ السجل اليوميّ. */
+  readonly days: CircleDayPort
 }
 
 /** قراءةُ إعدادِ قائمة — والنوعُ الخاطئ حالةٌ برمجيةٌ تُلقى لا خطأُ عمل (المادة ٣/٤). */

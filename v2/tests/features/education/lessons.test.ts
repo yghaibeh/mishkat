@@ -6,10 +6,8 @@
  */
 import { describe, it, expect } from "vitest"
 import {
-  attendanceOf,
   lessonsOfCircle,
   lessonsOfTeacher,
-  photosOf,
   recordLesson,
 } from "../../../src/features/education/services/lessons.js"
 import { archiveCircle } from "../../../src/features/circles/services/circles.js"
@@ -40,12 +38,13 @@ describe("§٣ — الدرسُ ابنُ الحلقة: يُسجَّل بمجلس
     if (!done.ok) return
 
     expect(done.value.circleId).toBe(w.circleId)
-    expect(done.value.teacherPersonId).toBe("u-teacher")
+    // **الإسنادُ يُسأل عنه في موطنه** (CR-016): لا نسخةَ معلّمٍ في الجلسة — ولذلك يُقرأ من الحلقة.
+    expect(ctx.circleOf(w.circleId)?.teacherPersonId).toBe("u-teacher")
     expect(done.value.recordedBy).toBe("u-teacher")
-    expect(attendanceOf(w.education, done.value.id).filter((a) => a.present)).toHaveLength(2)
-    expect(photosOf(w.education, done.value.id)).toHaveLength(2)
-    expect(lessonsOfCircle(w.education, w.circleId)).toHaveLength(1)
-    expect(lessonsOfTeacher(w.education, "u-teacher")).toHaveLength(1)
+    expect(done.value.presentEnrollmentIds).toHaveLength(2)
+    expect(done.value.photoKeys).toHaveLength(2)
+    expect(lessonsOfCircle(ctx, w.circleId)).toHaveLength(1)
+    expect(lessonsOfTeacher(ctx, "u-teacher")).toHaveLength(1)
   })
 
   it("**والحضورُ يُسجَّل لكل ملتحقٍ حاضراً أو غائباً** — فالغيابُ حقيقةٌ تُقرأ لا فراغٌ يُفسَّر", () => {
@@ -59,9 +58,8 @@ describe("§٣ — الدرسُ ابنُ الحلقة: يُسجَّل بمجلس
     })
     expect(done.ok).toBe(true)
     if (!done.ok) return
-    const attendance = attendanceOf(w.education, done.value.id)
-    expect(attendance).toHaveLength(3)
-    expect(attendance.filter((a) => a.present).map((a) => a.enrollmentId)).toEqual([w.enrollmentIds[0]])
+    expect(done.value.rosterEnrollmentIds).toHaveLength(3)
+    expect(done.value.presentEnrollmentIds).toEqual([w.enrollmentIds[0]])
   })
 
   it("**والتسجيلُ upsert آمنُ الإعادة** (ق-٩٠): إعادةُ تسجيل المجلس نفسِه تُحدِّث ولا تُنشئ ثانياً", () => {
@@ -85,8 +83,8 @@ describe("§٣ — الدرسُ ابنُ الحلقة: يُسجَّل بمجلس
     if (!first.ok || !second.ok) return
     expect(second.value.id).toBe(first.value.id)
     expect(second.value.durationMinutes).toBe(75)
-    expect(lessonsOfCircle(w.education, w.circleId)).toHaveLength(1)
-    expect(attendanceOf(w.education, second.value.id).filter((a) => a.present)).toHaveLength(2)
+    expect(lessonsOfCircle(ctx, w.circleId)).toHaveLength(1)
+    expect(second.value.presentEnrollmentIds).toHaveLength(2)
   })
 
   it("**والمعتمَدُ لا يُكتب عليه** (ق-٨): إعادةُ تسجيل درسٍ اعتُمد ⇒ `LESSON_LOCKED`", () => {

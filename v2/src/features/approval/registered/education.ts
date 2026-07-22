@@ -13,15 +13,22 @@
  * مسار وحدتها، فيُجيب `approverLayerFor` بأمير المسجد أولاً — وشغورُه يصعد إلى المربع فالمنطقة
  * **تلقائياً** (ق-٢) بلا سطرِ تصعيد. **صفر اسمِ دورٍ هنا** (G6).
  *
- * **والفترةُ هي الدرسُ نفسُه**: `period.id = lessonId` و`endsAt = heldAt` — فيصير شرطُ المحرّك
- * «طلبٌ واحدٌ لكل وحدةٍ وفترة» **«اعتمادَ الدرس المفرد»** حرفياً، ويرث الدرسُ **القفلَ الزمنيّ**
- * (ب-٣٩د) بلا حقلٍ جديدٍ في المحرّك.
+ * **والفترةُ هي الدرسُ نفسُه**: `period.id` معرّفُ **الجلسة اليومية** و`endsAt = heldAt` —
+ * فيصير شرطُ المحرّك «طلبٌ واحدٌ لكل وحدةٍ وفترة» **«اعتمادَ الدرس المفرد»** حرفياً، ويرث
+ * الدرسُ **القفلَ الزمنيّ** (ب-٣٩د) بلا حقلٍ جديدٍ في المحرّك.
+ *
+ * **ونوعُ اعتمادٍ واحدٌ للجلسة لا اثنان** (CR-016 §٦/٤، مهمة T22 بند ٤): وحدةُ السجل اليوميّ
+ * **لم تسجّل نوعاً قطّ** — أوقفت ورفعت (عقدُها §٠ «خارج النطاق»)، ومسحُ `registered/` يُثبته.
+ * فالنوعُ هنا **هو نوعُ الكيان الموحّد**، ومِرساتُه وفترتُه على **الجلسة** بعد التوحيد كما
+ * كانتا على «الدرس» قبله — **إعادةُ إرساءٍ لا نوعٌ ثانٍ**.
  */
 
-import type { EducationStore } from "../../education/data/store.js"
 import type { EducationPorts } from "../../education/services/bindings.js"
-import type { LessonApprovalCheck, TeachingCircle } from "../../education/services/ports.js"
-import { attendanceOf, photosOf } from "../../education/services/lessons.js"
+import type {
+  CircleDayReadPort,
+  LessonApprovalCheck,
+  TeachingCircle,
+} from "../../education/services/ports.js"
 import type { ApprovalStore } from "../data/store.js"
 import { defineApprovalType } from "../registry.js"
 import { isLocked } from "../services/locking.js"
@@ -69,32 +76,35 @@ export type LessonAttendanceLine = {
  * **وق-١٠ بنيوياً**: درسٌ لا يوجد، أو لا يخصّ هذه المِرساة ⇒ **حمولةٌ فارغة** ⇒ `EMPTY_PAYLOAD`.
  */
 export function educationLessonPayloadSource(
-  store: EducationStore,
+  days: CircleDayReadPort,
   ports: EducationPorts,
 ): ApprovalPayloadSource {
   return (typeId, unitPath, period) => {
     void typeId
-    const lesson = store.getLesson(period.id)
+    const lesson = days.byId(period.id)
     if (lesson === null) return {}
     const circle = ports.circleOf(lesson.circleId)
     if (circle === null || circleAnchorPath(circle) !== unitPath) return {}
 
-    const attendance = attendanceOf(store, lesson.id).map<LessonAttendanceLine>((a) => ({
-      enrollmentId: a.enrollmentId,
-      present: a.present,
+    const present = new Set(lesson.presentEnrollmentIds)
+    const attendance = lesson.rosterEnrollmentIds.map<LessonAttendanceLine>((enrollmentId) => ({
+      enrollmentId,
+      present: present.has(enrollmentId),
     }))
     return {
       lessonId: lesson.id,
       circleId: lesson.circleId,
       circleTypeId: circle.typeId,
       unitPath: circle.unitPath,
-      sessionId: lesson.sessionId,
+      dayKey: lesson.dayKey,
+      sessionId: lesson.curriculumSessionId,
       heldAt: lesson.heldAt.toISOString(),
       durationMinutes: lesson.durationMinutes,
       venueAr: lesson.venueAr,
-      teacherPersonId: lesson.teacherPersonId,
+      // **الإسنادُ من الحلقة لحظةَ السؤال** — لا نسخةٌ محفوظةٌ في الدرس (CR-016/ب-٢٨).
+      teacherPersonId: circle.teacherPersonId,
       attendance,
-      photoKeys: photosOf(store, lesson.id).map((p) => p.mediaKey),
+      photoKeys: lesson.photoKeys,
     }
   }
 }

@@ -86,7 +86,10 @@ export const CIRCLE_LESSONS_CONTRACT: ScreenContract = Object.freeze({
   surface: "education",
   lenses: ["admin", "section_head", "rabita", "square", "amir"] as const,
   // موطنُ «الدرس» و«مصفوفة تقدّم المنهج» (IA §١ ك-٣/ك-٤) — لا موطنَ ثانيَ لهما.
-  canonicalHome: ["lesson", "curriculumProgress"] as const,
+  // **CR-016 — «الدرس/الجلسة اليومية» (ك-٣) موطنُه `/mosque/circles/log`**: كيانٌ واحدٌ
+  // صاحبُه وحدةُ السجل اليوميّ، وهذه الشاشةُ **موطنُ مصفوفة التقدّم (ك-٤)** وعرضٌ منسوبٌ
+  // للدروس فوقها (نظيرُ ز-٢: عدسةٌ على كيانٍ له موطنٌ آخر، لا نسخةٌ ثانية).
+  canonicalHome: ["curriculumProgress"] as const,
   capabilities: ["circle.view", "circle.manage"] as const,
   dataSource: "education.circleLessons",
   emptyStates: { owner: "education.emptyOwner", viewer: "education.emptyViewer" } as const,

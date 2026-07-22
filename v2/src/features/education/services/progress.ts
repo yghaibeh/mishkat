@@ -17,7 +17,7 @@
 import type { EducationStore } from "../data/store.js"
 import type { EducationContext } from "./context.js"
 import { curriculumForCircleType, sessionsOfCurriculum } from "./curriculum.js"
-import { attendanceOf, lessonsOfCircle } from "./lessons.js"
+import { lessonsOfCircle } from "./lessons.js"
 import {
   educationErr,
   educationOk,
@@ -85,17 +85,13 @@ export function curriculumProgress(
   const roster = ctx.rosterOf(circle.id)
 
   // **الدروسُ المعتمَدة وحدها** — والسؤالُ عن حالٍ لا عن سلسلة (G22).
+  // والحضورُ **أسطرُ الجلسة في موطنها** لا سجلُّ حضورٍ ثانٍ عندنا (CR-016).
   const approvedBySession = new Map<string, ReadonlySet<string>>()
-  for (const lesson of lessonsOfCircle(store, circle.id)) {
+  for (const lesson of lessonsOfCircle(ctx, circle.id)) {
     if (!ctx.isLessonApproved(lesson.id)) continue
-    const present = new Set(
-      attendanceOf(store, lesson.id)
-        .filter((a) => a.present)
-        .map((a) => a.enrollmentId),
-    )
-    const merged = new Set(approvedBySession.get(lesson.sessionId) ?? [])
-    for (const id of present) merged.add(id)
-    approvedBySession.set(lesson.sessionId, merged)
+    const merged = new Set(approvedBySession.get(lesson.curriculumSessionId) ?? [])
+    for (const id of lesson.presentEnrollmentIds) merged.add(id)
+    approvedBySession.set(lesson.curriculumSessionId, merged)
   }
 
   let completedCells = 0

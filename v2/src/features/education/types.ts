@@ -54,48 +54,16 @@ export type CurriculumSession = {
   readonly ordinal: number
 }
 
-// ── ٢) الدرسُ وحضورُه وصورُه (IA ك-٣) ─────────────────────────────────────────
-
-/**
- * **الدرس** — ابنُ الحلقة بمجلسٍ من منهاج نوعها.
- *
- * **مفتاحُه الطبيعيّ `(الحلقة، المجلس)`**: فإعادةُ تسجيله `upsert` آمنُ الإعادة (ق-٩٠)،
- * ويصير «اعتمادُ الدرس المفرد» (ق-٨٥) **طلباً واحداً** في المحرّك بلا حقلٍ جديدٍ فيه.
- *
- * و`venueAr` **وسمُ مكانٍ نصّيّ** (ق-٩٨): المعهدُ **نوعُ مكانٍ لا كيانٌ إداريّ** — لا معرّفَ
- * له ولا شجرةَ ولا مسؤول، **ولا يُشتقّ منه نطاقٌ أبداً** (النطاقُ من وحدة الحلقة حصراً).
- */
-export type Lesson = {
-  readonly tenantId: string
-  readonly id: string
-  readonly circleId: string
-  readonly sessionId: string
-  readonly heldAt: Date
-  readonly durationMinutes: number
-  readonly venueAr: string | null
-  /** معلّمُ الحلقة لحظةَ التسجيل — عليه يقوم اشتقاقُ ق-٨٦. */
-  readonly teacherPersonId: string | null
-  /** مَن أدخل (المعلّمُ المالك أو أميرُ المكان — ق-٨٤): تدقيقٌ ظاهرٌ لا نيّة. */
-  readonly recordedBy: string
-  readonly recordedAt: Date
-}
-
-/** حضورُ ملتحقٍ في درس — **لكل ملتحقٍ صفٌّ**: فالغيابُ حقيقةٌ تُقرأ لا فراغٌ يُفسَّر. */
-export type LessonAttendance = {
-  readonly tenantId: string
-  readonly id: string
-  readonly lessonId: string
-  readonly enrollmentId: string
-  readonly present: boolean
-}
-
-/** صورةُ الدرس — **مرجعٌ** في خدمة الوسائط (IA ك-٣٤)، لا ملفٌّ ولا تحقّقُ صيغةٍ هنا. */
-export type LessonPhoto = {
-  readonly tenantId: string
-  readonly id: string
-  readonly lessonId: string
-  readonly mediaKey: string
-}
+// ── ٢) الدرسُ: **كيانٌ موطنُه وحدةُ السجل اليوميّ** (CR-016) ─────────────────
+//
+// كان هنا `Lesson` و`LessonAttendance` و`LessonPhoto` — فكشفت **بوابةُ الموطن الواحد**
+// (G20) عند التقاء الوحدتين أنّ «الدرس/الجلسة اليومية» (IA ك-٣) **كيانٌ واحدٌ له موطنان**:
+// انشطارُ v1 عائداً في طبقة السجل بعد أن قتله ب-٢٨ في طبقة الحلقة.
+//
+// **فالعلاجُ في النموذج لا في الحارس**: الكيانُ واحدٌ صاحبُه وحدةُ السجل اليوميّ، و**شكلُ
+// حقوله يتبع نوعَ الحلقة**؛ وهذه الوحدةُ **تقرؤه وتضيف قواعدَها** (ق-٨٥/ق-٨٦/ق-٩٢) عبر
+// منفذٍ معلن (`services/ports.ts`) وملفِّ وصلٍ واحد (`services/dayLogPort.ts`).
+// **ولا جسرَ ولا مزامنةَ ولا نسخةَ ثانية** — الغيابُ هنا هو الدليل.
 
 // ── ٣) التصحيحُ اليدويّ لخليّة تقدّم (ق-٩٢ ذيلاً · قب-٩) ──────────────────────
 
@@ -128,7 +96,12 @@ export type EducationErrorCode =
   | "UNKNOWN_SESSION"
   | "SESSION_TYPE_MISMATCH"
   | "UNKNOWN_LESSON"
+  /** الدرسُ المعتمَد **لا يُعاد تسجيلُه** (ق-٨) — قفلُ الجلسة عند صاحبها، بمفردتنا نحن. */
   | "LESSON_LOCKED"
+  /** CR-016 — **شكلُ الجلسة يتبع نوعَ الحلقة**: درسُ منهاجٍ على حلقةِ نوعٍ بلا منهاج. */
+  | "SESSION_SHAPE_MISMATCH"
+  /** ب-٣٩د — نافذةُ التأريخ عند صاحب الكيان: لا يومَ في المستقبل إلا بإعدادٍ يسمح. */
+  | "FUTURE_DATING_BLOCKED"
   | "NOT_ENROLLED"
   | "DUPLICATE_ATTENDANCE"
   | "EMPTY_ATTENDANCE"

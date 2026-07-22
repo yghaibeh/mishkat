@@ -91,11 +91,22 @@ describe("**ب-٢٨ — صفر كيانِ حلقةٍ ثانٍ ولا سجلِّ 
     expect(offenders, `مقبضُ جسرٍ في وحدة التعليم: ${offenders.join(" · ")}`).toEqual([])
   })
 
-  it("**وكاتبُ الدرس واحدٌ** (`services/lessons.ts`) وكاتبُ التصحيح واحدٌ (`services/progress.ts`)", () => {
+  /**
+   * **CR-016 — الحارسُ اشتدّ ولم يُخفَّف**: كان يقول «كاتبُ الدرس واحدٌ **هنا**»، فصار يقول
+   * «**لا كاتبَ للدرس هنا أصلاً**، والتفويضُ من ملفٍّ واحد». فالكيانُ واحدٌ في موطنه، وهذه
+   * الوحدةُ طبقةُ قواعدَ فوقه.
+   */
+  it("**ولا كاتبَ للدرس هنا أصلاً** (CR-016) — والتفويضُ من `services/lessons.ts` وحده", () => {
     const lessonWriters = sourceFiles(UNIT_DIR)
-      .filter((f) => /\.(?:saveLesson|saveAttendance|savePhoto)\s*\(/.test(code(f)))
+      .filter((f) => /\.(?:saveLesson|saveAttendance|savePhoto|upsertSession)\s*\(/.test(code(f)))
       .map(within)
-    expect([...new Set(lessonWriters)]).toEqual(["services/lessons.ts"])
+    expect(lessonWriters, `مستودعُ درسٍ ثانٍ في وحدة التعليم: ${lessonWriters.join(" · ")}`).toEqual([])
+
+    // **مَن يُفوّض الكتابةَ إلى موطن الكيان؟ ملفٌّ واحدٌ لا أكثر** — فلا مساران يكتبان يوماً.
+    const delegators = sourceFiles(UNIT_DIR)
+      .filter((f) => within(f) !== "services/dayLogPort.ts" && /\bdays\.record\s*\(/.test(code(f)))
+      .map(within)
+    expect(delegators).toEqual(["services/lessons.ts"])
 
     const correctionWriters = sourceFiles(UNIT_DIR)
       .filter((f) => /\.saveCorrection\s*\(/.test(code(f)))
