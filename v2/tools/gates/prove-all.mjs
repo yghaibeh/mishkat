@@ -120,6 +120,25 @@ const PROOFS = [
     content: `export function meetsTarget(score: number): boolean {\n  return score >= 70\n}\n`,
   },
   {
+    /**
+     * **CR-023/قب-٤٦ §٣ — البوابةُ تدلّ على الموضع الحقيقيّ.**
+     *
+     * لا يكفي أن تحمرّ: **حارسٌ يُصيب في الحكم ويُضلّ في العلاج** يُكلّف كلَّ مخالفةٍ
+     * مطاردةً في غير موضعها. فالزرعُ هنا **مخالفةٌ تسبقها كتلةُ توثيقٍ متعددةُ الأسطر**،
+     * والمطلوب أن تُبلَّغ **بسطرها الحقيقيّ** — وهو ما كان مستحيلاً قبل الإصلاح.
+     */
+    gate: "G14", script: "g14-no-hard-numbers.mjs",
+    what: "**التبليغُ بالسطر الحقيقيّ** بعد كتلة توثيقٍ متعددة الأسطر (CR-023)",
+    file: "src/services/__violation__.ts",
+    content:
+      `/**\n * كتلةُ توثيقٍ متعددةُ الأسطر — ثمانيةُ أسطرٍ عمداً.\n *\n * قبل CR-023 كانت تُستبدل بمسافةٍ واحدة، فتنهار أرقامُ الأسطر\n * ويصير التبليغُ عن السطر الخطأ. وهذا الزرعُ يقيس ذلك بالضبط:\n * المخالفةُ في السطر التاسع، والبوابةُ يجب أن تقول «التاسع».\n */\n` +
+      `export function meetsTarget(score: number): boolean {\n` +
+      `  return score >= 70\n` +
+      `}\n`,
+    // ٧ أسطرِ توثيق + سطرُ التعريف ⇒ **`return score >= 70` في السطر ٩**.
+    evidenceMustMatch: /__violation__\.ts:9 —/,
+  },
+  {
     gate: "G15", script: "g4-tests-coverage.mjs",
     what: "منطق تصنيف التسليم الجوهري (يُثبت باختبارٍ نقيّ لا بالتزامٍ مصطنع في المستودع)",
     patch: {
@@ -299,6 +318,9 @@ for (const p of PROOFS) {
     greenBefore: !before.failed,
     redOnViolation: during.failed,
     greenAfter: !after.failed,
+    // **ولا يكفي أن تحمرّ**: بندٌ يشترط نصّاً في التبليغ يُقاس عليه (CR-023).
+    evidenceOk: p.evidenceMustMatch === undefined || p.evidenceMustMatch.test(during.output),
+    evidenceExpected: p.evidenceMustMatch === undefined ? null : String(p.evidenceMustMatch),
     evidence: during.output.split("\n").filter((l) => l.includes("•") || l.includes("✗")).slice(0, 3),
   })
 }
@@ -306,10 +328,13 @@ for (const p of PROOFS) {
 let bad = 0
 console.log("\n═══ إثبات البوابات بالفشل ═══\n")
 for (const r of results) {
-  const ok = r.greenBefore && r.redOnViolation && r.greenAfter
+  const ok = r.greenBefore && r.redOnViolation && r.greenAfter && r.evidenceOk
   if (!ok) bad++
   console.log(`${ok ? "✓" : "✗"} ${r.gate} — ${r.what}`)
   console.log(`    خضراء قبل: ${r.greenBefore ? "نعم" : "لا"} · فشلت على المخالفة: ${r.redOnViolation ? "نعم" : "لا"} · خضراء بعد الإزالة: ${r.greenAfter ? "نعم" : "لا"}`)
+  if (r.evidenceExpected !== null) {
+    console.log(`    ودلّت على الموضع الصحيح: ${r.evidenceOk ? "نعم" : `لا — المطلوب ${r.evidenceExpected}`}`)
+  }
   for (const e of r.evidence) console.log(`    ${e.trim()}`)
   console.log("")
 }

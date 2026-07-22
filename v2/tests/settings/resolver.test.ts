@@ -6,9 +6,9 @@ import type { SettingOverride } from "../../src/settings/resolver.js"
 const AT = new Date("2026-07-20T00:00:00.000Z")
 
 describe("سلامة السجل (SPEC_settings §١-١)", () => {
-  it("٨٥ إعداداً: ٧٣ عمل + ١٢ منصة (بعد شطبات CR-008 وCR-009 وCR-010 وCR-014 وCR-021)", () => {
-    expect(SETTINGS).toHaveLength(85)
-    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(73)
+  it("٨٣ إعداداً: ٧١ عمل + ١٢ منصة (بعد شطبات CR-008…CR-010 وCR-014 وCR-021 وCR-024 وCR-025)", () => {
+    expect(SETTINGS).toHaveLength(83)
+    expect(SETTINGS.filter((d) => d.category === "business")).toHaveLength(71)
     expect(SETTINGS.filter((d) => d.category === "platform")).toHaveLength(12)
   })
 
@@ -51,28 +51,28 @@ describe("سلامة السجل (SPEC_settings §١-١)", () => {
     ).map((d) => d.id)
 
     /**
-     * **حَجْرٌ مُعلَنٌ لا قائمةُ حقيقة** (المادة ٢/٢، ونظيرُ `tools/gates/allowlist.any.json`):
-     * بندان اكتشفهما هذا الفحصُ نفسُه ورُفعا مسوّدتين — **والقرارُ لصاحبه** (§٩/§١٠):
-     *  · `identity.impersonation.read_only` ⟵ `CR-DRAFT-payroll-impersonation-read-only`
-     *    (ب-٤٠أ حسم «الانتحالُ قراءةً فقط»؛ وإطفاؤه يفتح الفعلَ باسم الغير — ق-٢٧).
-     *  · `finance.entitlement.approval_required` ⟵ `CR-DRAFT-payroll-entitlement-approval-required`
-     *    (ق-٥١: «الإدارة تقرّ آخر الشهر»؛ وإطفاؤه يُسقط الإقرارَ الشهريَّ نفسَه).
-     * **ولم تُقرأ واحدةٌ منهما في وحدة الرواتب** — الختمُ غيرُ مشروطٍ في الكود (عقدُ الوحدة §٢).
+     * **والحَجْرُ أُفرغ** (CR-024 وCR-025، ٢٠٢٦-٠٧-٢٢): البندان اللذان اصطادهما هذا الفحصُ
+     * نفسُه **شُطبا بقرار المدير**، فلم يبقَ في السجل بندٌ واحدٌ من الصنف.
+     *
+     * **والحَجْرُ الفارغُ ليس زينةً بل الحالةَ الصحيحة**: `[]` **حدٌّ لا يُتجاوز** — أوّلُ
+     * إعدادٍ جديدٍ يَعِد بإطفاء حارسٍ يُشغّله اسمُه **يُفشل هذا الاختبار يومَ يُكتب**، لا
+     * يومَ يُكتشف بعد سنة. ولذلك يبقى القياسُ كما هو **بلا تخفيفٍ ولا استثناء**:
+     * الحَجْرُ أُفرغ لأن الواقعَ نظُف، **لا لأن الفحص رقّ**.
      */
-    const QUARANTINED_PENDING_DECISION = [
-      "finance.entitlement.approval_required",
-      "identity.impersonation.read_only",
-    ]
+    const QUARANTINED_PENDING_DECISION: readonly string[] = []
 
     expect(
       offenders.sort(),
       "إعدادٌ جديدٌ يَعِد بإطفاء حارسٍ يُشغّله اسمُه — يُشطب أو يُرفع بـCR قبل أن يُدمج",
-    ).toEqual(QUARANTINED_PENDING_DECISION.sort())
+    ).toEqual([...QUARANTINED_PENDING_DECISION].sort())
 
-    expect(
-      offenders,
-      "CR-021: `edu.paid_hours.approved_only` مشطوبٌ فلا يبقى في الحصيلة",
-    ).not.toContain("edu.paid_hours.approved_only")
+    for (const revoked of [
+      "edu.paid_hours.approved_only",
+      "finance.entitlement.approval_required",
+      "identity.impersonation.read_only",
+    ]) {
+      expect(SETTINGS_BY_ID.has(revoked), `${revoked} مشطوبٌ فلا يبقى في السجل`).toBe(false)
+    }
   })
 
   /**

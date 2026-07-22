@@ -22,13 +22,18 @@ export const SCREEN_SURFACE_CAPS: readonly CapId[] = Object.freeze([
 ])
 
 /**
- * **القدرةُ الشخصية لا تُحسب بنطاق**: `payroll.own` نوعُها «ش»، ومسارُ قرارها ملكيةُ الكيان
- * لا الشجرة (§١.١) — فلو سُئلت هنا بنطاقٍ مصطنع لَظهر بابٌ شخصيٌّ للجميع (وهو عينُ العيب
- * الذي اصطاده سياجُ الواجهة في T5). حضورُها في شاشة «كشفُ راتبي» من **ملكية الشخص لكشفه**،
- * وفرضُها في الخادم بنطاقٍ شخصيٍّ مشتقٍّ من الفاعل نفسِه.
+ * **والقدرةُ الشخصية `payroll.own` ليست في القائمة أعلاه عمداً**: نوعُها «ش»، ومسارُ قرارها
+ * **ملكيةُ الكيان لا الشجرة** (§١.١). حضورُها في «كشفُ راتبي» من ملكية الشخص لكشفه،
+ * وفرضُها في الخادم **بنطاقٍ شخصيٍّ مشتقٍّ من الفاعل نفسِه** لا من مدخله.
+ *
+ * > **وحارسُها في المحرّك لا هنا** — وهذا فرقٌ اكتُشف بالكسر المُوجَّه (قب-٤٦ §١): كان في هذا
+ * > المِلفّ سطرُ تخطٍّ (`PERSONAL_CAPS`) يبدو حارساً وهو **ميّتٌ مرّتين**: القدرةُ الشخصية
+ * > **ليست في القائمة أصلاً** فلا يجري عليه الدور، **و`can()` يردّها بنفسه** بنطاقٍ منطاقٍ
+ * > (`DENIED_PERSONAL_NOT_OWNER`) فلا أثرَ له لو جرى. **كسرُه لم يُسقط اختباراً واحداً** —
+ * > وهو تعريفُ الحارس الديكور (المادة ٠). **فحُذف**، وحلّ محلَّه توكيدٌ يُثبت الضمانةَ
+ * > **الحقيقية**: أن المحرّك نفسَه يمنع تسرّبَ الشخصية إلى أيّ قشرةٍ منطاقة —
+ * > `tests/features/payroll/edges.test.ts`. **حارسٌ واحدٌ صادق خيرٌ من اثنين أحدُهما زينة.**
  */
-const PERSONAL_CAPS: readonly CapId[] = Object.freeze(["payroll.own"])
-
 export function computePayrollCaps(
   actor: Actor,
   scopePath: string,
@@ -36,7 +41,6 @@ export function computePayrollCaps(
 ): ReadonlySet<CapId> {
   const granted = new Set<CapId>()
   for (const cap of SCREEN_SURFACE_CAPS) {
-    if (PERSONAL_CAPS.includes(cap)) continue
     if (can(actor, cap, unitScope(scopePath), ctx).allowed) granted.add(cap)
   }
   return granted
