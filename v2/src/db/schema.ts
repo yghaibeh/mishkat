@@ -36,6 +36,7 @@ import type { TableSpec } from "./schema/columns.js"
 import { CUSTODY_TABLES } from "./schema/custody.js"
 import { INFRASTRUCTURE_TABLES } from "./schema/infrastructure.js"
 import { LEDGER_TABLES } from "./schema/ledger.js"
+import { LIBRARY_TABLES } from "./schema/library.js"
 import { ORG_TABLES } from "./schema/org.js"
 import { SHARED_TABLES } from "./schema/shared.js"
 
@@ -51,6 +52,7 @@ export const TABLES: readonly TableSpec[] = [
   ...ORG_TABLES,
   ...LEDGER_TABLES,
   ...CUSTODY_TABLES,
+  ...LIBRARY_TABLES,
   ...SHARED_TABLES,
 ]
 
