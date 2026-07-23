@@ -38,6 +38,7 @@ import { INFRASTRUCTURE_TABLES } from "./schema/infrastructure.js"
 import { LEDGER_TABLES } from "./schema/ledger.js"
 import { ORG_TABLES } from "./schema/org.js"
 import { SHARED_TABLES } from "./schema/shared.js"
+import { SUPERVISION_TABLES } from "./schema/supervision.js"
 
 export type { ColumnSpec, ColumnType, TableSpec } from "./schema/columns.js"
 export { ROUTING_COLUMN, TENANT_COLUMN, TENANT_ROOT_PATH } from "./schema/columns.js"
@@ -51,6 +52,7 @@ export const TABLES: readonly TableSpec[] = [
   ...ORG_TABLES,
   ...LEDGER_TABLES,
   ...CUSTODY_TABLES,
+  ...SUPERVISION_TABLES,
   ...SHARED_TABLES,
 ]
 
