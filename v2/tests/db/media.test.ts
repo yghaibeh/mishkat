@@ -12,7 +12,10 @@
  */
 
 import { describe, expect, it } from "vitest"
-import { persistentMedia } from "../../src/db/repositories/mediaRepository.js"
+import {
+  persistentMediaCatalog,
+  persistentMediaEntries,
+} from "../../src/db/repositories/mediaRepository.js"
 import { UnitOfWork } from "../../src/db/unitOfWork.js"
 import { MediaStore } from "../../src/features/media/data/store.js"
 import {
@@ -34,6 +37,7 @@ import {
   coverageInput,
   freshDb,
   freshMediaStore,
+  mediaCatalogUnitOfWork,
   mediaContext,
   mediaSession,
   rowsOf,
@@ -70,8 +74,10 @@ async function statementsAfter(
   fn: (store: MediaStore) => void,
 ): Promise<readonly SqlStatement[]> {
   const store = freshMediaStore(tenantId)
-  const source = persistentMedia(store)
+  const source = persistentMediaEntries(store)
   const uow = new UnitOfWork(driver, { tenantId, scopePath: "/" })
+  // المصدران كجلسةِ العمل الحقيقية، **والمقاسُ عباراتُ القيود** (وصفة §٤-٠).
+  uow.enlist(persistentMediaCatalog(store))
   uow.enlist(source)
   await uow.hydrate()
   fn(store)
@@ -149,7 +155,7 @@ describe("ق-١٠٥ — «سحبُ المنشور» حالةٌ لا محو: ال
     await mediaSession(driver, MAIN, (store) => createCov(store))
 
     const store = freshMediaStore(MAIN)
-    const source = persistentMedia(store)
+    const source = persistentMediaEntries(store)
     const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
     uow.enlist(source)
     await uow.hydrate()
@@ -166,7 +172,7 @@ describe("ق-١٠٥ — «سحبُ المنشور» حالةٌ لا محو: ال
     await mediaSession(driver, MAIN, (store) => addPic(store, createCov(store)))
 
     const store = freshMediaStore(MAIN)
-    const source = persistentMedia(store)
+    const source = persistentMediaEntries(store)
     const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
     uow.enlist(source)
     await uow.hydrate()
@@ -340,7 +346,7 @@ describe("الذرّية — فشلٌ في منتصف عمليةٍ لا يترك
   it("وحدةُ عملٍ خليطةٌ تُرمى — لا يُقذف إعلامٌ ومستودعٌ بلا مخطط", async () => {
     const driver = await freshDb()
     const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
-    uow.enlist(persistentMedia(new MediaStore(MAIN)))
+    uow.enlist(persistentMediaEntries(new MediaStore(MAIN)))
     uow.enlist({
       name: "مستودعٌ بلا مخطط",
       rowBudget: 10,
@@ -499,9 +505,15 @@ describe("الحتميّة تنجو عبور القاعدة — العدّادُ
 // ═══ الإلزاميّ ٧ — ميزانيةُ التحميل (G23) ═════════════════════════════════════
 
 describe("ميزانيةُ التحميل — الإعلامُ يُعلن سقفَه ويُقاس عليه (G23)", () => {
-  it("سقفُ الإعلام موجبٌ ومُعلَنٌ في المصنع — لا مستودعَ بلا سقف", () => {
-    const source = persistentMedia(new MediaStore(MAIN))
-    expect(`${source.name}:${source.rowBudget > 0}`).toBe("media:true")
+  it("**كلا المصنعين** يُعلن سقفَه موجباً — لا مستودعَ بلا سقف", () => {
+    const store = new MediaStore(MAIN)
+    for (const source of [persistentMediaCatalog(store), persistentMediaEntries(store)]) {
+      expect(`${source.name}:${source.rowBudget > 0}`).toBe(`${source.name}:true`)
+    }
+    expect([persistentMediaCatalog(store).name, persistentMediaEntries(store).name]).toEqual([
+      "mediaCatalog",
+      "mediaEntries",
+    ])
   })
 
   it("**وتجاوزُه رميةٌ تُسمّي الوحدةَ والجدولَ الأكبر** — لا «تجاوزٌ» مبهمة", async () => {
@@ -510,10 +522,51 @@ describe("ميزانيةُ التحميل — الإعلامُ يُعلن سقف
     await mediaSession(driver, MAIN, (store) => addPic(store, createCov(store)))
     const store = freshMediaStore(MAIN)
     const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
-    uow.enlist({ ...persistentMedia(store), rowBudget: 3 })
-    await expect(uow.hydrate()).rejects.toThrow(/وحدةُ عمل «media»/)
+    uow.enlist({ ...persistentMediaEntries(store), rowBudget: 3 })
+    await expect(uow.hydrate()).rejects.toThrow(/وحدةُ عمل «mediaEntries»/)
     await expect(uow.hydrate()).rejects.toThrow(/media_units=/)
     driver.close()
+  })
+
+  // ── §٤-٠: برهانُ الفصل — المعجمُ لا يجرّ القيود ─────────────────────────────
+  it("**قراءةُ المعجم بالجذر لا تُحمّل تغطيةً ولا صورة** — أضيقُ النطاقَين لا يفرض حملَه", async () => {
+    const driver = await freshDb()
+    await seedMediaSession(driver, MAIN)
+    // شبكةٌ فيها مادةٌ في مسجدين — لو جمعهما مستودعٌ واحد لجرّتها قراءةُ المعجم بالجذر.
+    await mediaSession(driver, MAIN, (store) => {
+      addPic(store, createCov(store, { titleAr: "خالد", unitId: "khalid" }))
+      addPic(store, createCov(store, { titleAr: "عمر", unitId: "omar" }))
+    })
+
+    const store = freshMediaStore(MAIN)
+    const uow = mediaCatalogUnitOfWork(driver, store, { tenantId: MAIN, scopePath: "/" })
+    await uow.hydrate()
+    // المعجمان حاضران بتمامهما…
+    expect(store.kinds().map((k) => k.id).sort()).toEqual(["event", "lesson", "retired"])
+    expect(store.formats()).toHaveLength(3)
+    // …ولا تغطيةَ ولا صورةَ ولا وحدةَ عبرت — وهذا هو مقصدُ §٤-٠ حرفياً.
+    expect(store.coverages()).toEqual([])
+    expect(store.photos()).toEqual([])
+    expect(store.getUnit("khalid")).toBeNull()
+    driver.close()
+  })
+
+  it("**وسقفُ المعجم لا يُقاس بحمولة القيود**: مصنعُ المعجم يملك جدولَيه وحدَهما", () => {
+    const store = new MediaStore(MAIN)
+    const catalog = persistentMediaCatalog(store)
+    const entries = persistentMediaEntries(store)
+    expect(catalog.tables).toEqual(["media_kinds", "media_formats"])
+    expect(entries.tables.filter((t) => typeof t === "string")).toEqual([
+      "media_units",
+      "media_coverages",
+      "media_photos",
+    ])
+    // ولا جدولَ مشتركٌ بين المصنعين — شكلُ التوجيه واحدٌ لكلٍّ (وصفة §٤-٠).
+    const catalogTables = new Set(catalog.tables.map((t) => (typeof t === "string" ? t : t.table)))
+    const shared = entries.tables
+      .map((t) => (typeof t === "string" ? t : t.table))
+      .filter((t) => catalogTables.has(t))
+    expect(shared).toEqual([])
   })
 })
 
@@ -532,12 +585,12 @@ describe("حوافُّ مستودع الإعلام — والسلبُ أكثرُ
       uploadedBy: "u-media",
       uploadedAt: NOW,
     })
-    expect(() => persistentMedia(store).project()).toThrow(/مفتاحُ توجيهٍ لا يُشتقّ/)
+    expect(() => persistentMediaEntries(store).project()).toThrow(/مفتاحُ توجيهٍ لا يُشتقّ/)
   })
 
   it("تحميلٌ من لا شيء لا يرمي ولا يخترع — قاعدةٌ فارغةٌ مستودعٌ فارغٌ وعدّادٌ من الصفر", () => {
     const store = new MediaStore(MAIN)
-    persistentMedia(store).load(new Map())
+    persistentMediaEntries(store).load(new Map())
     expect(store.coverages()).toEqual([])
     expect(store.photos()).toEqual([])
     expect(store.nextId("mc")).toBe("mc-1")
@@ -558,7 +611,7 @@ describe("حوافُّ مستودع الإعلام — والسلبُ أكثرُ
       uploadedBy: "u-media",
       uploadedAt: NOW,
     })
-    const rows = persistentMedia(store).project().get("sequences")!
+    const rows = persistentMediaEntries(store).project().get("sequences")!
     const seq = [...rows.values()][0]!
     // العدّادُ من التغطية (`mc-1`) لا من المفتاح المبهم — لا رميةَ ولا رقمٌ مخترع.
     expect(Number(seq["value"])).toBe(1)

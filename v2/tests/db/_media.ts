@@ -11,7 +11,10 @@
  * **حتميّ** (TESTING_POLICY §٥): لحظةُ العالم القانونيّ مثبَّتة، والمعرّفاتُ من عدّاد المستودع.
  */
 
-import { persistentMedia } from "../../src/db/repositories/mediaRepository.js"
+import {
+  persistentMediaCatalog,
+  persistentMediaEntries,
+} from "../../src/db/repositories/mediaRepository.js"
 import type { SqliteDriver } from "../../src/db/sql/sqliteDriver.js"
 import { UnitOfWork, type Scope } from "../../src/db/unitOfWork.js"
 import { MediaStore } from "../../src/features/media/data/store.js"
@@ -49,9 +52,28 @@ export function seedMediaData(store: MediaStore): void {
   for (const format of FORMATS) store.saveFormat({ tenantId, ...format })
 }
 
+/**
+ * وحدةُ عملٍ كاملة — **مصدران** (وصفة §٤-٠): المعجمان بالجذر والقيودُ بالوحدة.
+ * وجلسةُ العمل تحتاجهما معاً (الإنشاءُ يسأل المعجمَ، والرفعُ يسأل الصيغ).
+ */
 export function mediaUnitOfWork(driver: SqliteDriver, store: MediaStore, scope: Scope): UnitOfWork {
   const uow = new UnitOfWork(driver, scope)
-  uow.enlist(persistentMedia(store))
+  uow.enlist(persistentMediaCatalog(store))
+  uow.enlist(persistentMediaEntries(store))
+  return uow
+}
+
+/**
+ * **وحدةُ عملِ المعجم وحدَه** — بها يُبرهَن مقصدُ الفصل: قراءةُ المعجم بالجذر **لا تلمس
+ * تغطيةً ولا صورة**، فلا يفرض أضيقُ النطاقَين على أوسعِهما حملَه.
+ */
+export function mediaCatalogUnitOfWork(
+  driver: SqliteDriver,
+  store: MediaStore,
+  scope: Scope,
+): UnitOfWork {
+  const uow = new UnitOfWork(driver, scope)
+  uow.enlist(persistentMediaCatalog(store))
   return uow
 }
 

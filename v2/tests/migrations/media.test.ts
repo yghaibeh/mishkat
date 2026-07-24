@@ -96,7 +96,11 @@ describe("هجرةُ الإعلام — **على بيانات v1 منقولة** 
 
     const before = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     const applied = await applyMigrations(target, shippedMigrations())
-    expect(applied).toEqual(["0006_media.sql"])
+    // **مشتقٌّ لا مسرود** (وصفة §٣-٨): سردُ «0006 وحدها» يفترض أنها **الأخيرة**، فتُحمّرها أوّلُ
+    // هجرةِ وحدةٍ تليني — وقد وقع هذا ثلاث مرّاتٍ في الموجة قبل أن يُصلَح. **والثابتُ المقصود
+    // هو السطرُ التالي** (`after == before`: اللاإتلاف) لا عددُ الهجرات.
+    expect(applied).toEqual(shippedMigrations().filter((m) => m.name >= "0006").map((m) => m.name))
+    expect(applied).toContain("0006_media.sql")
     const after = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     expect(after).toEqual(before)
     target.close()
