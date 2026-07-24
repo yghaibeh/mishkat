@@ -136,7 +136,7 @@ describe("T22/١ — **كيانٌ واحد**: جلسةُ التحفيظ وجلس
     expect([...rows].map((s) => s.shape.kind).sort()).toEqual(["curriculum", "recitation"])
     for (const row of rows) {
       expect(row.dayKey).toBe(rows[0]!.dayKey)
-      expect(w.log.getSession(row.circleId, row.dayKey)?.id).toBe(row.id)
+      expect(w.log.getSession(row.circleId, row.dayKey, row.periodId)?.id).toBe(row.id)
     }
     // والمعرّفان من **عدّاد المستودع نفسِه** — لا فضاءَي معرّفاتٍ منفصلين.
     expect(new Set(rows.map((s) => s.id)).size).toBe(2)
@@ -553,7 +553,7 @@ describe("T22/٨ — **عزلُ الشبكة والنطاق**، ومصفوفةُ
     const otherTenant = new CircleLogStore(SECOND_TENANT_ID)
     expect(otherTenant.sessions()).toHaveLength(0)
     const stored = w.log.sessions()[0]!
-    expect(otherTenant.getSession(stored.circleId, stored.dayKey)).toBe(null)
+    expect(otherTenant.getSession(stored.circleId, stored.dayKey, stored.periodId)).toBe(null)
     // والشبكةُ **تُختم من المستودع لا من المدخل**.
     expect(stored.tenantId).toBe(w.log.tenantId)
   })

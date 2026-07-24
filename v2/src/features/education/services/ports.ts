@@ -53,6 +53,8 @@ export type CircleDay = {
   readonly id: string
   readonly circleId: string
   readonly dayKey: string
+  /** **CR-٠٢٠** — فترةُ اليوم عند صاحب الكيان: تُقرأ ولا تُفسَّر، فمعجمُها معجمُه. */
+  readonly periodId: string
   readonly heldAt: Date
   /** المجلسُ من كتالوج **هذه الوحدة** — مرجعٌ في الجلسة، وكتالوجُه هنا (قب-٢٢). */
   readonly curriculumSessionId: string
@@ -70,6 +72,8 @@ export type CircleDay = {
 export type RecordCircleDayInput = {
   readonly circleId: string
   readonly heldAt: Date
+  /** **CR-٠٢٠** — تُمرَّر كما وصلت: **الحاسمُ صاحبُ الكيان** لا هذه الوحدة (قائمتُه قائمتُه). */
+  readonly periodId?: string
   readonly curriculumSessionId: string
   readonly durationMinutes: number
   readonly venueAr?: string

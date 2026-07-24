@@ -61,6 +61,7 @@ function dayOf(session: DaySession): CircleDay | null {
     id: session.id,
     circleId: session.circleId,
     dayKey: session.dayKey,
+    periodId: session.periodId,
     heldAt: session.heldAt,
     curriculumSessionId: companion.curriculumSessionId,
     durationMinutes: companion.durationMinutes,
@@ -92,6 +93,9 @@ const CODE_MAP: Readonly<Record<string, EducationErrorCode>> = Object.freeze({
   ENROLLMENT_NOT_IN_CIRCLE: "NOT_ENROLLED",
   EMPTY_PHOTO_KEY: "EMPTY_PHOTO_KEY",
   DUPLICATE_PHOTO_KEY: "DUPLICATE_PHOTO_KEY",
+  // **CR-٠٢٠** — الفترةُ مفردةٌ عندهم ومفردةٌ عندنا: تُترجَم ولا تُبتلع (§١١).
+  UNKNOWN_PERIOD: "UNKNOWN_PERIOD",
+  PERIOD_REQUIRED: "PERIOD_REQUIRED",
 })
 
 /**
@@ -155,6 +159,8 @@ export function circleDaysFrom(
         const written = recordCurriculumSession(logStore, logContext, {
           circleId: input.circleId,
           at: input.heldAt,
+          // (الاختياريُّ **يُحذف ولا يُمرَّر `undefined`** — `exactOptionalPropertyTypes` مُفعَّل.)
+          ...(input.periodId === undefined ? {} : { periodId: input.periodId }),
           companion: {
             curriculumSessionId: input.curriculumSessionId,
             durationMinutes: input.durationMinutes,

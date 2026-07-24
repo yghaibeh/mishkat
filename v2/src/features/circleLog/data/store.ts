@@ -19,6 +19,7 @@ import type {
   DaySession,
   GuardianLink,
   MushafRef,
+  SessionPeriodRef,
   SupervisionNote,
   SurahRef,
 } from "../types.js"
@@ -26,6 +27,7 @@ import type {
 export class CircleLogStore {
   private surahMap = new Map<string, SurahRef>()
   private mushafMap = new Map<string, MushafRef>()
+  private periodMap = new Map<string, SessionPeriodRef>()
   private sessionMap = new Map<string, DaySession>()
   private noteMap = new Map<string, SupervisionNote>()
   private linkMap = new Map<string, GuardianLink>()
@@ -57,10 +59,28 @@ export class CircleLogStore {
     return this.mushafMap.get(id) ?? null
   }
 
-  // ── الجلسات: **مفتاحٌ طبيعيٌّ واحد** (حلقة × يوم) ────────────────────────────
-  /** المفتاحُ الطبيعيّ — هو ما يجعل إعادةَ الإرسال آمنةً بالبنية لا بالانضباط. */
-  private static key(circleId: string, dayKey: string): string {
-    return `${circleId}|${dayKey}`
+  /**
+   * **CR-٠٢٠ — فتراتُ اليوم صفوفٌ مرجعية** (ق-٨٩): تُعلنها الشبكةُ فتصير مفتاحاً، ولا تُعلنها
+   * فيبقى يومُها غيرَ مقسَّم. **والفراغُ حالٌ مشروعٌ يُقرأ** (`services/periods.ts`) لا سهو.
+   */
+  savePeriod(p: SessionPeriodRef): void {
+    this.periodMap.set(p.id, Object.freeze({ ...p, tenantId: this.tenantId }))
+  }
+  /** **مرتَّبةٌ حتميّاً** بالترتيب ثم بالمعرّف — فلا يختلف جوابُ القائمة بين تشغيلين. */
+  periods(): readonly SessionPeriodRef[] {
+    return Object.freeze(
+      [...this.periodMap.values()].sort((a, b) => a.ordinal - b.ordinal || a.id.localeCompare(b.id)),
+    )
+  }
+
+  // ── الجلسات: **مفتاحٌ طبيعيٌّ واحد** (حلقة × يوم × فترة — CR-020) ────────────
+  /**
+   * المفتاحُ الطبيعيّ — هو ما يجعل إعادةَ الإرسال آمنةً بالبنية لا بالانضباط.
+   * **والفترةُ ضلعٌ فيه** (CR-020): فجلستان بنفس الفترة **صفٌّ واحد**، وبفترتين **صفّان** —
+   * وكلا الوجهين بنيةٌ لا اتفاق، ولا مِقبضَ يُنشئ جلسةً ثالثةً لفترةٍ سُجِّلت.
+   */
+  private static key(circleId: string, dayKey: string, periodId: string): string {
+    return `${circleId}|${dayKey}|${periodId}`
   }
 
   /** **الكاتبُ الوحيد للجلسة**: يُنشئ أو يستبدل — ولا مقبضَ ثالث. */
@@ -70,12 +90,15 @@ export class CircleLogStore {
       tenantId: this.tenantId,
       rows: Object.freeze([...session.rows]),
     })
-    this.sessionMap.set(CircleLogStore.key(session.circleId, session.dayKey), sealed)
+    this.sessionMap.set(
+      CircleLogStore.key(session.circleId, session.dayKey, session.periodId),
+      sealed,
+    )
     return sealed
   }
 
-  getSession(circleId: string, dayKey: string): DaySession | null {
-    return this.sessionMap.get(CircleLogStore.key(circleId, dayKey)) ?? null
+  getSession(circleId: string, dayKey: string, periodId: string): DaySession | null {
+    return this.sessionMap.get(CircleLogStore.key(circleId, dayKey, periodId)) ?? null
   }
 
   sessions(): readonly DaySession[] {

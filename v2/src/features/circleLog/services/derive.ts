@@ -16,6 +16,7 @@ import type { CircleLogStore } from "../data/store.js"
 import { settingNumber, settingText, type SessionContext } from "./context.js"
 import { dayKeyIn } from "./day.js"
 import { recitationRefAr } from "./mushaf.js"
+import { foldMarks, resolvePeriodId } from "./periods.js"
 import type { SessionShapeKind } from "./sessionShape.js"
 import {
   logErr,
@@ -45,6 +46,8 @@ export type CircleDayRow = {
 export type CircleDayView = {
   readonly circleId: string
   readonly dayKey: string
+  /** **CR-٠٢٠** — كشفُ **فترةٍ** بعينها: الشاشةُ تعرف أيَّ جلسةٍ تعرض، ولا تخلط فترتين. */
+  readonly periodId: string
   readonly recorded: boolean
   /** **شكلُ يومِ هذه الحلقة** — من نوعها لا من المسجَّل: فالشاشةُ تعرف أعمدتَها قبل التسجيل. */
   readonly shape: SessionShapeKind
@@ -97,18 +100,23 @@ function rowView(
 export function circleDayView(
   store: CircleLogStore,
   ctx: SessionContext,
-  input: { readonly circleId: string; readonly at: Date },
+  input: { readonly circleId: string; readonly at: Date; readonly periodId?: string },
 ): DayLogResult<CircleDayView> {
   const circle = ctx.circles.circleOf(input.circleId)
   if (circle === null) return logErr("UNKNOWN_CIRCLE", input.circleId)
 
   const dayKey = dayKeyIn(input.at, settingText(ctx, "time.zone", circle.unitPath))
-  const session = store.getSession(circle.id, dayKey)
+  // **CR-٠٢٠** — القراءةُ تُحسم فترتَها بالقاعدة نفسِها التي تحسمها الكتابة: شبكةٌ قسّمت يومَها
+  // ⇒ سؤالٌ بلا فترةٍ **يُردّ** ولا يُجاب بأولى الفترات نيابةً عن السائل.
+  const period = resolvePeriodId(store, input.periodId)
+  if (!period.ok) return period
+  const session = store.getSession(circle.id, dayKey, period.value)
   const byEnrollment = new Map((session?.rows ?? []).map((r) => [r.enrollmentId, r]))
 
   return logOk({
     circleId: circle.id,
     dayKey,
+    periodId: period.value,
     recorded: session !== null,
     shape: ctx.shape.shapeOf(circle.typeId),
     companion: session?.shape.kind === "curriculum" ? session.shape.companion : null,
@@ -122,6 +130,8 @@ export function circleDayView(
 /** سطرُ يومٍ في سجلّ الطالب — ما يخصّه هو وحده (ق-٩٣: لا يكشف إلا طالبَه). */
 export type StudentDayLine = {
   readonly dayKey: string
+  /** **CR-٠٢٠** — سطرٌ **لكلِّ فترةٍ سُجِّلت**: التفصيلُ بالفترة، **والعدُّ باليوم** (أدناه). */
+  readonly periodId: string
   readonly attendance: AttendanceMark
   /** شكلُ ذلك اليوم — **الكيانُ واحدٌ والشكلُ صفة** (CR-016). */
   readonly shape: SessionShapeKind
@@ -143,6 +153,10 @@ export type StudentRecordView = {
   readonly circleId: string
   readonly enrollmentId: string
   readonly nameAr: string
+  /**
+   * **عددُ الأيام لا عددُ الفترات** (CR-020): يومٌ بفترتين **يُعدّ يوماً واحداً**، وعلامتُه
+   * أقوى علامتَيه. ولولا ذلك لقال سجلُّ ثلاثة أيامٍ «ستُّ جلسات» — **ع-٢٩ في ثوبٍ جديد**.
+   */
   readonly sessions: number
   readonly present: number
   readonly absent: number
@@ -154,18 +168,22 @@ export type StudentRecordView = {
   readonly days: readonly StudentDayLine[]
 }
 
-/** جلساتُ حلقةٍ مرتّبةً باليوم — **ترتيبٌ حتميّ** لا يتغيّر بين تشغيلين. */
+/**
+ * جلساتُ حلقةٍ مرتّبةً باليوم **ثم بالفترة** — **ترتيبٌ حتميّ** لا يتغيّر بين تشغيلين.
+ * (وبعد CR-020 صار اليومُ وحدَه **قيمةَ فرزٍ يتقاسمها كيانان** — فالضلعُ الثاني يحسم.)
+ */
 function sessionsOf(store: CircleLogStore, circleId: string): readonly DaySession[] {
   return store
     .sessions()
     .filter((s) => s.circleId === circleId)
-    .sort((a, b) => a.dayKey.localeCompare(b.dayKey))
+    .sort((a, b) => a.dayKey.localeCompare(b.dayKey) || a.periodId.localeCompare(b.periodId))
 }
 
 function lineOf(store: CircleLogStore, session: DaySession, row: SessionRow): StudentDayLine {
   const evaluation = row.evaluation
   return {
     dayKey: session.dayKey,
+    periodId: session.periodId,
     attendance: row.attendance,
     // **شكلُ اليوم منطوقٌ في سجل الطالب** (ق-١١٢): يومُ منهاجٍ بلا علاماتٍ **يُقرأ بسببه**.
     shape: session.shape.kind,
@@ -200,7 +218,11 @@ export function studentRecordView(
     if (row !== undefined) days.push(lineOf(store, session, row))
   }
 
-  const counted = (mark: AttendanceMark): number => days.filter((d) => d.attendance === mark).length
+  // **CR-٠٢٠ — الحضورُ يُجمع عبر فترات اليوم ولا يُضاعَف**: طالبٌ حضر صباحاً وغاب مساءً
+  // **حضر ذلك اليوم**، ويومُه واحدٌ في البسط والمقام معاً.
+  const byDay = foldMarks(days, (d) => d.dayKey, (d) => d.attendance)
+  const dayMarks = [...byDay.values()]
+  const counted = (mark: AttendanceMark): number => dayMarks.filter((m) => m === mark).length
   const grades = days
     .flatMap((d) => [d.memorizationGrade, d.reviewGrade, d.tajweedGrade, d.enrichmentGrade])
     .filter((g): g is number => g !== null)
@@ -210,12 +232,12 @@ export function studentRecordView(
     circleId: circle.id,
     enrollmentId: student.id,
     nameAr: student.nameAr,
-    sessions: days.length,
+    sessions: dayMarks.length,
     present,
     absent: counted("absent"),
     left: counted("left"),
     excused: counted("excused"),
-    attendancePct: days.length === 0 ? 0 : (present * 100) / days.length,
+    attendancePct: dayMarks.length === 0 ? 0 : (present * 100) / dayMarks.length,
     averageGrade:
       grades.length === 0 ? null : grades.reduce((sum, g) => sum + g, 0) / grades.length,
     gradeMax: settingNumber(ctx, "edu.grade.max", circle.unitPath),

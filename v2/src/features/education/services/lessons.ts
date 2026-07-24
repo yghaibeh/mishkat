@@ -22,6 +22,8 @@ export type RecordLessonInput = {
   readonly circleId: string
   readonly sessionId: string
   readonly heldAt: Date
+  /** **CR-٠٢٠** — فترةُ اليوم؛ تمرّ إلى موطن الكيان **بلا تفسيرٍ هنا** (قائمتُها عنده). */
+  readonly periodId?: string
   readonly durationMinutes: number
   readonly venueAr?: string
   /** الحاضرون — والباقي **يُسجَّل غائباً**: الغيابُ حقيقةٌ تُقرأ لا فراغٌ يُفسَّر. */
@@ -59,6 +61,7 @@ export function recordLesson(
   return ctx.days.record({
     circleId: circle.id,
     heldAt: input.heldAt,
+    ...(input.periodId === undefined ? {} : { periodId: input.periodId }),
     curriculumSessionId: session.id,
     durationMinutes: input.durationMinutes,
     ...(input.venueAr === undefined ? {} : { venueAr: input.venueAr }),

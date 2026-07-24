@@ -118,6 +118,8 @@ export function makeCircleLogEndpoints(deps: CircleLogDeps) {
   type RecordInput = {
     readonly circleId: string
     readonly at: Date
+    /** **CR-٠٢٠** — فترةُ اليوم من القائمة المحصورة؛ وغيابُها يُحسم في الخدمة لا هنا. */
+    readonly periodId?: string
     readonly rows: readonly SessionRowInput[]
   }
 
@@ -150,7 +152,7 @@ export function makeCircleLogEndpoints(deps: CircleLogDeps) {
   })
 
   // ── العرض (ق-٨٤: المشرفُ والمديرُ **يريان** ولا يُدخلان) ─────────────────────
-  type DayInput = { readonly circleId: string; readonly at: Date }
+  type DayInput = { readonly circleId: string; readonly at: Date; readonly periodId?: string }
 
   const dayViewFn = defineServerFn({
     name: "circle.log.day.view",

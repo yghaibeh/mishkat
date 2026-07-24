@@ -112,6 +112,10 @@ export type EducationErrorCode =
   | "DUPLICATE_PHOTO_KEY"
   | "EMPTY_REASON"
   | "UNKNOWN_PAID_CURRICULUM"
+  /** CR-٠٢٠ — فترةُ اليوم عند صاحب الكيان: ليست في قائمته المحصورة (ق-٨٩). */
+  | "UNKNOWN_PERIOD"
+  /** CR-٠٢٠ — شبكةٌ قسّمت يومَها ولم يُقل الدرسُ فترتَه: **رفضٌ لا اختيارٌ صامت**. */
+  | "PERIOD_REQUIRED"
 
 export type EducationError = {
   readonly code: EducationErrorCode
