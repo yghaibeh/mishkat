@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مِشكاة — رئيسية أمير المسجد</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body>
+
+<!-- مفاتيحُ المعاينة: خارج المنتج، للمالك وحده (تبديلٌ بـCSS خالص). -->
+<input type="radio" name="st" id="st-full" checked>
+<input type="radio" name="st" id="st-empty">
+<input type="radio" name="st" id="st-error">
+<input type="radio" name="st" id="st-loading">
+<input type="checkbox" id="caps-on">
+
+<div class="m-preview" id="embed">
+  <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
+  <div class="m-preview__group">
+    <label for="st-full">ممتلئة</label>
+    <label for="st-empty">فارغة تشرح</label>
+    <label for="st-error">خطأٌ إنسانيّ</label>
+    <label for="st-loading">تحميل</label>
+  </div>
+  <span class="m-preview__label">·</span>
+  <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__spacer"></span>
+  <a class="m-link" href="../index.html">← الفهرس</a>
+</div>
+
+<div class="m-stage">
+<div class="m-shell">
+
+  <!-- القشرةُ الواحدة: تبقى كما هي في كل الحالات وكل الصفحات (ق-١١٤). -->
+  <header class="m-appbar">
+    <span class="m-appbar__brand">مِشكاة</span>
+    <span class="m-appbar__role">◆ أمير المسجد</span>
+    <span class="m-appbar__spacer"></span>
+    <!-- لا صندوقَ بحثٍ للأمير: البحثُ لمن يملك `network.view` وحده، وهو لا يملكه. -->
+    <button class="m-appbar__icon" type="button" aria-label="إشعاراتي (٣ جديدة)">◉<span class="m-badge is-danger">٣</span></button>
+  </header>
+
+  <div class="m-scope">
+    <span>نطاقُ الصفحة:</span>
+    <span class="m-scope__unit">مسجد خالد بن الوليد</span>
+    <span>· مربع الوعر · منطقة حمص</span>
+    <span class="m-scope__unit m-hijri">الخميس ١٥ محرم ١٤٤٨ هـ</span>
+  </div>
+
+  <!-- ═════════════ الحالة ١: ممتلئة ═════════════ -->
+  <main class="m-main m-state is-full">
+
+    <h1 class="m-section-title m-section-title--first">أين أنا من هدف الأسبوع؟</h1>
+
+    <div class="m-card is-highlight">
+      <p class="m-stat__sentence">أضفتَ <strong>٤١</strong> نقطة من هدف الأسبوع، وبقي <strong>٢٩</strong> نقطة.</p>
+      <p class="m-stat__value is-brand">٤١ / ٧٠</p>
+      <p class="m-stat__scope">الأرقام على مسجدك وحده · لم يُدخَل سجلُ اليوم بعد · آخرُ إدخالٍ أمس: نشاطان</p>
+    </div>
+
+    <h2 class="m-section-title">ماذا بقي عليّ اليوم؟</h2>
+
+    <ul class="m-list">
+      <li class="m-item">
+        <span class="m-badge is-neutral">• مسودة</span>
+        <span class="m-item__text">
+          <span>سجلُّ الأسبوع جاهزٌ للتقديم — حصيلتُه ٤١ نقطة</span>
+          <span class="m-item__sub">يعتمده مسؤولُ مربعك بعد التقديم، لا أنت</span>
+        </span>
+        <span class="m-item__action">
+          <a class="m-btn is-secondary" href="#" data-cap="report.submit #٣">قدِّم سجل المسجد</a>
+        </span>
+      </li>
+
+      <li class="m-item is-info">
+        <span class="m-badge is-info">ℹ ٢</span>
+        <span class="m-item__text">
+          <span>نشاطان من لجنة الدعوة ينتظران إقرارَك ليُحسبا في سجل المسجد</span>
+          <span class="m-item__sub">أدخلهما مسؤولُ اللجنة: أ. أنس الشامي</span>
+        </span>
+        <span class="m-item__action">
+          <a class="m-btn is-secondary" href="#" data-cap="report.approve #٤">افتح ما ينتظر إقراري</a>
+        </span>
+      </li>
+
+      <li class="m-item is-warning">
+        <span class="m-badge is-warning">⚠ بلا محفّظ</span>
+        <span class="m-item__text">
+          <span>حلقةُ الرشيدي بلا محفّظٍ منذ ٦ أيام — ولذلك لا يُسجَّل يومُها</span>
+          <span class="m-item__sub">مكّن محفّظاً باسم مستخدمٍ وكلمةِ مرورٍ تُعطيها له مباشرةً</span>
+        </span>
+        <span class="m-item__action">
+          <a class="m-btn is-secondary" href="#" data-cap="users.provision #٧٠">مكّن محفّظاً</a>
+        </span>
+      </li>
+
+      <li class="m-item">
+        <span class="m-badge is-neutral">• متى شئت</span>
+        <span class="m-item__text">
+          <span>تسليمُ عهدةٍ لعاملٍ في مسجدي</span>
+          <span class="m-item__sub">تُقيَّد في سلسلة الحيازة ويقرُّها المستلِم بنفسه</span>
+        </span>
+        <span class="m-item__action">
+          <a class="m-btn is-ghost" href="#" data-cap="custody.grant #٦٠">سلِّم عهدة</a>
+        </span>
+      </li>
+    </ul>
+
+    <h2 class="m-section-title">كيف حال حلقات مسجدي ولجانه؟</h2>
+
+    <div class="m-card is-half">
+      <h3 class="m-empty__title">حلقاتُ مسجدي</h3>
+      <div class="m-entity__facts">
+        <span class="m-fact"><span class="m-fact__label">حلقات</span><span class="m-fact__value">٤</span></span>
+        <span class="m-fact"><span class="m-fact__label">طلاب</span><span class="m-fact__value">٦٣</span></span>
+        <span class="m-fact"><span class="m-fact__label">سُجّل يومُها</span><span class="m-fact__value">٣ / ٤</span></span>
+      </div>
+      <ul class="m-list">
+        <li class="m-item"><span class="m-item__text"><span>على بصيرة — أ. بلال الخطيب</span><span class="m-item__sub">١٨ طالباً</span></span><span class="m-badge is-success">✔ سُجّل</span></li>
+        <li class="m-item"><span class="m-item__text"><span>التحفيظ — أ. محمد نور الدين</span><span class="m-item__sub">٢١ طالباً</span></span><span class="m-badge is-success">✔ سُجّل</span></li>
+        <li class="m-item"><span class="m-item__text"><span>العلمية — أ. عبد الرحمن الحمصي</span><span class="m-item__sub">١٢ طالباً</span></span><span class="m-badge is-success">✔ سُجّل</span></li>
+        <li class="m-item is-warning"><span class="m-item__text"><span>الرشيدي — شاغرة</span><span class="m-item__sub">١٢ طالباً</span></span><span class="m-badge is-warning">⚠ بلا محفّظ</span></li>
+      </ul>
+      <div class="m-stat__row">
+        <a class="m-btn is-ghost" href="#" data-cap="circle.manage #١٧">إدارةُ الحلقات وإضافةُ حلقة</a>
+      </div>
+      <p class="m-stat__scope">الأنواعُ الأربعة (تحفيظ · على بصيرة · علمية · رشيدي) صفةٌ على الحلقة الواحدة — لا أقسامٌ تُفعَّل.</p>
+    </div>
+
+    <div class="m-card is-half">
+      <h3 class="m-empty__title">لجانُ مسجدي</h3>
+      <div class="m-entity__facts">
+        <span class="m-fact"><span class="m-fact__label">لجان</span><span class="m-fact__value">٣</span></span>
+        <span class="m-fact"><span class="m-fact__label">أنشطةُ الأسبوع</span><span class="m-fact__value">٥</span></span>
+      </div>
+      <ul class="m-list">
+        <li class="m-item"><span class="m-item__text"><span>لجنة الدعوة — أ. أنس الشامي</span><span class="m-item__sub">٩ مشاركين</span></span><span class="m-badge is-info">ℹ تنتظر إقرارك</span></li>
+        <li class="m-item"><span class="m-item__text"><span>لجنة الإغاثة — أ. زياد المصري</span><span class="m-item__sub">١٤ مشاركاً</span></span><span class="m-badge is-success">✔ مُقرّة</span></li>
+        <li class="m-item"><span class="m-item__text"><span>لجنة النظافة — أ. سليم الحموي</span><span class="m-item__sub">٦ مشاركين</span></span><span class="m-badge is-neutral">• لا نشاطَ هذا الأسبوع</span></li>
+      </ul>
+      <div class="m-stat__row">
+        <a class="m-btn is-ghost" href="#" data-cap="committees.manage #٣٠">إدارةُ اللجان والاجتماعات</a>
+      </div>
+    </div>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">رصيدُ صندوق مسجدي</p>
+      <p class="m-stat__value m-money">١٢٥٬٠٠٠ ل.س</p>
+      <p class="m-stat__scope">الأرقام على مسجدك وحده · مشتقّةٌ من الدفتر لحظتَها</p>
+      <div class="m-stat__row">
+        <a class="m-btn is-ghost" href="#" data-cap="box.view #٥٠">الصندوق ومالية المسجد</a>
+      </div>
+    </div>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">زياراتُ مسجدي</p>
+      <p class="m-stat__value">٢</p>
+      <p class="m-stat__scope">زارَ مسجدَك مشرفُ المربع مرتين هذه الدورة · آخرها ٢ محرم، اعتمدها: أ. ماهر الرستني</p>
+      <div class="m-stat__row">
+        <a class="m-btn is-ghost" href="#" data-cap="visit.view #٣٤">تفصيلُ الزيارات</a>
+      </div>
+      <p class="m-stat__scope">اطّلاعٌ لا تنفيذ: الزيارةُ يسجّلها مشرفُ نطاقك ويعتمدها مَن فوقه.</p>
+    </div>
+
+    <!-- الفعلُ الأهمُّ: مدخلٌ واحدٌ في متناول الإبهام، ولا يتكرّر زرّاً في أي بطاقة. -->
+    <div class="m-thumb">
+      <a class="m-btn is-primary" href="../flows/circle-day.html" data-cap="dailyLog.edit #١٢">إدخال سجل اليوم</a>
+      <span class="m-thumb__note">أقربُ ما عليك اليوم · يبقى في متناول يدك مهما نزلتَ في الصفحة</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ الحالة ٢: فارغةٌ تشرح ═════════════ -->
+  <main class="m-main m-state is-empty">
+
+    <h1 class="m-section-title m-section-title--first">أين أنا من هدف الأسبوع؟</h1>
+
+    <div class="m-card">
+      <p class="m-stat__sentence">لم تُدخِل شيئاً هذا الأسبوع بعد — والهدف ٧٠ نقطة.</p>
+      <p class="m-stat__value">٠ / ٧٠</p>
+      <p class="m-stat__scope">الأرقام على مسجدك وحده</p>
+    </div>
+
+    <h2 class="m-section-title">كيف حال حلقات مسجدي ولجانه؟</h2>
+
+    <div class="m-empty is-half">
+      <svg class="m-mihrab" viewBox="0 0 64 96" aria-hidden="true" focusable="false">
+        <path d="M8 92 V44 C8 24 20 8 32 3 C44 8 56 24 56 44 V92 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(45 32 56)"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <p class="m-empty__title">لا حلقاتِ في مسجدك بعد</p>
+      <p class="m-empty__hint">حلقتُك أولُ ما يُعمَر: أنشئها ثم مكّن محفّظَها بحسابٍ خاصّ، فيدخل ويسجّل يومَها بنفسه. والأنواعُ الأربعة (تحفيظ · على بصيرة · علمية · رشيدي) متاحةٌ لك الآن — لا قسمَ ينتظر التفعيل.</p>
+      <a class="m-btn is-secondary" href="#" data-cap="circle.manage #١٧">أنشئ أولى حلقاتك</a>
+    </div>
+
+    <div class="m-empty is-half">
+      <svg class="m-mihrab" viewBox="0 0 64 96" aria-hidden="true" focusable="false">
+        <path d="M8 92 V44 C8 24 20 8 32 3 C44 8 56 24 56 44 V92 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+      </svg>
+      <p class="m-empty__title">لا لجانَ في مسجدك بعد</p>
+      <p class="m-empty__hint">اللجنةُ تُنشئها ثم تُعطي مسؤولَها حساباً، فيُدخل أنشطتها ويصلك إقرارُها فتُحسب في سجل مسجدك.</p>
+      <a class="m-btn is-secondary" href="#" data-cap="committees.manage #٣٠">أنشئ أولى لجانك</a>
+    </div>
+
+    <div class="m-empty is-half">
+      <p class="m-empty__title">لم تُسجَّل حركةٌ في صندوق مسجدك بعد</p>
+      <p class="m-empty__hint">الرصيدُ يُشتقّ من الحركات لا يُكتب يدوياً — سجّل قبضاً أو صرفاً ليظهر.</p>
+      <a class="m-btn is-ghost" href="#" data-cap="mosqueFinance.manage #٥٨">سجّل أولَ عملية</a>
+    </div>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">زياراتُ مسجدي</p>
+      <div class="m-diagnosis">
+        <span>لم يزُر مسجدَك مشرفٌ بعد.</span>
+        <span class="m-diagnosis__who">الزياراتُ تظهر هنا حين يسجّلها مشرفُ مربعك — والمسؤول عنها: أ. ماهر الرستني (مسؤول مربع الوعر).</span>
+      </div>
+    </div>
+
+    <div class="m-thumb">
+      <a class="m-btn is-primary" href="../flows/circle-day.html" data-cap="dailyLog.edit #١٢">ابدأ بإدخال أول نشاط</a>
+      <span class="m-thumb__note">أولُ خطوةٍ في مسجدٍ جديد — ومنها تبدأ نقاطُ أسبوعك</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ الحالة ٣: خطأٌ إنسانيّ ═════════════ -->
+  <main class="m-main m-state is-error">
+
+    <div class="m-banner is-warning">
+      <span>⚠ أنت خارج الاتصال — يعمل التطبيق بما لديك، وما تُدخله يُرسَل عند عودة الشبكة.</span>
+    </div>
+
+    <h1 class="m-section-title m-section-title--first">أين أنا من هدف الأسبوع؟</h1>
+
+    <div class="m-card">
+      <p class="m-stat__sentence">أضفتَ <strong>٤١</strong> نقطة من هدف الأسبوع، وبقي <strong>٢٩</strong> نقطة.</p>
+      <p class="m-stat__value is-brand">٤١ / ٧٠</p>
+      <p class="m-stat__scope">الأرقام على مسجدك وحده · آخر مزامنةٍ قبل ١٢ دقيقة · نشاطٌ واحد في طابور الإرسال</p>
+    </div>
+
+    <h2 class="m-section-title">ماذا بقي عليّ اليوم؟</h2>
+
+    <ul class="m-list">
+      <li class="m-item is-danger">
+        <span class="m-badge is-danger">✖ رُدَّ</span>
+        <span class="m-item__text">
+          <span>رُدَّ سجلُ الأسبوع الماضي، والسببُ: «نشاطُ الإفطار مكرَّرٌ يومي ١٠ و١١ محرم بالعدد نفسه — احذف أحدهما ثم أعد التقديم».</span>
+          <span class="m-item__sub">ردَّه: أ. ماهر الرستني (مسؤول مربع الوعر) — ٣ محرم</span>
+        </span>
+        <span class="m-item__action">
+          <a class="m-btn is-secondary" href="#" data-cap="dailyLog.edit #١٢">افتح القيدين وصحّح</a>
+        </span>
+      </li>
+
+      <li class="m-item is-warning">
+        <span class="m-badge is-warning">⚠ ناقص</span>
+        <span class="m-item__text">
+          <span>لم يُضبط عددُ طلاب أسرة المسجد — فالأنشطةُ المشروطة بعتبة الحضور بلا نقاطٍ حتى يُضبط.</span>
+          <span class="m-item__sub">هذا سببُ ظهور ٦ أنشطةٍ بصفر نقطة هذا الأسبوع</span>
+        </span>
+        <span class="m-item__action">
+          <a class="m-btn is-secondary" href="#" data-cap="familyRoster.manage #١٤">اضبط عدد طلاب الأسرة</a>
+        </span>
+      </li>
+    </ul>
+
+    <h2 class="m-section-title">كيف حال حلقات مسجدي ولجانه؟</h2>
+
+    <div class="m-card">
+      <div class="m-banner is-danger">
+        <span>✖ تعذّر عرض هذه الكتلة</span>
+        <button class="m-btn is-secondary" type="button" data-cap="circle.view #١٦">أعد المحاولة</button>
+      </div>
+      <p class="m-stat__scope">أعد المحاولة، فإن تكرّر فأبلغ مسؤولك — ولا تُعاد الصفحةُ كلُّها لأجل كتلةٍ واحدة.</p>
+    </div>
+
+    <div class="m-thumb">
+      <a class="m-btn is-primary" href="../flows/circle-day.html" data-cap="dailyLog.edit #١٢">إدخال سجل اليوم</a>
+      <span class="m-thumb__note">يعمل بلا شبكة — يُحفظ عندك ويُرسَل عند الاتصال</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ الحالة ٤: تحميل ═════════════ -->
+  <main class="m-main m-state is-loading" aria-busy="true">
+    <p class="m-stat__scope">جارٍ تحضير البيانات…</p>
+
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton is-value"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+
+    <div class="m-list">
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+    </div>
+
+    <div class="m-card is-half">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+    </div>
+    <div class="m-card is-half">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+    </div>
+  </main>
+
+  <nav class="m-nav" aria-label="التنقّل الرئيسي">
+    <a href="#" aria-current="page"><span class="m-nav__glyph">⌂</span>الرئيسية</a>
+    <a href="#"><span class="m-nav__glyph">◈</span>مسجدي</a>
+    <a href="#"><span class="m-nav__glyph">✦</span>النشاطات</a>
+    <a href="#"><span class="m-nav__glyph">▤</span>المكتبة</a>
+    <a href="#"><span class="m-nav__glyph">▥</span>المنهاج</a>
+    <a href="#" class="is-more"><span class="m-nav__glyph">⋯</span>المزيد</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◇</span>المسابقة</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">⬡</span>العُهد</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">⚙</span>الإدارة</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◐</span>حسابي</a>
+  </nav>
+
+</div>
+</div>
+
+<aside class="m-note">
+  <h2>حاشيةُ التصميم — ليست جزءاً من الشاشة</h2>
+  <ul>
+    <li><strong>العقد</strong>: <code>/home</code> · <code>lenses: ["amir"]</code> · <code>dataSource: home.amirSnapshot</code>. كلُّ رقمٍ هنا حقلٌ في اللقطة المعلنة: <code>weekPointsAr</code> · <code>weekRemainingAr</code> · <code>circlesCountAr</code> · <code>committeesCountAr</code> · <code>pendingApprovalsAr</code> · <code>todayLogEntered</code> · <code>boxBalance</code>.</li>
+    <li><strong>مدخلٌ واحدٌ لكلِّ فعل</strong> (قب-٥٤/٣): «إدخال سجل اليوم» في شريط الإبهام <em>وحده</em> — ولذلك حُذف زرُّه من بطاقة الهدف، وصار «لم يُدخَل سجلُ اليوم» سطرَ حالٍ في البطاقة لا بطاقةً ثانيةً بزرٍّ ثانٍ.</li>
+    <li><strong>ثلاثُ كتلٍ لثلاثة أسئلةٍ فقط</strong> — لا لوحةَ قيادةٍ تريد كلَّ شيءٍ فتقول لا شيء.</li>
+    <li><strong>لا «البيان» في الشريط ولا صندوقَ بحث</strong>: الأميرُ لا يملك <code>network.view #١</code>، فما ليس له <em>لا يُرسم</em> — لا رمادياً ولا معطَّلاً (ثابتُ عدسته الحاسم).</li>
+    <li><strong>ع-٥ يموت عياناً</strong>: «إدارةُ الحلقات وإضافةُ حلقة» بابٌ حاضرٌ بقدرة <code>circle.manage #١٧</code> — والأنواعُ الأربعة صفةٌ على الحلقة لا أقساماً تُفعَّل (ع-٦/ع-٨).</li>
+    <li><strong>ع-٤/ع-٢٧/ع-٢٨</strong>: «مكّن محفّظاً» سطرٌ في عمل اليوم مقرونٌ بسببه (حلقةٌ بلا محفّظ) — يعطيه الأميرُ اسمَ مستخدمٍ وكلمةَ مرورٍ مباشرةً (<code>users.provision #٧٠</code>) بلا مرورٍ بالإدارة العليا.</li>
+    <li><strong>ع-٧</strong>: الحلقاتُ داخل بطاقة «مسجدي» تابعةً له لا بإزائه، والرشيديُّ الشاغرُ يقول شغورَه ولا يختفي.</li>
+    <li><strong>اعتمادُ عمله ليس له</strong>: زرُّ «قدِّم» حاضر، ولا زرَّ اعتمادٍ لسجلّه — يصعد لمن فوقه. و«ما ينتظر إقراري» إنما هو عملُ لجانه وحلقاته.</li>
+    <li><strong>الفراغُ يشرح</strong>: كلُّ حالةٍ فارغةٍ تقول سببَها ووجهةَ علاجها؛ ولمن لا يملك الفعلَ تشخيصٌ ومن يُسأل (بطاقةُ الزيارات).</li>
+    <li><strong>الخطأُ الإنسانيّ</strong>: الردُّ يُعرض بسببه ونصِّه ووجهةِ علاجه، والأوفلاين حالةٌ معلنةٌ لا خطأ.</li>
+  </ul>
+</aside>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مِشكاة — رواتبُ الشهر</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body>
+
+<input type="radio" name="st" id="st-full" checked>
+<input type="radio" name="st" id="st-empty">
+<input type="radio" name="st" id="st-error">
+<input type="radio" name="st" id="st-loading">
+<input type="checkbox" id="caps-on">
+
+<div class="m-preview" id="embed">
+  <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
+  <div class="m-preview__group">
+    <label for="st-full">ممتلئة</label>
+    <label for="st-empty">فارغة تشرح</label>
+    <label for="st-error">خطأٌ إنسانيّ</label>
+    <label for="st-loading">تحميل</label>
+  </div>
+  <span class="m-preview__label">·</span>
+  <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__spacer"></span>
+  <a class="m-link" href="../index.html">← الفهرس</a>
+</div>
+
+<div class="m-stage">
+<div class="m-shell">
+
+  <header class="m-appbar">
+    <span class="m-appbar__brand">مِشكاة</span>
+    <span class="m-appbar__role">₪ المسؤول المالي</span>
+    <span class="m-appbar__spacer"></span>
+    <button class="m-appbar__icon" type="button" aria-label="إشعاراتي">◉</button>
+  </header>
+
+  <div class="m-scope">
+    <span>نطاقُ الصفحة:</span>
+    <span class="m-scope__unit">الشبكة كلُّها</span>
+    <span>· مستحقاتُ هذا النطاق وحده</span>
+    <span class="m-scope__unit m-hijri">رواتبُ محرم ١٤٤٨ هـ</span>
+  </div>
+
+  <!-- ═════════════ ممتلئة ═════════════ -->
+  <main class="m-main m-state is-full">
+
+    <h1 class="m-section-title m-section-title--first">أين وصلت دورةُ هذا الشهر؟</h1>
+
+    <!-- شريطُ المراحل: جزءٌ من الشاشة لا حاشيةٌ فيها — وهو جوابُ ع-٢١ قبل أيّ زر. -->
+    <div class="m-stepper" aria-label="مراحلُ دورة الشهر">
+      <span class="m-step is-done"><span class="m-step__dot" aria-hidden="true"></span>١ — احتُسبت آلياً</span>
+      <span class="m-step is-done"><span class="m-step__dot" aria-hidden="true"></span>٢ — رفعتَها للإدارة في ١٣ محرم</span>
+      <span class="m-step is-current"><span class="m-step__dot" aria-hidden="true"></span>٣ — أقرّتها الإدارةُ وخُتمت — التسليمُ عليك الآن</span>
+    </div>
+
+    <div class="m-card is-highlight">
+      <p class="m-stat__sentence">مجموعُ المطلوب دفعه هذا الشهر لاثنين وأربعين مستحقّاً.</p>
+      <p class="m-stat__value m-money is-brand">٣٬٤٢٠٬٠٠٠ ل.س</p>
+      <p class="m-stat__scope">الاحتسابُ آليّ، والإقرارُ على الإدارة، والتسليمُ عليك · أقرّها أ. المدير العام في ١٤ محرم</p>
+    </div>
+
+    <h2 class="m-section-title">مَن المستحقّون ولماذا؟</h2>
+
+    <div class="m-card">
+      <div class="m-table-wrap">
+        <table class="m-table">
+          <caption>أوّلُ ستةٍ من ٤٢ — وعمودُ «بيان الاحتساب» لا يخلو سطرٌ منه</caption>
+          <thead>
+            <tr>
+              <th>المستحِقّ</th><th>الإجماليّ</th><th>قسطُ السلفة</th><th>المطلوبُ دفعه</th><th>بيانُ الاحتساب</th><th>سُلّم</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="المستحِقّ">أ. محمد نور الدين — محفّظ</td>
+              <td data-label="الإجماليّ" class="num m-money">١٨٠٬٠٠٠</td>
+              <td data-label="قسطُ السلفة" class="num m-money">٢٠٬٠٠٠</td>
+              <td data-label="المطلوبُ دفعه" class="num m-money">١٦٠٬٠٠٠</td>
+              <td data-label="بيانُ الاحتساب">ساعاتُ دروسٍ معتمدة</td>
+              <td data-label="سُلّم"><span class="m-badge is-success">✔ سُلّم</span></td>
+            </tr>
+            <tr>
+              <td data-label="المستحِقّ">أ. بلال الخطيب — محفّظ</td>
+              <td data-label="الإجماليّ" class="num m-money">٩٦٬٠٠٠</td>
+              <td data-label="قسطُ السلفة" class="num m-money">٠</td>
+              <td data-label="المطلوبُ دفعه" class="num m-money">٩٦٬٠٠٠</td>
+              <td data-label="بيانُ الاحتساب">ساعاتُ دروسٍ معتمدة · نقاطُ سجلٍّ معتمد</td>
+              <td data-label="سُلّم"><span class="m-badge is-neutral">• لم يُسلَّم</span></td>
+            </tr>
+            <tr>
+              <td data-label="المستحِقّ">أ. عبد الرحمن الحمصي — أمير مسجد</td>
+              <td data-label="الإجماليّ" class="num m-money">١٢٠٬٠٠٠</td>
+              <td data-label="قسطُ السلفة" class="num m-money">٠</td>
+              <td data-label="المطلوبُ دفعه" class="num m-money">١٢٠٬٠٠٠</td>
+              <td data-label="بيانُ الاحتساب">نقاطُ سجلٍّ معتمد</td>
+              <td data-label="سُلّم"><span class="m-badge is-neutral">• لم يُسلَّم</span></td>
+            </tr>
+            <tr>
+              <td data-label="المستحِقّ">أ. سليم الحموي — أمير مسجد</td>
+              <td data-label="الإجماليّ" class="num m-money">٠</td>
+              <td data-label="قسطُ السلفة" class="num m-money">٠</td>
+              <td data-label="المطلوبُ دفعه" class="num m-money">٠</td>
+              <td data-label="بيانُ الاحتساب">صفر — سجلُّ الشهر لم يُعتمد بعد</td>
+              <td data-label="سُلّم"><span class="m-badge is-neutral">•</span></td>
+            </tr>
+            <tr>
+              <td data-label="المستحِقّ">أ. زياد المصري — محفّظ</td>
+              <td data-label="الإجماليّ" class="num m-money">٠</td>
+              <td data-label="قسطُ السلفة" class="num m-money">٠</td>
+              <td data-label="المطلوبُ دفعه" class="num m-money">٠</td>
+              <td data-label="بيانُ الاحتساب">صفر — أجرُ الساعة لم يُضبط بعد</td>
+              <td data-label="سُلّم"><span class="m-badge is-neutral">•</span></td>
+            </tr>
+            <tr>
+              <td data-label="المستحِقّ">أ. أنس الشامي — مسؤول لجنة</td>
+              <td data-label="الإجماليّ" class="num m-money">٠</td>
+              <td data-label="قسطُ السلفة" class="num m-money">٠</td>
+              <td data-label="المطلوبُ دفعه" class="num m-money">٠</td>
+              <td data-label="بيانُ الاحتساب">صفر — نقاطُ المسجد مستحقّةٌ لأميره</td>
+              <td data-label="سُلّم"><span class="m-badge is-neutral">•</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="m-stat__scope">لا سطرَ صفريٍّ بلا سببه — والسببُ في مكان الرقم نفسِه لا في صفحةِ مساعدة.</p>
+    </div>
+
+    <h2 class="m-section-title">أين وقفت رواتبُ هذا الشهر؟</h2>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">ما سُلِّم من مجموع المستحق</p>
+      <p class="m-stat__value m-money">١٬٢٤٠٬٠٠٠ ل.س</p>
+      <p class="m-stat__scope">على هذا النطاق وما تحته · المتبقّي <span class="m-money">٢٬١٨٠٬٠٠٠ ل.س</span></p>
+    </div>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">مواضعُ التوقّف</p>
+      <div class="m-table-wrap">
+        <table class="m-table">
+          <caption>كلُّ توقّفٍ بصاحبه — لا رقمٌ معلَّقٌ بلا اسم</caption>
+          <thead><tr><th>الوحدة</th><th>المستحِقّ</th><th>المتبقّي</th></tr></thead>
+          <tbody>
+            <tr><td data-label="الوحدة">منطقة حمص</td><td data-label="المستحِقّ">٩ مستحقّين</td><td data-label="المتبقّي" class="num m-money">٧٤٠٬٠٠٠</td></tr>
+            <tr><td data-label="الوحدة">منطقة حماة</td><td data-label="المستحِقّ">١١ مستحقّاً</td><td data-label="المتبقّي" class="num m-money">٩٢٠٬٠٠٠</td></tr>
+            <tr><td data-label="الوحدة">قسم النساء</td><td data-label="المستحِقّ">٦ مستحقّات</td><td data-label="المتبقّي" class="num m-money">٥٢٠٬٠٠٠</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="m-card">
+      <p class="m-stat__sentence">تغيّرَ عملٌ بعد إقرار هذا الشهر</p>
+      <div class="m-table-wrap">
+        <table class="m-table">
+          <caption>يُعلَن ولا يُطبَّق — المُقرُّ لا يتغيّر</caption>
+          <thead><tr><th>المستحِقّ</th><th>المُقرُّ المختوم</th><th>ما يقوله العملُ اليوم</th><th>الفارق</th></tr></thead>
+          <tbody>
+            <tr>
+              <td data-label="المستحِقّ">أ. سليم الحموي</td>
+              <td data-label="المُقرُّ المختوم" class="num m-money">٠</td>
+              <td data-label="ما يقوله العملُ اليوم" class="num m-money">٨٤٬٠٠٠</td>
+              <td data-label="الفارق" class="num m-money">+٨٤٬٠٠٠</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="m-diagnosis">
+        <span>اعتُمد سجلُّ مسجد النور بعد ختم الخطة — فظهر استحقاقٌ لم يكن وقتَ الإقرار.</span>
+        <span class="m-diagnosis__who">المُقرُّ لا يتغيّر، والفارقُ يُعالَج في شهرٍ قادم بإقرارٍ جديد.</span>
+      </div>
+    </div>
+
+    <div class="m-thumb">
+      <button class="m-btn is-primary" type="button" data-cap="finance.payout #٣٩">سلِّم الراتب</button>
+      <span class="m-thumb__note">صار متاحاً بعد ختم الإقرار · التسليمُ يُقيَّد سنداً في الدفتر باسمك</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ فارغةٌ تشرح ═════════════ -->
+  <main class="m-main m-state is-empty">
+
+    <h1 class="m-section-title m-section-title--first">أين وصلت دورةُ هذا الشهر؟</h1>
+
+    <div class="m-stepper" aria-label="مراحلُ دورة الشهر">
+      <span class="m-step is-current"><span class="m-step__dot" aria-hidden="true"></span>١ — قيدُ الاحتساب — النظامُ يرشّح</span>
+      <span class="m-step"><span class="m-step__dot" aria-hidden="true"></span>٢ — تُرفع لإقرار الإدارة</span>
+      <span class="m-step"><span class="m-step__dot" aria-hidden="true"></span>٣ — تُختَم فيُتاح التسليم</span>
+    </div>
+
+    <div class="m-empty">
+      <svg class="m-mihrab" viewBox="0 0 64 96" aria-hidden="true" focusable="false">
+        <path d="M8 92 V44 C8 24 20 8 32 3 C44 8 56 24 56 44 V92 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(45 32 56)"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <p class="m-empty__title">لا مستحقّاتٍ في هذا الشهر بعدُ</p>
+      <p class="m-empty__hint">المستحقُّ يُبنى من <strong>عملٍ معتمَد</strong>: ساعاتِ دروسٍ اعتُمدت، أو نقاطِ سجلٍّ اعتُمد، أو راتبٍ مقطوعٍ مضبوط. ولم يُعتمد في الشبكة عملٌ لهذا الشهر بعد — فالجدولُ فارغٌ بحقّ، لا بخطأ.</p>
+    </div>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">وما الذي يمنع الاحتساب اليوم؟</p>
+      <ul class="m-list">
+        <li class="m-item is-warning"><span class="m-item__text"><span>١٢ محفّظاً بلا أجرِ ساعةٍ مضبوط</span><span class="m-item__sub">حتى يُضبط يظهر لهم «صفر — أجرُ الساعة لم يُضبط بعد»</span></span></li>
+        <li class="m-item is-warning"><span class="m-item__text"><span>٢٦ سجلَّ مسجدٍ لم يُعتمد بعد</span><span class="m-item__sub">الاعتمادُ على مشرفي نطاقهم، لا عليك</span></span></li>
+      </ul>
+    </div>
+
+    <div class="m-empty is-half">
+      <p class="m-empty__title">لا توقّفاتٍ في خريطة التوزيع</p>
+      <p class="m-empty__hint">تظهر هنا حين يوجد مُقرٌّ لم يُسلَّم — ولا مُقرَّ بعد.</p>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ خطأٌ إنسانيّ ═════════════ -->
+  <main class="m-main m-state is-error">
+
+    <div class="m-banner is-danger">
+      <span>✖ لم يُقيَّد التسليم — والمبلغُ لم يخرج من الصندوق.</span>
+    </div>
+
+    <h1 class="m-section-title m-section-title--first">تسليمُ رواتب محرم</h1>
+
+    <div class="m-card">
+      <ul class="m-list">
+        <li class="m-item is-danger">
+          <span class="m-badge is-danger">✖ مكرَّر</span>
+          <span class="m-item__text">
+            <span>راتبُ أ. محمد نور الدين سُلّم في ١٤ محرم بالسند ١٤٠٧ — ولا يُسلَّم مرتين.</span>
+            <span class="m-item__sub">لو كان التسليمُ الأول ناقصاً فالعلاجُ قيدُ فرقٍ لا تسليمٌ ثانٍ</span>
+          </span>
+          <span class="m-item__action"><button class="m-btn is-ghost" type="button" data-cap="finance.view #٣٥">افتح السند ١٤٠٧</button></span>
+        </li>
+        <li class="m-item is-warning">
+          <span class="m-badge is-warning">⚠ فترةٌ مقفلة</span>
+          <span class="m-item__text">
+            <span>فترةُ ذي الحجة مقفلةٌ محاسبياً — فلا يُقيَّد فيها تسليمٌ جديد.</span>
+            <span class="m-item__sub">مَن يُسأل: الإدارةُ العليا — فتحُ فترةٍ مقفلةٍ قرارُها</span>
+          </span>
+        </li>
+      </ul>
+      <p class="m-stat__scope">حين يفشل التسليمُ لا يُقتطع مبلغٌ ولا يُحرَق رقمُ سند — العمليةُ إمّا تتمّ كلُّها أو لا تكون.</p>
+    </div>
+
+    <div class="m-thumb">
+      <button class="m-btn is-primary" type="button" data-cap="finance.payout #٣٩">سلِّم الراتب للتالي: أ. بلال الخطيب</button>
+      <span class="m-thumb__note">بقي ٢٩ مستحقّاً · تخطّي المكرَّر لا يوقف الطابور</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ تحميل ═════════════ -->
+  <main class="m-main m-state is-loading" aria-busy="true">
+    <p class="m-stat__scope">جارٍ تحضير خطة الشهر…</p>
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton is-value"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+  </main>
+
+  <nav class="m-nav" aria-label="التنقّل الرئيسي">
+    <a href="#"><span class="m-nav__glyph">⌂</span>الرئيسية</a>
+    <a href="#" aria-current="page"><span class="m-nav__glyph">₪</span>المالية المركزية</a>
+    <a href="#"><span class="m-nav__glyph">▤</span>المكتبة</a>
+    <a href="#"><span class="m-nav__glyph">▥</span>المنهاج</a>
+    <a href="#"><span class="m-nav__glyph">⬡</span>العُهد</a>
+    <a href="#" class="is-more"><span class="m-nav__glyph">⋯</span>المزيد</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◐</span>حسابي</a>
+  </nav>
+
+</div>
+</div>
+
+<aside class="m-note">
+  <h2>حاشيةُ التصميم — ليست جزءاً من الشاشة</h2>
+  <ul>
+    <li><strong>العقد</strong>: <code>/finance/payroll</code> · <code>lenses: ["admin", "finance_officer"]</code> · <code>capabilities: ["payroll.view", "payroll.run", "finance.payout", "incentive.manage"]</code> · <code>dataSource: payroll.monthlyPlan</code>. والمرسومُ هنا عدسةُ <strong>المسؤول المالي</strong>.</li>
+    <li><strong>ع-٢١ يموت بالنموذج</strong> («لم أجد من أين أعطي الرواتب، أأدخلها يدوياً؟»): شريطُ المراحل الثلاث <em>جزءٌ من الشاشة</em> يقول أين وصلت الدورة قبل أيّ زر؛ والاحتسابُ آليٌّ لا يدويّ؛ وزرُّ التسليم <strong>لا يُبنى قبل الختم</strong> — لأن النموذج لا يُتيحه، لا لأن الشاشة تُخفيه.</li>
+    <li><strong>ع-٢٥ يموت في مكان الرقم</strong> («اعتمد المشرفُ ومع ذلك ٠$»): عمودُ «بيان الاحتساب» إلزاميٌّ في كل سطر، والصفرُ يقول سببَه بعبارةٍ كاملة — «صفر — سجلُّ الشهر لم يُعتمد بعد»، «صفر — أجرُ الساعة لم يُضبط بعد».</li>
+    <li><strong>فصلُ المهام مرسومٌ لا موصوف</strong>: المسؤولُ الماليّ يرفع ويسلّم ولا يُقرّ — فلا زرَّ إقرارٍ في شاشته أصلاً؛ والمديرُ يُقرّ ولا يرفع. والشريطُ يقول من فعل ماذا ومتى.</li>
+    <li><strong>مدخلٌ واحدٌ لكلِّ فعل</strong> (قب-٥٤/٣): فعلُ المرحلة في شريط الإبهام وحده، وبطاقةُ المجموع تقول الرقمَ ولا تحمل زرّاً ثانياً إليه.</li>
+    <li><strong>الفراغُ يشرح</strong>: «المستحقُّ يُبنى من عملٍ معتمَد» + بطاقةُ «ما الذي يمنع الاحتساب اليوم» — فلا يُترك الماليُّ أمام جدولٍ أبيضَ يظنّه عطلاً (وهو عينُ ما وقع في v1).</li>
+    <li><strong>وجهُ المالية مبسَّط</strong>: «المطلوبُ دفعه» و«قسطُ السلفة» و«سُلّم» — لا مدينَ ولا دائنَ ولا يوميّة؛ والقيدُ المزدوجُ يجري تحتها لا أمامها.</li>
+  </ul>
+</aside>
+
+</body>
+</html>
