@@ -1,0 +1,32 @@
+/* مشكاة — الألوان. الفاتح افتراضي؛ الداكن عبر [data-theme="dark"] */
+:root {
+  /* سلّم الأخضر */
+  --green-50:#F0F5F1; --green-100:#E2ECE4; --green-200:#C6DACB; --green-300:#9FC0A9;
+  --green-400:#6FA383; --green-500:#468563; --green-600:#2E7852; --green-700:#1F6B45;
+  --green-800:#185338; --green-900:#123D2A; --green-950:#0B2519;
+  /* محايدات دافئة */
+  --bg:#FBFAF7; --surface:#FFFFFF; --surface-2:#F5F3EE; --surface-hover:#F1EFE8;
+  --border:#E8E5DC; --border-strong:#D6D2C4;
+  --text-1:#1B2420; --text-2:#4E5B53; --text-3:#7E8A81; --text-disabled:#ABB4AC;
+  /* الهوية */
+  --primary:#1F6B45; --primary-strong:#185338; --primary-soft:#E7F1EA; --on-primary:#FFFFFF;
+  /* دلالية */
+  --success-fg:#1F6B45; --success-bg:#E7F1EA; --success-border:#BFDCCA;
+  --warning-fg:#7A5104; --warning-bg:#FAF2DE; --warning-border:#EBD9A9;
+  --danger-fg:#A32B22; --danger-bg:#FAECEA; --danger-border:#EDC7C2;
+  --gold:#8E7434; --gold-bg:#F6F0E1;
+  --focus-ring:0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+  --overlay:rgba(20,28,23,.44);
+}
+[data-theme="dark"] {
+  --bg:#111612; --surface:#191F1A; --surface-2:#0C110D; --surface-hover:#202822;
+  --border:#2A332C; --border-strong:#3A453C;
+  --text-1:#E9EFE9; --text-2:#A6B3A8; --text-3:#76837B; --text-disabled:#55625A;
+  --primary:#4FB07E; --primary-strong:#6BC494; --primary-soft:#16301F; --on-primary:#06130B;
+  --success-fg:#4FB07E; --success-bg:#16301F; --success-border:#295C40;
+  --warning-fg:#DEB25E; --warning-bg:#2E250E; --warning-border:#4A3B17;
+  --danger-fg:#E08578; --danger-bg:#351B17; --danger-border:#55261F;
+  --gold:#C8A75D; --gold-bg:#2B2415;
+  --focus-ring:0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+  --overlay:rgba(0,0,0,.6);
+}

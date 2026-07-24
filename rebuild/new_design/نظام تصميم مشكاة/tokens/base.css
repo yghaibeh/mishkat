@@ -1,0 +1,7 @@
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--font);font-size:var(--fs-body);line-height:var(--lh-body);
+  background:var(--bg);color:var(--text-1);direction:rtl;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--primary);text-decoration:none}
+a:hover{color:var(--primary-strong);text-decoration:underline}
+:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:var(--r-sm)}

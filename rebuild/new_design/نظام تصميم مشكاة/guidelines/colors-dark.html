@@ -1,0 +1,26 @@
+<!-- @dsCard group="Colors" viewport="700x210" subtitle="النمط الداكن — data-theme=dark" name="اللوحة الداكنة" -->
+<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="../styles.css">
+<style>
+body{padding:0;background:transparent}
+.dark{background:var(--bg);padding:16px;border-radius:var(--r-md)}
+.row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px}
+.sw{height:60px;border-radius:var(--r-sm);border:1px solid var(--border);padding:8px;font-size:11px;line-height:15px;color:var(--text-1)}
+.sw b{font-weight:600;display:block}.sw span{direction:ltr;display:inline-block;color:var(--text-3)}
+</style></head><body>
+<div class="dark" data-theme="dark">
+<div class="row">
+<div class="sw" style="background:var(--bg)"><b>bg</b><span>#111612</span></div>
+<div class="sw" style="background:var(--surface)"><b>surface</b><span>#191F1A</span></div>
+<div class="sw" style="background:var(--surface-2)"><b>surface-2</b><span>#0C110D</span></div>
+<div class="sw" style="background:var(--primary);color:var(--on-primary)"><b style="color:var(--on-primary)">primary</b><span style="color:#0f2418">#4FB07E</span></div>
+<div class="sw" style="background:var(--gold);color:#1d180b"><b style="color:#1d180b">gold</b><span style="color:#4a3d1d">#C8A75D</span></div>
+</div>
+<div class="row">
+<div class="sw" style="background:var(--surface)"><b>text-1</b><span>#E9EFE9</span></div>
+<div class="sw" style="background:var(--surface);color:var(--text-2)"><b style="color:var(--text-2)">text-2</b><span>#A6B3A8</span></div>
+<div class="sw" style="background:var(--success-bg);color:var(--success-fg)"><b style="color:var(--success-fg)">نجاح</b><span style="color:var(--success-fg)">#4FB07E</span></div>
+<div class="sw" style="background:var(--warning-bg);color:var(--warning-fg)"><b style="color:var(--warning-fg)">تحذير</b><span style="color:var(--warning-fg)">#DEB25E</span></div>
+<div class="sw" style="background:var(--danger-bg);color:var(--danger-fg)"><b style="color:var(--danger-fg)">خطر</b><span style="color:var(--danger-fg)">#E08578</span></div>
+</div>
+</div>
+</body></html>

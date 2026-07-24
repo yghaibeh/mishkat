@@ -1,0 +1,47 @@
+<!-- @dsCard group="Components" viewport="700x400" subtitle="حالة فارغة · خطأ إنساني · Toast · لوح تأكيد" name="التغذية الراجعة" -->
+<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>
+body{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:16px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-1)}
+.state{display:flex;flex-direction:column;align-items:center;gap:8px;padding:28px 20px;text-align:center}
+.disc{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.ic{display:inline-block;width:28px;height:28px;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;flex:none}
+.t{font-size:var(--fs-section);font-weight:600}
+.m{font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-2)}
+.sbtn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:var(--r-md);border:1px solid var(--border-strong);background:var(--surface);color:var(--text-1);font:600 14px/1 var(--font);cursor:pointer;margin-top:4px}
+.toast{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:var(--r-full);background:var(--text-1);color:var(--bg);box-shadow:var(--shadow-3);font-size:var(--fs-body);font-weight:500}
+</style></head><body>
+<div class="card state">
+<span class="disc" style="background:var(--primary-soft)"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/calendar-plus.svg);background:var(--primary)"></i></span>
+<span class="t">لا نشاطات هذا الأسبوع</span>
+<span class="m">حين تدخل أول نشاط سيظهر هنا مع نقاطه.</span>
+<button class="sbtn ds-btn">إضافة نشاط</button>
+</div>
+<div class="card state">
+<span class="disc" style="background:var(--danger-bg)"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/cloud-off.svg);background:var(--danger-fg)"></i></span>
+<span class="t">تعذّر تحميل البيانات</span>
+<span class="m">لا يبدو أنها مشكلة من عندك — نحاول من جديد؟</span>
+<button class="sbtn ds-btn"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/rotate-ccw.svg);width:16px;height:16px"></i>إعادة المحاولة</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:11px;color:var(--text-3)">Toast — نجاح وخطأ</span>
+<span class="toast ds-toast"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/check-circle-2.svg);width:19px;height:19px;background:var(--green-300)"></i><span style="flex:1">حُفظ سجل اليوم</span><span style="color:var(--green-300);font-size:var(--fs-caption);font-weight:600">تراجع</span></span>
+<span class="toast"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/alert-circle.svg);width:19px;height:19px;background:#F0A79D"></i>لم يُحفظ — أعد المحاولة</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:11px;color:var(--text-3)">لوح تأكيد سفلي</span>
+<div style="background:var(--overlay);border-radius:var(--r-lg);padding:28px 12px 0;overflow:hidden">
+<div style="background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;box-shadow:var(--shadow-3);padding:12px 20px 20px">
+<div style="width:40px;height:4px;border-radius:2px;background:var(--border-strong);margin:4px auto 14px"></div>
+<div style="font-size:var(--fs-section);font-weight:700;margin-bottom:6px">حفظ سجل اليوم؟</div>
+<div style="font-size:var(--fs-caption);color:var(--text-2);margin-bottom:14px">حضر ٦ من ٨ — يمكنك التعديل حتى منتصف الليل.</div>
+<div style="display:flex;gap:10px">
+<button style="flex:1;height:44px;border:0;border-radius:var(--r-md);background:var(--primary);color:var(--on-primary);font:600 14px/1 var(--font);cursor:pointer">حفظ</button>
+<button style="flex:1;height:44px;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--surface);color:var(--text-1);font:600 14px/1 var(--font);cursor:pointer">إلغاء</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

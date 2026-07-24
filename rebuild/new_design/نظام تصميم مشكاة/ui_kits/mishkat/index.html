@@ -1,0 +1,45 @@
+<!-- @dsCard group="تطبيق مشكاة" viewport="1400x950" subtitle="عرض تفاعلي: بدّل الشاشات والنمط" name="العرض التفاعلي" -->
+<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>مشكاة — عدة الواجهات</title>
+<link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="kit.css">
+<style>
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:20px;padding:20px}
+.bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+.pillbox2{display:inline-flex;background:var(--surface-2);border-radius:var(--r-full);padding:3px;gap:2px}
+.seg{height:34px;padding:0 16px;border-radius:var(--r-full);border:0;background:transparent;color:var(--text-2);font:400 var(--fs-caption)/1 var(--font);cursor:pointer}
+.seg.on{background:var(--surface);color:var(--text-1);font-weight:600;box-shadow:var(--shadow-1)}
+#stage{display:flex;justify-content:safe center;width:100%;overflow-x:auto;padding-bottom:8px}
+</style>
+</head><body>
+<div class="bar">
+  <span style="font-weight:700;font-size:var(--fs-section)">مشكاة — الشاشات الثلاث</span>
+  <span class="pillbox2" id="screens">
+    <button class="seg on" data-s="amir">١ رئيسية الأمير</button>
+    <button class="seg" data-s="halaqa">٢ سجل الحلقة</button>
+    <button class="seg" data-s="admin">٣ لوحة المدير</button>
+  </span>
+  <span class="pillbox2" id="themes">
+    <button class="seg on" data-t="light">فاتح</button>
+    <button class="seg" data-t="dark">داكن</button>
+  </span>
+</div>
+<div id="stage"></div>
+<script type="module">
+import { amirHome, halaqaLog, adminDash, wire } from './screens.js';
+const S = { amir: amirHome, halaqa: halaqaLog, admin: adminDash };
+const stage = document.getElementById('stage');
+let cur = 'amir';
+const render = () => { stage.innerHTML = S[cur](); };
+render(); wire(stage);
+document.getElementById('screens').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-s]'); if (!b) return;
+  cur = b.dataset.s; render();
+  [...b.parentElement.children].forEach((c) => c.classList.toggle('on', c === b));
+});
+document.getElementById('themes').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-t]'); if (!b) return;
+  if (b.dataset.t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else document.documentElement.removeAttribute('data-theme');
+  [...b.parentElement.children].forEach((c) => c.classList.toggle('on', c === b));
+});
+</script>
+</body></html>

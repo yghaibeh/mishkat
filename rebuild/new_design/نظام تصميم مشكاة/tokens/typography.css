@@ -1,0 +1,12 @@
+/* مشكاة — الطباعة. IBM Plex Sans Arabic: حديث، عالي الوضوح، أرقام عربية-هندية واضحة */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+:root {
+  --font:'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  /* سلّم من 5 مقاسات */
+  --fs-display:30px; --lh-display:42px;  /* أرقام كبيرة وعناوين بطاقات رئيسة */
+  --fs-title:22px;   --lh-title:32px;    /* عناوين الشاشات */
+  --fs-section:17px; --lh-section:26px;  /* عناوين الأقسام وعناصر القوائم */
+  --fs-body:15px;    --lh-body:24px;     /* النص الأساسي */
+  --fs-caption:13px; --lh-caption:20px;  /* سياق وتسميات */
+  --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+}

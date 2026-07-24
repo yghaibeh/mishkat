@@ -1,0 +1,40 @@
+<!-- @dsCard group="Components" viewport="700x400" subtitle="نص · اختيار · عدّاد ساعات ودقائق · بحث وفلاتر" name="حقول النماذج" -->
+<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>
+body{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;align-content:start}
+.f{display:flex;flex-direction:column;gap:6px}
+.f .l{font-size:var(--fs-caption);font-weight:600;color:var(--text-2)}
+.in{width:100%;height:48px;padding:0 14px;border-radius:var(--r-md);border:1px solid var(--border-strong);background:var(--surface);color:var(--text-1);font:400 var(--fs-body)/1.2 var(--font);outline:none}
+.h{font-size:var(--fs-caption);color:var(--text-3)}
+.ic{display:inline-block;width:18px;height:18px;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;flex:none}
+.step{display:inline-flex;align-items:center;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--surface)}
+.step button{width:44px;height:44px;border:0;background:transparent;color:var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.step .v{min-width:56px;text-align:center;font-size:var(--fs-section);font-weight:600;border-inline:1px solid var(--border);align-self:stretch;display:flex;align-items:center;justify-content:center;gap:4px}
+.step .u{font-size:12px;font-weight:400;color:var(--text-3)}
+.fc{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:var(--r-full);border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);font:400 var(--fs-caption)/1 var(--font);cursor:pointer;flex:none}
+</style></head><body>
+<div class="f"><span class="l">اسم الحلقة</span><input class="in" value="حلقة أبي بن كعب"><span class="h">كما سيظهر لوليّ الأمر</span></div>
+<div class="f"><span class="l">السورة</span>
+<span style="position:relative;display:block"><select class="in" style="appearance:none;padding-inline-end:40px;cursor:pointer"><option>النبأ</option></select><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/chevron-down.svg);background:var(--text-3);position:absolute;inset-inline-end:12px;top:15px;pointer-events:none"></i></span>
+</div>
+<div class="f"><span class="l" style="color:var(--danger-fg)">عدد الآيات</span><input class="in" style="border-color:var(--danger-fg)" value="٠"><span class="h" style="color:var(--danger-fg)">أدخل عدداً أكبر من صفر</span></div>
+<div class="f"><span class="l" style="color:var(--text-disabled)">المسجد</span><input class="in" style="background:var(--surface-2);color:var(--text-disabled)" value="مسجد خالد بن الوليد" disabled><span class="h">يُحدَّد من حسابك</span></div>
+<div class="f"><span class="l">مدة الجلسة</span>
+<div style="display:flex;gap:10px">
+<span class="step"><button><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/plus.svg)"></i></button><span class="v">١<span class="u">س</span></span><button><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/minus.svg)"></i></button></span>
+<span class="step"><button><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/plus.svg)"></i></button><span class="v">٣٠<span class="u">د</span></span><button><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/minus.svg)"></i></button></span>
+<span class="step" style="opacity:.6;background:var(--surface-2)"><button style="cursor:default;opacity:.35"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/plus.svg)"></i></button><span class="v">٠</span><button style="cursor:default;opacity:.35"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/minus.svg)"></i></button></span>
+</div>
+<span class="h">ساعات · دقائق · معطّل</span>
+</div>
+<div class="f"><span class="l">بحث وفلاتر</span>
+<span style="position:relative;display:block">
+<i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/search.svg);background:var(--text-3);position:absolute;inset-inline-start:14px;top:15px"></i>
+<input class="in" style="border-radius:var(--r-full);padding:0 44px 0 14px" placeholder="ابحث عن مسجد أو حلقة…">
+</span>
+<div style="display:flex;gap:8px;overflow:hidden">
+<button class="fc" style="border-color:var(--primary);background:var(--primary-soft);color:var(--primary);font-weight:600"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/check.svg);width:14px;height:14px"></i>الكل</button>
+<button class="fc">متأخر</button><button class="fc">معلّق</button><button class="fc">معتمد</button>
+</div>
+</div>
+</body></html>

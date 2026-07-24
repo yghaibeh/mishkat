@@ -1,0 +1,41 @@
+<!-- @dsCard group="Components" viewport="700x330" subtitle="Avatar · Chip · StatusDot · Skeleton" name="الأساسيات" -->
+<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>
+body{padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lbl{font-size:11px;color:var(--text-3);min-width:88px;flex:none}
+.av{border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-weight:600;flex:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:var(--r-full);padding:3px 12px;font-size:var(--fs-caption);line-height:18px;font-weight:600;border:1px solid}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%}
+</style></head><body>
+<div class="row"><span class="lbl">Avatar — مقاسات</span>
+<span class="av" style="width:32px;height:32px;background:var(--primary-soft);color:var(--primary);font-size:12px">م‍خ</span>
+<span class="av" style="width:40px;height:40px;background:var(--primary-soft);color:var(--primary);font-size:14px">أ‍ص</span>
+<span class="av" style="width:56px;height:56px;background:var(--primary-soft);color:var(--primary);font-size:20px">ع‍ح</span>
+<span class="lbl" style="min-width:40px">نغمات</span>
+<span class="av" style="width:40px;height:40px;background:var(--gold-bg);color:var(--gold);font-size:14px">س‍ن</span>
+<span class="av" style="width:40px;height:40px;background:var(--surface-2);color:var(--text-2);font-size:14px">ب‍ر</span>
+</div>
+<div class="row"><span class="lbl">Chip — حالات</span>
+<span class="chip" style="background:var(--success-bg);color:var(--success-fg);border-color:var(--success-border)">معتمد</span>
+<span class="chip" style="background:var(--warning-bg);color:var(--warning-fg);border-color:var(--warning-border)">معلّق</span>
+<span class="chip" style="background:var(--danger-bg);color:var(--danger-fg);border-color:var(--danger-border)">متأخر</span>
+<span class="chip" style="background:var(--surface-2);color:var(--text-2);border-color:var(--border)">صباحية</span>
+<span class="chip" style="background:var(--warning-bg);color:var(--warning-fg);border-color:var(--warning-border)"><span class="dot" style="width:6px;height:6px;background:var(--warning-fg)"></span>بنقطة</span>
+<span class="chip" style="background:var(--success-bg);color:var(--success-fg);border-color:var(--success-border);padding:1px 10px;font-size:12px">صغير</span>
+</div>
+<div class="row"><span class="lbl">StatusDot</span>
+<span class="dot" style="background:var(--success-fg)"></span><span style="font-size:13px;color:var(--text-2)">نشط</span>
+<span class="dot" style="background:var(--warning-fg)"></span><span style="font-size:13px;color:var(--text-2)">معلّق</span>
+<span class="dot" style="background:var(--danger-fg)"></span><span style="font-size:13px;color:var(--text-2)">متأخر</span>
+<span class="dot" style="background:var(--text-3)"></span><span style="font-size:13px;color:var(--text-2)">غير مفعّل</span>
+</div>
+<div class="row" style="align-items:flex-start"><span class="lbl" style="margin-top:12px">Skeleton</span>
+<span class="ds-skeleton" style="width:40px;height:40px;border-radius:50%;display:block"></span>
+<span style="flex:1;display:flex;flex-direction:column;gap:8px">
+<span class="ds-skeleton" style="display:block;height:14px;border-radius:6px;width:45%"></span>
+<span class="ds-skeleton" style="display:block;height:14px;border-radius:6px;width:70%"></span>
+</span>
+<span class="ds-skeleton" style="width:120px;height:64px;border-radius:var(--r-md);display:block"></span>
+</div>
+</body></html>

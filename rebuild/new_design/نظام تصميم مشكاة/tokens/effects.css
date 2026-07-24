@@ -1,0 +1,13 @@
+/* حالات تفاعلية وحركات مشتركة */
+@keyframes ds-shimmer{0%{background-position:150% 0}100%{background-position:-50% 0}}
+@keyframes ds-spin{to{transform:rotate(360deg)}}
+@keyframes ds-toast-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.ds-skeleton{background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-hover) 37%,var(--surface-2) 63%);background-size:400% 100%;animation:ds-shimmer 1.6s var(--ease) infinite}
+.ds-spin{animation:ds-spin .8s linear infinite}
+.ds-hover{transition:background var(--dur-1) var(--ease)}
+.ds-hover:hover{background:var(--surface-hover)}
+.ds-btn{transition:filter var(--dur-1) var(--ease),transform var(--dur-1) var(--ease),background var(--dur-1) var(--ease)}
+.ds-btn:hover:not(:disabled){filter:brightness(.96)}
+.ds-btn:active:not(:disabled){transform:scale(.98)}
+.ds-ghost:hover:not(:disabled){filter:none;background:var(--primary-soft)}
+.ds-toast{animation:ds-toast-in var(--dur-2) var(--ease)}

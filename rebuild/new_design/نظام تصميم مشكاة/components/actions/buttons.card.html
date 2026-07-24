@@ -1,0 +1,32 @@
+<!-- @dsCard group="Components" viewport="700x300" subtitle="أساسي · ثانوي · شبحي — بكل الحالات والمقاسات" name="الأزرار" -->
+<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>
+body{padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lbl{font-size:11px;color:var(--text-3);min-width:64px;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:var(--r-md);font:600 var(--fs-body)/1 var(--font);border:1px solid transparent;cursor:pointer;white-space:nowrap}
+.pri{background:var(--primary);color:var(--on-primary)}
+.sec{background:var(--surface);color:var(--text-1);border-color:var(--border-strong)}
+.gho{background:transparent;color:var(--primary)}
+.dis{background:var(--surface-2);color:var(--text-disabled);border-color:transparent;cursor:default}
+.ic{display:inline-block;width:18px;height:18px;background:currentColor;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
+.spin{width:18px;height:18px;border-radius:50%;border:2px solid var(--on-primary);border-top-color:transparent}
+</style></head><body>
+<div class="row"><span class="lbl">عادي</span>
+<button class="btn pri ds-btn">إدخال سجل اليوم</button>
+<button class="btn sec ds-btn">عرض الكل</button>
+<button class="btn gho ds-btn ds-ghost">تخطٍّ</button>
+<button class="btn pri ds-btn"><i class="ic" style="--m:url(https://unpkg.com/lucide-static@0.462.0/icons/plus.svg)"></i>بأيقونة</button>
+</div>
+<div class="row"><span class="lbl">معطّل</span>
+<button class="btn dis" disabled>إدخال سجل اليوم</button>
+<button class="btn dis" disabled>عرض الكل</button>
+<span class="lbl" style="min-width:44px">تحميل</span>
+<button class="btn pri"><span class="spin ds-spin"></span>يحفظ…</button>
+</div>
+<div class="row"><span class="lbl">مقاسات</span>
+<button class="btn pri ds-btn" style="height:40px;font-size:14px">صغير ٤٠</button>
+<button class="btn pri ds-btn">متوسط ٤٨</button>
+<button class="btn pri ds-btn" style="height:56px">كبير ٥٦ — للفعل اللاصق</button>
+</div>
+</body></html>
