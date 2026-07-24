@@ -111,6 +111,16 @@ export default defineConfig({
         // معها (والعتبةُ أرضيةٌ تصعد ولا تهبط — TESTING_POLICY §٣).
         "src/features/payroll/services/**": { lines: 95, branches: 95, functions: 95, statements: 95 },
         "src/features/payroll/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
+        // **والمسابقةُ خلفها بابٌ عامٌّ بلا هوية وجائزةٌ تُعلَن** (قب-١٣/قب-٤٥، T28): خطأُ
+        // ضابطٍ في المسار العامّ يفتح نقطةً لمجهول، وخطأُ اشتقاقٍ يظلم متبارياً في لوحةٍ
+        // تُعلَن ولا تُراجَع ⇒ خدماتُها عتبتُها ٩٥٪، وطبقةُ بياناتها معها (أرضيةٌ تصعد — §٣).
+        "src/features/competition/services/**": {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
+        "src/features/competition/data/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
       },
     },
   },
