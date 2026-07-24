@@ -106,8 +106,50 @@
   --mishkat-motion-ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
 }
 
+/* ── قب-٦١: **الفاتحُ هو الافتراضيّ** ──────────────────────────────────────────
+ * الداكنُ «خيارٌ يبقى متاحاً» لا افتراضاً: يُطلب صراحةً (`data-theme="dark"` في
+ * الإنتاج، أو مبدّلُ «النمط» في شريط المعاينة، أو إطارُ الفهرس `#embed-dark`)،
+ * وتفضيلُ النظام يُحترم حين **يختاره** المستخدم (`data-theme="system"` أو خيارُ
+ * «بتفضيل جهازك»). فمن لم يختر شيئاً رأى الفاتحَ — على أيّ جهازٍ كان. */
+[data-theme="dark"],
+:root:has(#th-dark:checked),
+:root:has(#embed-dark:target) {
+  --mishkat-color-surface-base: #121815;
+  --mishkat-color-surface-raised: #1B231F;
+  --mishkat-color-surface-sunken: #0C1210;
+  --mishkat-color-surface-inverse: #F1EFE9;
+  --mishkat-color-text-primary: #EAF0EC;
+  --mishkat-color-text-secondary: #B3BFB8;
+  --mishkat-color-text-disabled: #6E7B74;
+  --mishkat-color-text-on-accent: #06120C;
+  --mishkat-color-text-on-inverse: #1B2420;
+  --mishkat-color-border-subtle: #2A322D;
+  --mishkat-color-border-strong: #8A968F;
+  --mishkat-color-border-focus: #8AD3AE;
+  --mishkat-color-brand: #6FC49B;
+  --mishkat-color-brand-hover: #8AD3AE;
+  --mishkat-color-brand-muted: #1D3A2C;
+  --mishkat-color-success: #6FC49B;
+  --mishkat-color-success-muted: #17301F;
+  --mishkat-color-warning: #E0A94B;
+  --mishkat-color-warning-muted: #33260C;
+  --mishkat-color-danger: #F08A80;
+  --mishkat-color-danger-muted: #3A1E1B;
+  --mishkat-color-info: #7BC0E0;
+  --mishkat-color-info-muted: #15303D;
+  --mishkat-color-neutral: #A8B4AD;
+  --mishkat-color-neutral-muted: #212925;
+  --mishkat-elevation-flat: none;
+  --mishkat-elevation-raised: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --mishkat-elevation-overlay: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --mishkat-elevation-modal: 0 12px 32px rgba(0, 0, 0, 0.7);
+}
+
+/* احترامُ تفضيل النظام — **باختيارٍ صريح** لا افتراضاً (قب-٦١). */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  [data-theme="system"],
+  :root:has(#th-system:checked),
+  :root:has(#embed-system:target) {
     --mishkat-color-surface-base: #121815;
     --mishkat-color-surface-raised: #1B231F;
     --mishkat-color-surface-sunken: #0C1210;
@@ -138,38 +180,6 @@
     --mishkat-elevation-overlay: 0 4px 12px rgba(0, 0, 0, 0.6);
     --mishkat-elevation-modal: 0 12px 32px rgba(0, 0, 0, 0.7);
   }
-}
-
-[data-theme="dark"] {
-  --mishkat-color-surface-base: #121815;
-  --mishkat-color-surface-raised: #1B231F;
-  --mishkat-color-surface-sunken: #0C1210;
-  --mishkat-color-surface-inverse: #F1EFE9;
-  --mishkat-color-text-primary: #EAF0EC;
-  --mishkat-color-text-secondary: #B3BFB8;
-  --mishkat-color-text-disabled: #6E7B74;
-  --mishkat-color-text-on-accent: #06120C;
-  --mishkat-color-text-on-inverse: #1B2420;
-  --mishkat-color-border-subtle: #2A322D;
-  --mishkat-color-border-strong: #8A968F;
-  --mishkat-color-border-focus: #8AD3AE;
-  --mishkat-color-brand: #6FC49B;
-  --mishkat-color-brand-hover: #8AD3AE;
-  --mishkat-color-brand-muted: #1D3A2C;
-  --mishkat-color-success: #6FC49B;
-  --mishkat-color-success-muted: #17301F;
-  --mishkat-color-warning: #E0A94B;
-  --mishkat-color-warning-muted: #33260C;
-  --mishkat-color-danger: #F08A80;
-  --mishkat-color-danger-muted: #3A1E1B;
-  --mishkat-color-info: #7BC0E0;
-  --mishkat-color-info-muted: #15303D;
-  --mishkat-color-neutral: #A8B4AD;
-  --mishkat-color-neutral-muted: #212925;
-  --mishkat-elevation-flat: none;
-  --mishkat-elevation-raised: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --mishkat-elevation-overlay: 0 4px 12px rgba(0, 0, 0, 0.6);
-  --mishkat-elevation-modal: 0 12px 32px rgba(0, 0, 0, 0.7);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -769,8 +779,11 @@ ul, ol { padding: 0; list-style: none; }
   align-items: center;
   font-size: var(--mishkat-font-caption-size);
 }
-/* داخل إطار الجوّال في الفهرس (`…#embed`) يختفي شريطُ المعاينة فتبقى الشاشةُ وحدها — بـCSS خالص. */
+/* داخل إطار الجوّال في الفهرس (`…#embed` وأخواه `#embed-dark`/`#embed-system` — قب-٦١)
+ * يختفي شريطُ المعاينة فتبقى الشاشةُ وحدها — بـCSS خالص. */
 .m-preview:target { display: none; }
+:root:has(#embed-dark:target) .m-preview,
+:root:has(#embed-system:target) .m-preview { display: none; }
 .m-preview__label { color: var(--mishkat-color-text-secondary); }
 .m-preview__spacer { margin-inline-start: auto; }
 .m-preview__group { display: flex; flex-wrap: wrap; gap: var(--mishkat-space-2xs); }
@@ -790,7 +803,10 @@ body:has(#st-full:checked) label[for="st-full"],
 body:has(#st-empty:checked) label[for="st-empty"],
 body:has(#st-error:checked) label[for="st-error"],
 body:has(#st-loading:checked) label[for="st-loading"],
-body:has(#caps-on:checked) label[for="caps-on"] {
+body:has(#caps-on:checked) label[for="caps-on"],
+body:has(#th-light:checked) label[for="th-light"],
+body:has(#th-dark:checked) label[for="th-dark"],
+body:has(#th-system:checked) label[for="th-system"] {
   background: var(--mishkat-color-surface-inverse);
   color: var(--mishkat-color-text-on-inverse);
   border-color: var(--mishkat-color-surface-inverse);
@@ -921,6 +937,15 @@ body:has(#caps-on:checked) label[for="caps-on"] {
   transform: scale(var(--s));
   transform-origin: top right;
 }
+
+/* مبدّلُ النمط في الفهرس (قب-٦١): لكل نموذجٍ ثلاثةُ أُطر (فاتح — وهو الافتراض —
+ * وداكنٌ وبتفضيل الجهاز) يظهر منها إطارُ الاختيار وحده — بـCSS خالص، والكسولُ
+ * المخفيُّ لا يُحمَّل حتى يُعرض فلا ثمنَ على من لم يبدّل. */
+.m-frame iframe.is-dark, .m-frame iframe.is-system { display: none; }
+:root:has(#th-dark:checked) .m-frame iframe.is-light,
+:root:has(#th-system:checked) .m-frame iframe.is-light { display: none; }
+:root:has(#th-dark:checked) .m-frame iframe.is-dark,
+:root:has(#th-system:checked) .m-frame iframe.is-system { display: block; }
 
 /* مقاساتُ الأجهزة الثلاثة — القيمُ مقاساتُ أجهزةٍ حقيقية لا أرقامٌ جمالية. */
 .m-frame { --w: 390px; --h: 780px; --s: 1; }

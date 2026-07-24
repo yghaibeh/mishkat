@@ -8,11 +8,14 @@
 </head>
 <body>
 
-<!-- مبدّلُ الأجهزة: بـCSS خالص (`:has`) — لا سطرَ جافاسكربت. -->
+<!-- مبدّلا الأجهزة والنمط: بـCSS خالص (`:has`) — لا سطرَ جافاسكربت. -->
 <input type="radio" name="dev" id="dev-auto" checked>
 <input type="radio" name="dev" id="dev-mobile">
 <input type="radio" name="dev" id="dev-tablet">
 <input type="radio" name="dev" id="dev-desktop">
+<input type="radio" name="th" id="th-light" checked>
+<input type="radio" name="th" id="th-dark">
+<input type="radio" name="th" id="th-system">
 
 <div class="m-preview">
   <span class="m-preview__label">اعرض النماذج على:</span>
@@ -21,6 +24,12 @@
     <label for="dev-mobile">جوّال ٣٩٠</label>
     <label for="dev-tablet">تابلت ٧٦٨</label>
     <label for="dev-desktop">مكتب ١٢٨٠</label>
+  </div>
+  <span class="m-preview__label">النمط (قب-٦١):</span>
+  <div class="m-preview__group">
+    <label for="th-light">فاتح — الافتراض</label>
+    <label for="th-dark">داكن</label>
+    <label for="th-system">بتفضيل جهازك</label>
   </div>
 </div>
 
@@ -43,7 +52,7 @@
       <li class="m-item"><span class="m-item__text"><span><strong>حالاتُ الحقيقة الأربع</strong> في أعلى كل نموذج: ممتلئة — فارغةٌ تشرح — خطأٌ إنسانيّ — تحميل، تُبدَّل بنقرة.</span><span class="m-item__sub">الفارغةُ والخطأُ هما ما أهمله v1، ولذلك رُسما بالتفصيل نفسِه لا أقلّ. (يظهر شريطُ التبديل حين تفتح الشاشةَ بحجمها الكامل.)</span></span></li>
       <li class="m-item"><span class="m-item__text"><span><strong>«أظهِر قدرةَ كل زر»</strong>: يكشف بجانب كل زرٍّ ورابطٍ <em>القدرةَ</em> التي تُظهره من المصفوفة الذهبية.</span><span class="m-item__sub">برهانُ «الواجهة لا تكذب»: لا زرَّ في شاشةِ دورٍ سيرفضه الخادم.</span></span></li>
       <li class="m-item"><span class="m-item__text"><span><strong>الفعلُ الأهمُّ في متناول الإبهام</strong>: شريطٌ لاصقٌ فوق شريط التنقّل يحمل فعلَ الدور الأهمَّ وحدَه، يُبلَغ بيدٍ واحدةٍ بلا تمرير.</span><span class="m-item__sub">وعلى المكتب يصير بطاقةً في مكانها — لا شريطَ عائماً بلا داعٍ.</span></span></li>
-      <li class="m-item"><span class="m-item__text"><span><strong>الوضعان الفاتح والداكن</strong> يتبعان إعدادَ جهازك — النماذجُ تصحّ فيهما معاً.</span><span class="m-item__sub">لا شاشةَ تفترض خلفيةً بيضاء.</span></span></li>
+      <li class="m-item"><span class="m-item__text"><span><strong>الفاتحُ هو الافتراضيّ</strong> (قب-٦١) — والداكنُ خيارٌ باقٍ: من مبدّل «النمط» أعلاه، أو «بتفضيل جهازك» فيُتبَع إعدادُ نظامك.</span><span class="m-item__sub">النماذجُ تصحّ في النمطين معاً — ولا شاشةَ تفترض خلفيةً بيضاء.</span></span></li>
       <li class="m-item"><span class="m-item__text"><span><strong>صفرُ خطوطٍ خارجية وصفرُ صورٍ وصفرُ جافاسكربت</strong>: كلُّ ما تراه أشكالٌ تُرسم في الصفحة.</span><span class="m-item__sub">أولُ تحميلٍ كامل ≈ ١٤ ك.ب مضغوطة — من ميزانية ١٥٠ ك.ب.</span></span></li>
     </ul>
   </section>
@@ -56,7 +65,11 @@
       <p class="m-index__role">◆ أميرُ المسجد — ٤٢ قدرة — جهازُه الأوّل: الجوّال</p>
       <p class="m-index__q">«ما حالُ مسجدي اليومَ وما المطلوبُ مني الآن؟»</p>
       <div class="m-frame-wrap">
-        <div class="m-frame is-first-mobile"><iframe src="amir/home.html#embed" title="رئيسية أمير المسجد" loading="lazy"></iframe></div>
+        <div class="m-frame is-first-mobile">
+          <iframe class="is-light" src="amir/home.html#embed" title="رئيسية أمير المسجد" loading="lazy"></iframe>
+          <iframe class="is-dark" src="amir/home.html#embed-dark" title="رئيسية أمير المسجد — بالنمط الداكن" loading="lazy"></iframe>
+          <iframe class="is-system" src="amir/home.html#embed-system" title="رئيسية أمير المسجد — بتفضيل جهازك" loading="lazy"></iframe>
+        </div>
       </div>
       <p class="m-index__meta">يعالج: ع-٤ — ع-٥ — ع-٦ — ع-٧ — ع-٨ — ع-١٩ — ع-٢٦ — ع-٢٧ — ع-٢٨</p>
       <a class="m-btn is-secondary" href="amir/home.html">افتحها بحجمها الكامل</a>
@@ -66,7 +79,11 @@
       <p class="m-index__role">◈ المحفّظ/المعلّم — ٩ قدرات — جهازُه الأوّل: الجوّال</p>
       <p class="m-index__q">«حلقتي اليوم — من حضر وما سجّلت؟»</p>
       <div class="m-frame-wrap">
-        <div class="m-frame is-first-mobile"><iframe src="teacher/home.html#embed" title="رئيسية المحفّظ" loading="lazy"></iframe></div>
+        <div class="m-frame is-first-mobile">
+          <iframe class="is-light" src="teacher/home.html#embed" title="رئيسية المحفّظ" loading="lazy"></iframe>
+          <iframe class="is-dark" src="teacher/home.html#embed-dark" title="رئيسية المحفّظ — بالنمط الداكن" loading="lazy"></iframe>
+          <iframe class="is-system" src="teacher/home.html#embed-system" title="رئيسية المحفّظ — بتفضيل جهازك" loading="lazy"></iframe>
+        </div>
       </div>
       <p class="m-index__meta">يعالج: ع-١١ — ع-٢٩</p>
       <a class="m-btn is-secondary" href="teacher/home.html">افتحها بحجمها الكامل</a>
@@ -76,7 +93,11 @@
       <p class="m-index__role">▲ المشرف (مسؤول المنطقة) — ٤٥ قدرة — جهازُه الأوّل: الجوّال، والمكتبُ يليه</p>
       <p class="m-index__q">«ما ينتظر اعتمادي، ومَن تأخّر، وأين الشواغر؟»</p>
       <div class="m-frame-wrap">
-        <div class="m-frame is-first-mobile"><iframe src="supervisor/home.html#embed" title="رئيسية المشرف" loading="lazy"></iframe></div>
+        <div class="m-frame is-first-mobile">
+          <iframe class="is-light" src="supervisor/home.html#embed" title="رئيسية المشرف" loading="lazy"></iframe>
+          <iframe class="is-dark" src="supervisor/home.html#embed-dark" title="رئيسية المشرف — بالنمط الداكن" loading="lazy"></iframe>
+          <iframe class="is-system" src="supervisor/home.html#embed-system" title="رئيسية المشرف — بتفضيل جهازك" loading="lazy"></iframe>
+        </div>
       </div>
       <p class="m-index__meta">يعالج: ع-٢٢ — ع-٣١ — ع-٣٢ — ع-٣٣</p>
       <a class="m-btn is-secondary" href="supervisor/home.html">افتحها بحجمها الكامل</a>
@@ -86,7 +107,11 @@
       <p class="m-index__role">★ المديرُ العام — ٤٧ قدرة — جهازُه الأوّل: <strong>سطحُ المكتب</strong></p>
       <p class="m-index__q">«صحةُ الشبكة رقماً، وأين الاستثناء؟»</p>
       <div class="m-frame-wrap">
-        <div class="m-frame is-first-desktop"><iframe src="admin/home.html#embed" title="رئيسية المدير العام" loading="lazy"></iframe></div>
+        <div class="m-frame is-first-desktop">
+          <iframe class="is-light" src="admin/home.html#embed" title="رئيسية المدير العام" loading="lazy"></iframe>
+          <iframe class="is-dark" src="admin/home.html#embed-dark" title="رئيسية المدير العام — بالنمط الداكن" loading="lazy"></iframe>
+          <iframe class="is-system" src="admin/home.html#embed-system" title="رئيسية المدير العام — بتفضيل جهازك" loading="lazy"></iframe>
+        </div>
       </div>
       <p class="m-index__meta">ثلاثةُ أعمدةٍ على المكتب تنزل عموداً واحداً على الجوّال بلا فقدِ محتوى — بدِّل الحجمَ لتراه. يعالج: ع-١ — ع-٣٤</p>
       <a class="m-btn is-secondary" href="admin/home.html">افتحها بحجمها الكامل</a>
@@ -102,7 +127,11 @@
       <p class="m-index__role">◈ المحفّظ — تسجيلُ يوم الحلقة — جهازُه الأوّل: الجوّال</p>
       <p class="m-index__q">«حضورٌ وتسميعٌ بأقلِّ نقرات»</p>
       <div class="m-frame-wrap">
-        <div class="m-frame is-first-mobile"><iframe src="flows/circle-day.html#embed" title="تسجيل يوم الحلقة" loading="lazy"></iframe></div>
+        <div class="m-frame is-first-mobile">
+          <iframe class="is-light" src="flows/circle-day.html#embed" title="تسجيل يوم الحلقة" loading="lazy"></iframe>
+          <iframe class="is-dark" src="flows/circle-day.html#embed-dark" title="تسجيل يوم الحلقة — بالنمط الداكن" loading="lazy"></iframe>
+          <iframe class="is-system" src="flows/circle-day.html#embed-system" title="تسجيل يوم الحلقة — بتفضيل جهازك" loading="lazy"></iframe>
+        </div>
       </div>
       <p class="m-index__meta">يعالج: ع-٢ (الازدواج) — ع-٣ — ع-٩ (حدُّ العلامة) — ع-١٠ — ع-١٢ — ع-٢٣</p>
       <a class="m-btn is-secondary" href="flows/circle-day.html">افتحها بحجمها الكامل</a>
@@ -112,7 +141,11 @@
       <p class="m-index__role">▲ المشرف — طابورُ الاعتماد — جهازُه الأوّل: الجوّال</p>
       <p class="m-index__q">«ابتّ في الأقدم وأنت ترى ما فيه»</p>
       <div class="m-frame-wrap">
-        <div class="m-frame is-first-mobile"><iframe src="flows/approval-queue.html#embed" title="طابور الاعتماد" loading="lazy"></iframe></div>
+        <div class="m-frame is-first-mobile">
+          <iframe class="is-light" src="flows/approval-queue.html#embed" title="طابور الاعتماد" loading="lazy"></iframe>
+          <iframe class="is-dark" src="flows/approval-queue.html#embed-dark" title="طابور الاعتماد — بالنمط الداكن" loading="lazy"></iframe>
+          <iframe class="is-system" src="flows/approval-queue.html#embed-system" title="طابور الاعتماد — بتفضيل جهازك" loading="lazy"></iframe>
+        </div>
       </div>
       <p class="m-index__meta">يعالج: ع-١٥ — ع-٢٢ — ع-٣١</p>
       <a class="m-btn is-secondary" href="flows/approval-queue.html">افتحها بحجمها الكامل</a>
@@ -122,7 +155,11 @@
       <p class="m-index__role">₪ المسؤول المالي — رواتبُ الشهر — جهازُه الأوّل: المكتب (ويعمل على الجوّال)</p>
       <p class="m-index__q">«أين وصلت الدورة، ولماذا هذا صفر؟»</p>
       <div class="m-frame-wrap">
-        <div class="m-frame is-first-desktop"><iframe src="flows/payroll.html#embed" title="رواتب الشهر" loading="lazy"></iframe></div>
+        <div class="m-frame is-first-desktop">
+          <iframe class="is-light" src="flows/payroll.html#embed" title="رواتب الشهر" loading="lazy"></iframe>
+          <iframe class="is-dark" src="flows/payroll.html#embed-dark" title="رواتب الشهر — بالنمط الداكن" loading="lazy"></iframe>
+          <iframe class="is-system" src="flows/payroll.html#embed-system" title="رواتب الشهر — بتفضيل جهازك" loading="lazy"></iframe>
+        </div>
       </div>
       <p class="m-index__meta">يعالج: ع-٢١ (الدورة ظاهرة) — ع-٢٥ (الصفرُ يشرح نفسه) — ع-١٣ — ع-١٤ — ع-٢٤</p>
       <a class="m-btn is-secondary" href="flows/payroll.html">افتحها بحجمها الكامل</a>
