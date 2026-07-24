@@ -52,6 +52,10 @@ export class CommitteeStore {
   getUnit(id: string): CommitteeUnit | null {
     return this.unitMap.get(id) ?? null
   }
+  /** كلُّ وحدات الإسقاط — لطبقة الاستمرار (نظيرُ `units()` في مستودعَي الريادة والعُهد). */
+  units(): readonly CommitteeUnit[] {
+    return byId(this.unitMap.values())
+  }
 
   // ── اللجان ──────────────────────────────────────────────────────────────────
   saveCommittee(committee: Committee): void {
