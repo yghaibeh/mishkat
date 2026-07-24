@@ -47,12 +47,20 @@ export class MediaStore {
   getUnit(id: string): MediaUnit | null {
     return this.unitMap.get(id) ?? null
   }
+  /** كلُّ الوحدات — **لطبقةِ الاستمرار تُسقطها**؛ الخدماتُ تسأل بالمعرّف (`getUnit`). */
+  units(): readonly MediaUnit[] {
+    return Object.freeze([...this.unitMap.values()])
+  }
 
   saveKind(k: MediaKind): void {
     this.kindMap.set(k.id, Object.freeze({ ...k, tenantId: this.tenantId }))
   }
   getKind(id: string): MediaKind | null {
     return this.kindMap.get(id) ?? null
+  }
+  /** كلُّ الأنواع — **لطبقةِ الاستمرار تُسقطها** (المعجمُ بياناتٌ مرجعيةٌ تُخزَّن). */
+  kinds(): readonly MediaKind[] {
+    return Object.freeze([...this.kindMap.values()])
   }
 
   saveFormat(f: MediaFormat): void {
@@ -83,6 +91,10 @@ export class MediaStore {
   }
   photosOf(coverageId: string): readonly MediaPhoto[] {
     return Object.freeze(this.photoList.filter((p) => p.coverageId === coverageId))
+  }
+  /** كلُّ الصور بترتيب إضافتها — **لطبقةِ الاستمرار تُسقطها**؛ الخدماتُ تسأل بألبومها. */
+  photos(): readonly MediaPhoto[] {
+    return Object.freeze([...this.photoList])
   }
 
   // ── المعاملة الذرّية ───────────────────────────────────────────────────────
