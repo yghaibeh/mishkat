@@ -769,6 +769,20 @@ ul, ol { padding: 0; list-style: none; }
 
 /* ── أدواتُ المعاينة (خارج المنتج — للمالك وحده) ───────────────────────────── */
 
+/* مفاتيحُ المعاينة الخام (حالات · قدرات · نمط) تُخفى بصرياً — وسومُها في الشريط
+ * تقلبها. كانت تُرسَم صفَّ دوائرَ عارياً أعلى كلِّ شاشة (عيبٌ رصده تدقيق T34). */
+body > input[name="st"],
+body > input[name="th"],
+body > input[name="dev"],
+body > #caps-on {
+  position: absolute;
+  inset-block-start: 0;
+  inline-size: var(--mishkat-x-hairline);
+  block-size: var(--mishkat-x-hairline);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .m-preview {
   padding: var(--mishkat-space-sm) var(--mishkat-space-md);
   background: var(--mishkat-color-surface-sunken);
