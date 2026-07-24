@@ -12,11 +12,17 @@
  *  ٣. **ذرّيةٌ عابرةٌ للمستودعين**: `atomically` تلفّ معاملةَ هذا المستودع حول معاملة الدفتر،
  *     فيرتدّان معاً — فلا قيدُ صرفٍ بلا سجلِّه ولا سجلٌّ بلا قيده.
  *
+ * **وسجلُّ التدقيق مُحقَنٌ لا مملوك** (CR-027 · شرطُ قب-٤٩): كانت `data/tenant.ts` تُنشئ
+ * `LedgerStore` بسجلِّه الافتراضيّ الخاصّ — سجلٌّ للصندوق وآخرُ للرواتب على دفترٍ واحد،
+ * وتسلسلان يبدآن من ١ فيدهس أحدُهما صفوفَ الآخر بالمفتاح `(tenant_id, source, seq)`.
+ * فصار بناءُ الحزمة من موضعٍ واحد (`payrollStoresFor`) يحقن سجلاً واحداً ويُعلنه فيها.
+ *
  * **حتميّ** (TESTING_POLICY §٥): معرّفاتٌ بعدّادٍ متتابع لا عشوائيّة، ولا ساعةَ داخلية.
  * ولا SQL ولا مكتبةَ قاعدةٍ هنا (G17): بِنى JS خالصة.
  */
 
-import type { LedgerStore } from "../../ledger/data/store.js"
+import { AuditJournal } from "../../../audit/journal.js"
+import { LedgerStore } from "../../ledger/data/store.js"
 import type {
   Advance,
   AdvanceInstalment,
@@ -29,6 +35,18 @@ import type {
 export type PayrollStores = {
   readonly ledger: LedgerStore
   readonly payroll: PayrollStore
+}
+
+/**
+ * **مصنعُ الحزمة الواحد** (شرطُ قب-٤٩) — سِجلٌّ **واحدٌ مُحقَن** في الدفتر، وهو
+ * `stores.ledger.audit` لا غير؛ ووحدةُ العمل تُلحق `persistentAudit` به بعينه.
+ * (ونظيرُه في `box/data/store.ts` — ومسوّغُ عدم إعلانه ضلعاً ثالثاً مشروحٌ هناك.)
+ */
+export function payrollStoresFor(
+  tenantId: string,
+  audit: AuditJournal = new AuditJournal(tenantId),
+): PayrollStores {
+  return { ledger: new LedgerStore(tenantId, audit), payroll: new PayrollStore(tenantId) }
 }
 
 type Snapshot = {
@@ -81,6 +99,15 @@ export class PayrollStore {
   instalmentsOf(advanceId: string): readonly AdvanceInstalment[] {
     return Object.freeze(this.instalmentList.filter((i) => i.advanceId === advanceId))
   }
+  /**
+   * تعدادُ الإسقاط — **يحتاجه الإسقاطُ إلى القاعدة وحدَه** (نظيرُ `distributions()`).
+   * ولا يكفي الجمعُ عبر `instalmentsOf(كلِّ سلفة)`: قسطٌ يشير إلى سلفةٍ ليست في المستودع
+   * **يختفي من الإسقاط صامتاً** — محوٌ في جدولٍ ملحقٍ فقط (المادة ٧/٤). والتعدادُ المباشر
+   * يبلغه، فيرميه اشتقاقُ مفتاح التوجيه باسمه بدل أن يبتلعه.
+   */
+  instalments(): readonly AdvanceInstalment[] {
+    return Object.freeze([...this.instalmentList])
+  }
 
   // ── الصرف (ق-٦٥/ق-٧١) — توثيقٌ بلا مبلغ ────────────────────────────────────
   appendPayout(payout: Payout): void {
@@ -105,6 +132,14 @@ export class PayrollStore {
   }
   distributionsIn(periodId: string): readonly RegionDistribution[] {
     return Object.freeze(this.distributionList.filter((d) => d.periodId === periodId))
+  }
+  /**
+   * تعدادُ الإسقاط — يحتاجه **الإسقاطُ إلى القاعدة وحدَه** (نظيرُ `units()` في العُهد):
+   * قراءةٌ مجمَّدةٌ لا سطحُ تحرير. وبدونه كان الإسقاطُ سيستنبط الفتراتِ من جداولَ أخرى —
+   * **استنباطٌ يُسقط توزيعاً لا صرفَ في فترته**، وهو محوٌ صامتٌ في جدولٍ ملحقٍ فقط.
+   */
+  distributions(): readonly RegionDistribution[] {
+    return Object.freeze([...this.distributionList])
   }
   hasDistribution(periodId: string, toUnitPath: string): boolean {
     return this.distributionList.some((d) => d.periodId === periodId && d.toUnitPath === toUnitPath)

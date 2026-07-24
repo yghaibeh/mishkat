@@ -10,20 +10,19 @@
  * المسارُ النسبيُّ بين شبكتين** (وهو ما تتعمّده بذرةُ الاختبار) لم يبلغ أحدُهما الآخر.
  */
 
-import { LedgerStore } from "../../ledger/data/store.js"
-import { PayrollStore, type PayrollStores } from "./store.js"
+import { payrollStoresFor, type PayrollStores } from "./store.js"
 
 export class PayrollTenantRegistry {
   private readonly stores = new Map<string, PayrollStores>()
 
-  /** مستودعا الشبكة **مقترنَين** — يُنشآن معاً عند أول طلبٍ ثم يُعادان هما نفسُهما. */
+  /**
+   * مستودعا الشبكة **مقترنَين** — يُنشآن معاً عند أول طلبٍ ثم يُعادان هما نفسُهما.
+   * **وبسجلِّ تدقيقٍ واحدٍ مُحقَن** (شرطُ قب-٤٩) — انظر مسوّغَه في رأس `store.ts`.
+   */
   storesFor(tenantId: string): PayrollStores {
     const existing = this.stores.get(tenantId)
     if (existing !== undefined) return existing
-    const created: PayrollStores = {
-      ledger: new LedgerStore(tenantId),
-      payroll: new PayrollStore(tenantId),
-    }
+    const created = payrollStoresFor(tenantId)
     this.stores.set(tenantId, created)
     return created
   }

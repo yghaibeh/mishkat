@@ -193,14 +193,17 @@ describe("الذرّية: لا إخفاقَ صامت", () => {
     const driver = await freshDb()
     const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
     uow.enlist(persistentLedger(new LedgerStore(MAIN)))
+    // **سِنتينل لا وحدةٌ لم تُنقل** (فخّ ٢): كان `box_handovers`، وانقضى موضوعُه يومَ نُقل
+    // الصندوق. والثابتُ «مستودعٌ بلا مخطط يُرمى» لا يخصّ وحدةً بعينها — فاسمٌ لا يُنقل أصدق.
+    const noSuchTable = "__جدولٌ_لا_مخططَ_له__"
     uow.enlist({
       name: "box",
       rowBudget: 1_000,
-      tables: ["box_handovers"],
+      tables: [noSuchTable],
       project: () => new Map(),
       load: () => undefined,
     })
-    await expect(uow.hydrate()).rejects.toThrow(/box_handovers/)
+    await expect(uow.hydrate()).rejects.toThrow(noSuchTable)
     driver.close()
   })
 

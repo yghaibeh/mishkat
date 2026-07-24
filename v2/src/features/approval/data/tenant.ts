@@ -9,8 +9,7 @@
  * مُحلِّلُ النطاق يبحث في مستودع شبكة الفاعل وحدها، فالكيانُ الغريب ⇒ `NO_SCOPE` ⇒ رفض.
  */
 
-import { BoxStore, type BoxStores } from "../../box/data/store.js"
-import { LedgerStore } from "../../ledger/data/store.js"
+import { boxStoresFor, type BoxStores } from "../../box/data/store.js"
 import { ApprovalStore } from "./store.js"
 
 export type ApprovalStores = {
@@ -26,7 +25,7 @@ export class ApprovalTenantRegistry {
     const existing = this.stores.get(tenantId)
     if (existing !== undefined) return existing
     const created: ApprovalStores = {
-      box: { ledger: new LedgerStore(tenantId), box: new BoxStore(tenantId) },
+      box: boxStoresFor(tenantId),
       approval: new ApprovalStore(tenantId),
     }
     this.stores.set(tenantId, created)

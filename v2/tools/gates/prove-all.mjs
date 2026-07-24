@@ -87,33 +87,40 @@ const PROOFS = [
      * **نقطةُ اللاعودة الأولى** (ADR-001 §٦-١): جدولُ بياناتٍ يدخل المخطط بلا مفتاح توجيه.
      * إن مرّ هذا صامتاً صار إصلاحُه لاحقاً **هجرةَ بياناتٍ على جداول العمليات كلِّها**.
      * والقائمةُ **مشتقّةٌ من المخطط** (CR-011): الجدولُ المزروع لم يكن معروفاً للبوابة.
+     *
+     * > ⚠️ **واسمُ الجدول المزروع سِنتينل لا اسمُ وحدةٍ لم تُنقل بعد** (فخّ ٢ · قاعدةُ قب-٥٠ ٢).
+     * > كان `box_handovers`، **فانقضى موضوعُه يومَ نُقل الصندوق**: الجدولُ صار قائماً فصارت
+     * > `CREATE TABLE IF NOT EXISTS` **لا تفعل شيئاً** ⟵ المخالفةُ لا تُزرع أصلاً، والبوابةُ
+     * > تخضرّ **فيُظنّ أنها حرست وهي لم تُختبر**. وهذا أخطرُ من إخفاقٍ صريح.
+     * > فالاسمُ الآن **لا يمكن أن يُنقل**: لا بادئةَ وحدةٍ له ولا شكلَ اسمِ جدولٍ في المشروع.
      */
     gate: "G10", script: "g10-migrations.mjs",
     what: "**جدولُ بياناتٍ بلا مفتاح توجيه** يدخل المخطط (ع-٥ — نقطةُ اللاعودة)",
     file: "src/db/migrations/9002_violation.sql",
     content:
-      `CREATE TABLE IF NOT EXISTS box_handovers (\n` +
+      `CREATE TABLE IF NOT EXISTS __violation_probe_routing__ (\n` +
       `  tenant_id TEXT NOT NULL,\n` +
       `  id        TEXT NOT NULL,\n` +
       `  entry_id  TEXT NOT NULL,\n` +
       `  PRIMARY KEY (tenant_id, id)\n` +
       `);\n`,
-    evidenceMustMatch: /box_handovers ينقصه unit_path/,
+    evidenceMustMatch: /__violation_probe_routing__ ينقصه unit_path/,
   },
   {
     // لا يكفي وجودُ العمود: استعلامُ «كلُّ ما تحت هذه العقدة» أشيعُ استعلامٍ في النظام،
     // وبلا فهرسٍ مركّبٍ يصير مسحاً كاملاً — والحارسُ يقيس الفهرسَ لا النيّة.
+    // (والاسمُ سِنتينل للسبب المشروح أعلاه — كان `box_categories`.)
     gate: "G10", script: "g10-migrations.mjs",
     what: "مفتاحُ توجيهٍ **بلا فهرسه** — عمودٌ يُرضي الحرفَ ويخون الغرض",
     file: "src/db/migrations/9003_violation.sql",
     content:
-      `CREATE TABLE IF NOT EXISTS box_categories (\n` +
+      `CREATE TABLE IF NOT EXISTS __violation_probe_index__ (\n` +
       `  tenant_id TEXT NOT NULL,\n` +
       `  unit_path TEXT NOT NULL,\n` +
       `  id        TEXT NOT NULL,\n` +
       `  PRIMARY KEY (tenant_id, id)\n` +
       `);\n`,
-    evidenceMustMatch: /box_categories ينقصه فهرسٌ/,
+    evidenceMustMatch: /__violation_probe_index__ ينقصه فهرسٌ/,
   },
   {
     gate: "G10", script: "g10-migrations.mjs",

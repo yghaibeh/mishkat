@@ -32,6 +32,7 @@
  * > تُسرد** يُحرّرها كلُّ وحدةٍ تُنقل — وهو عينُ التعارض الذي جاء هذا التقسيمُ ليمنعه.
  */
 
+import { BOX_TABLES } from "./schema/box.js"
 import type { TableSpec } from "./schema/columns.js"
 import { COMMITTEES_TABLES } from "./schema/committees.js"
 import { CUSTODY_TABLES } from "./schema/custody.js"
@@ -42,6 +43,7 @@ import { LIBRARY_TABLES } from "./schema/library.js"
 import { MEDIA_TABLES } from "./schema/media.js"
 import { NOTIFICATIONS_TABLES } from "./schema/notifications.js"
 import { ORG_TABLES } from "./schema/org.js"
+import { PAYROLL_TABLES } from "./schema/payroll.js"
 import { SHARED_TABLES } from "./schema/shared.js"
 import { SUPERVISION_TABLES } from "./schema/supervision.js"
 
@@ -56,6 +58,8 @@ export const TABLES: readonly TableSpec[] = [
   ...INFRASTRUCTURE_TABLES,
   ...ORG_TABLES,
   ...LEDGER_TABLES,
+  ...BOX_TABLES,
+  ...PAYROLL_TABLES,
   ...COMMITTEES_TABLES,
   ...CUSTODY_TABLES,
   ...DAILY_LOG_TABLES,
