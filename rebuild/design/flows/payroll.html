@@ -13,6 +13,12 @@
 <input type="radio" name="st" id="st-error">
 <input type="radio" name="st" id="st-loading">
 <input type="checkbox" id="caps-on">
+<input type="radio" name="th" id="th-light" checked>
+<input type="radio" name="th" id="th-dark">
+<input type="radio" name="th" id="th-system">
+<!-- مرساتا إطارَي الفهرس الداكن/بتفضيل الجهاز (قب-٦١) — لا تُرسمان. -->
+<span id="embed-dark" hidden></span>
+<span id="embed-system" hidden></span>
 
 <div class="m-preview" id="embed">
   <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
@@ -24,6 +30,12 @@
   </div>
   <span class="m-preview__label">·</span>
   <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__label">النمط:</span>
+  <div class="m-preview__group">
+    <label for="th-light">فاتح</label>
+    <label for="th-dark">داكن</label>
+    <label for="th-system">بتفضيل جهازك</label>
+  </div>
   <span class="m-preview__spacer"></span>
   <a class="m-link" href="../index.html">← الفهرس</a>
 </div>
@@ -41,7 +53,6 @@
   <div class="m-scope">
     <span>نطاقُ الصفحة:</span>
     <span class="m-scope__unit">الشبكة كلُّها</span>
-    <span>· مستحقاتُ هذا النطاق وحده</span>
     <span class="m-scope__unit m-hijri">رواتبُ محرم ١٤٤٨ هـ</span>
   </div>
 
@@ -54,13 +65,13 @@
     <div class="m-stepper" aria-label="مراحلُ دورة الشهر">
       <span class="m-step is-done"><span class="m-step__dot" aria-hidden="true"></span>١ — احتُسبت آلياً</span>
       <span class="m-step is-done"><span class="m-step__dot" aria-hidden="true"></span>٢ — رفعتَها للإدارة في ١٣ محرم</span>
-      <span class="m-step is-current"><span class="m-step__dot" aria-hidden="true"></span>٣ — أقرّتها الإدارةُ وخُتمت — التسليمُ عليك الآن</span>
+      <span class="m-step is-current"><span class="m-step__dot" aria-hidden="true"></span>٣ — أقرّها المديرُ العام في ١٤ محرم — التسليمُ عليك الآن</span>
     </div>
 
     <div class="m-card is-highlight">
-      <p class="m-stat__sentence">مجموعُ المطلوب دفعه هذا الشهر لاثنين وأربعين مستحقّاً.</p>
+      <p class="m-stat__sentence">مجموعُ المطلوب دفعه هذا الشهر — ٤٢ مستحقّاً.</p>
       <p class="m-stat__value m-money is-brand">٣٬٤٢٠٬٠٠٠ ل.س</p>
-      <p class="m-stat__scope">الاحتسابُ آليّ، والإقرارُ على الإدارة، والتسليمُ عليك · أقرّها أ. المدير العام في ١٤ محرم</p>
+      <p class="m-stat__scope">على الشبكة كلِّها</p>
     </div>
 
     <h2 class="m-section-title">مَن المستحقّون ولماذا؟</h2>
@@ -68,7 +79,7 @@
     <div class="m-card">
       <div class="m-table-wrap">
         <table class="m-table">
-          <caption>أوّلُ ستةٍ من ٤٢ — وعمودُ «بيان الاحتساب» لا يخلو سطرٌ منه</caption>
+          <caption>أوّلُ ستةٍ من ٤٢ مستحقّاً</caption>
           <thead>
             <tr>
               <th>المستحِقّ</th><th>الإجماليّ</th><th>قسطُ السلفة</th><th>المطلوبُ دفعه</th><th>بيانُ الاحتساب</th><th>سُلّم</th>
@@ -108,7 +119,7 @@
               <td data-label="سُلّم"><span class="m-badge is-neutral">•</span></td>
             </tr>
             <tr>
-              <td data-label="المستحِقّ">أ. زياد المصري — محفّظ</td>
+              <td data-label="المستحِقّ">أ. كريم اللبابيدي — محفّظ</td>
               <td data-label="الإجماليّ" class="num m-money">٠</td>
               <td data-label="قسطُ السلفة" class="num m-money">٠</td>
               <td data-label="المطلوبُ دفعه" class="num m-money">٠</td>
@@ -126,7 +137,6 @@
           </tbody>
         </table>
       </div>
-      <p class="m-stat__scope">لا سطرَ صفريٍّ بلا سببه — والسببُ في مكان الرقم نفسِه لا في صفحةِ مساعدة.</p>
     </div>
 
     <h2 class="m-section-title">أين وقفت رواتبُ هذا الشهر؟</h2>
@@ -134,14 +144,14 @@
     <div class="m-card is-half">
       <p class="m-stat__sentence">ما سُلِّم من مجموع المستحق</p>
       <p class="m-stat__value m-money">١٬٢٤٠٬٠٠٠ ل.س</p>
-      <p class="m-stat__scope">على هذا النطاق وما تحته · المتبقّي <span class="m-money">٢٬١٨٠٬٠٠٠ ل.س</span></p>
+      <p class="m-stat__scope">على الشبكة كلِّها · المتبقّي <span class="m-money">٢٬١٨٠٬٠٠٠ ل.س</span></p>
     </div>
 
     <div class="m-card is-half">
       <p class="m-stat__sentence">مواضعُ التوقّف</p>
       <div class="m-table-wrap">
         <table class="m-table">
-          <caption>كلُّ توقّفٍ بصاحبه — لا رقمٌ معلَّقٌ بلا اسم</caption>
+          <caption>المتبقّي مفصَّلاً بالوحدات</caption>
           <thead><tr><th>الوحدة</th><th>المستحِقّ</th><th>المتبقّي</th></tr></thead>
           <tbody>
             <tr><td data-label="الوحدة">منطقة حمص</td><td data-label="المستحِقّ">٩ مستحقّين</td><td data-label="المتبقّي" class="num m-money">٧٤٠٬٠٠٠</td></tr>
@@ -157,7 +167,7 @@
       <div class="m-table-wrap">
         <table class="m-table">
           <caption>يُعلَن ولا يُطبَّق — المُقرُّ لا يتغيّر</caption>
-          <thead><tr><th>المستحِقّ</th><th>المُقرُّ المختوم</th><th>ما يقوله العملُ اليوم</th><th>الفارق</th></tr></thead>
+          <thead><tr><th>المستحِقّ</th><th>المُقرُّ المختوم</th><th>لو احتُسب اليوم</th><th>الفارق</th></tr></thead>
           <tbody>
             <tr>
               <td data-label="المستحِقّ">أ. سليم الحموي</td>
@@ -175,8 +185,8 @@
     </div>
 
     <div class="m-thumb">
-      <button class="m-btn is-primary" type="button" data-cap="finance.payout #٣٩">سلِّم الراتب</button>
-      <span class="m-thumb__note">صار متاحاً بعد ختم الإقرار · التسليمُ يُقيَّد سنداً في الدفتر باسمك</span>
+      <button class="m-btn is-primary" type="button" data-cap="finance.payout #٣٩">سلِّم الراتبَ التالي: أ. بلال الخطيب</button>
+      <span class="m-thumb__note">يُقيَّد سنداً في الدفتر باسمك</span>
     </div>
 
   </main>
@@ -244,12 +254,11 @@
           </span>
         </li>
       </ul>
-      <p class="m-stat__scope">حين يفشل التسليمُ لا يُقتطع مبلغٌ ولا يُحرَق رقمُ سند — العمليةُ إمّا تتمّ كلُّها أو لا تكون.</p>
     </div>
 
     <div class="m-thumb">
-      <button class="m-btn is-primary" type="button" data-cap="finance.payout #٣٩">سلِّم الراتب للتالي: أ. بلال الخطيب</button>
-      <span class="m-thumb__note">بقي ٢٩ مستحقّاً · تخطّي المكرَّر لا يوقف الطابور</span>
+      <button class="m-btn is-primary" type="button" data-cap="finance.payout #٣٩">سلِّم الراتبَ التالي: أ. بلال الخطيب</button>
+      <span class="m-thumb__note">بقي ٢٦ مستحقّاً · تخطّي المكرَّر لا يوقف الطابور</span>
     </div>
 
   </main>
@@ -295,6 +304,7 @@
     <li><strong>مدخلٌ واحدٌ لكلِّ فعل</strong> (قب-٥٤/٣): فعلُ المرحلة في شريط الإبهام وحده، وبطاقةُ المجموع تقول الرقمَ ولا تحمل زرّاً ثانياً إليه.</li>
     <li><strong>الفراغُ يشرح</strong>: «المستحقُّ يُبنى من عملٍ معتمَد» + بطاقةُ «ما الذي يمنع الاحتساب اليوم» — فلا يُترك الماليُّ أمام جدولٍ أبيضَ يظنّه عطلاً (وهو عينُ ما وقع في v1).</li>
     <li><strong>وجهُ المالية مبسَّط</strong>: «المطلوبُ دفعه» و«قسطُ السلفة» و«سُلّم» — لا مدينَ ولا دائنَ ولا يوميّة؛ والقيدُ المزدوجُ يجري تحتها لا أمامها.</li>
+    <li><strong>تدقيق T34 (قب-٦١)</strong>: وُحِّد سردُ الدورة في الستيبر وحده (كانت بطاقةُ المجموع تعيده جملةً: «الاحتسابُ آليّ والإقرارُ على الإدارة…» — ومَن أقرّ ومتى صار في خطوته الثالثة). وزرُّ التسليم صار مسمّىً بالتالي المستحقّ («سلِّم الراتبَ التالي: …») بدل «سلِّم الراتب» المبهم. وحُذف تعليقان بصوت المصمّم («لا سطرَ صفريٍّ بلا سببه» — الجدولُ نفسُه يثبته) وسطرُ طمأنةٍ يكرّر ما في البنر، وصُدِّق وصفُ جدول التوقّفات (كان يدّعي «كلُّ توقّفٍ بصاحبه» ولا اسمَ فيه)، و«ما يقوله العملُ اليوم» صار «لو احتُسب اليوم»، والعددُ المكتوبُ حروفاً صار رقماً (٤٢).</li>
   </ul>
 </aside>
 

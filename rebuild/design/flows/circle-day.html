@@ -13,6 +13,12 @@
 <input type="radio" name="st" id="st-error">
 <input type="radio" name="st" id="st-loading">
 <input type="checkbox" id="caps-on">
+<input type="radio" name="th" id="th-light" checked>
+<input type="radio" name="th" id="th-dark">
+<input type="radio" name="th" id="th-system">
+<!-- مرساتا إطارَي الفهرس الداكن/بتفضيل الجهاز (قب-٦١) — لا تُرسمان. -->
+<span id="embed-dark" hidden></span>
+<span id="embed-system" hidden></span>
 
 <div class="m-preview" id="embed">
   <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
@@ -24,6 +30,12 @@
   </div>
   <span class="m-preview__label">·</span>
   <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__label">النمط:</span>
+  <div class="m-preview__group">
+    <label for="th-light">فاتح</label>
+    <label for="th-dark">داكن</label>
+    <label for="th-system">بتفضيل جهازك</label>
+  </div>
   <span class="m-preview__spacer"></span>
   <a class="m-link" href="../index.html">← الفهرس</a>
 </div>
@@ -65,8 +77,6 @@
     </div>
 
     <div class="m-card">
-      <p class="m-stat__scope">اضغط حالةَ الحضور مباشرةً في السطر — ولا تفتح شيئاً إن لم يكن للطالب تسميع. وفتحُ السطر يُظهر حقولَ التسميع نفسَها في مكانها، لا في نموذجٍ ثانٍ أسفل الصفحة.</p>
-
       <ul class="m-list">
 
         <!-- سطرُ طالبٍ لم يُسجَّل بعد: الحضورُ بنقرةٍ واحدة. -->
@@ -104,7 +114,7 @@
               <span class="m-field">
                 <span class="m-field__label">السورة</span>
                 <span class="m-field__control">النبأ</span>
-                <span class="m-hint">من كتالوج السور — لا كتابةَ حرّة، فلا يختلف اسمُ السورة بين حلقتين</span>
+                <span class="m-hint">من كتالوج السور</span>
               </span>
               <span class="m-field">
                 <span class="m-field__label">من الآية — إلى الآية</span>
@@ -113,7 +123,7 @@
               <span class="m-field">
                 <span class="m-field__label">علامةُ الحفظ</span>
                 <span class="m-field__control">٩</span>
-                <span class="m-hint">من ١٠ — الحدُّ من إعدادات الشبكة لا من الشاشة</span>
+                <span class="m-hint">من ١٠</span>
               </span>
               <span class="m-field">
                 <span class="m-field__label">علامةُ المراجعة</span>
@@ -128,7 +138,7 @@
               <span class="m-field">
                 <span class="m-field__label">مادةٌ إثرائية (اختياريّ)</span>
                 <span class="m-field__control">على بصيرة — المجلس ١٥ — علامة ٧</span>
-                <span class="m-hint">نوعُها من كتالوج الأنواع، ولها علامةٌ كبقيّة الموادّ</span>
+                <span class="m-hint">من كتالوج الأنواع</span>
               </span>
             </div>
 
@@ -173,7 +183,7 @@
 
       </ul>
 
-      <p class="m-stat__scope">وبقي ١٤ طالباً — تظهر أسماؤهم على الترتيب نفسه.</p>
+      <p class="m-stat__scope">وبقي ١٤ طالباً.</p>
     </div>
 
     <div class="m-thumb">
@@ -258,12 +268,11 @@
         </li>
       </ul>
 
-      <p class="m-stat__scope">ما أدخلتَه لم يضِع: يبقى عندك حتى يصحّ السطرُ وتعود الشبكة.</p>
     </div>
 
     <div class="m-thumb">
       <button class="m-btn is-loading" type="button" disabled data-cap="circle.teach #١٨">احفظ جلسةَ اليوم · بانتظار تصحيح سطرين</button>
-      <span class="m-thumb__note">الحفظُ لا يمرّ بسطرٍ خارج الحدّ — والسببُ مكتوبٌ في مكان الرقم نفسِه</span>
+      <span class="m-thumb__note">لا يُحفظ اليومُ وفيه سطرٌ يحتاج تصحيحاً</span>
     </div>
 
   </main>
@@ -308,6 +317,7 @@
     <li><strong>ع-١٠ (المادةُ الإثرائية بعلامة)</strong> حقلٌ في السطر نفسِه لا قائمةٌ بلا فائدة؛ و<strong>ق-٨٩</strong>: السورةُ من كتالوجٍ لا كتابةً حرّة.</li>
     <li><strong>الفارغةُ تشخّص</strong>: المعلّمُ لا يُسجّل الطلاب (تسجيلُهم بـ<code>circle.manage #١٧</code> عند الأمير) — فالحالةُ الفارغة <em>لا</em> تعرض زرّاً سيرفضه الخادم، بل تقول من يُسأل باسمه.</li>
     <li><strong>ملاحظاتُ الإشراف تبويبٌ لا كتلةٌ مكرّرة</strong> (قب-٥٤/٣): موضعُها هنا وحده — وأُزيلت من رئيسية المعلّم كي لا تُقرأ المعلومةُ الواحدة في موضعين.</li>
+    <li><strong>تدقيق T34 (قب-٦١)</strong>: حُذفت فقرةُ «اضغط حالة الحضور مباشرةً…» — شرحُ آليّةِ استعمالٍ في وجه الشاشة إقرارٌ بأنها لم تُفهم من نفسها، والرقائقُ تشرح نفسَها بالشكل. وبُسِّطت تلميحاتُ الحقول إلى حدِّها («من ١٠» · «من كتالوج السور») — مصدرُ الحدّ من إعدادات الشبكة معلومةُ مديرٍ لا محفّظ. وحُذف سطرُ طمأنةٍ مكرَّرٌ في حالة الخطأ (جملةُ البطاقة الأولى تقوله).</li>
   </ul>
 </aside>
 

@@ -13,6 +13,12 @@
 <input type="radio" name="st" id="st-error">
 <input type="radio" name="st" id="st-loading">
 <input type="checkbox" id="caps-on">
+<input type="radio" name="th" id="th-light" checked>
+<input type="radio" name="th" id="th-dark">
+<input type="radio" name="th" id="th-system">
+<!-- مرساتا إطارَي الفهرس الداكن/بتفضيل الجهاز (قب-٦١) — لا تُرسمان. -->
+<span id="embed-dark" hidden></span>
+<span id="embed-system" hidden></span>
 
 <div class="m-preview" id="embed">
   <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
@@ -24,6 +30,12 @@
   </div>
   <span class="m-preview__label">·</span>
   <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__label">النمط:</span>
+  <div class="m-preview__group">
+    <label for="th-light">فاتح</label>
+    <label for="th-dark">داكن</label>
+    <label for="th-system">بتفضيل جهازك</label>
+  </div>
   <span class="m-preview__spacer"></span>
   <a class="m-link" href="../index.html">← الفهرس</a>
 </div>
@@ -53,9 +65,9 @@
     <h1 class="m-section-title m-section-title--first">ما الذي ينتظر اعتمادي الآن؟</h1>
 
     <div class="m-card is-highlight">
-      <p class="m-stat__sentence">ستةُ أعمالٍ تنتظر اعتمادَك أنت — أربعةُ سجلاتٍ وزيارتان.</p>
-      <p class="m-stat__value is-brand">٦</p>
-      <p class="m-stat__scope">ما أنت أقربُ طبقةٍ له وحدَه · أقدمُها منذ ٣ أيام · مدخلُه شريطُ الفعل أسفلَ الشاشة</p>
+      <p class="m-stat__sentence">خمسةُ أعمالٍ تنتظر اعتمادَك أنت — ثلاثةُ سجلاتٍ وزيارتان.</p>
+      <p class="m-stat__value is-brand">٥</p>
+      <p class="m-stat__scope">ما أنت أقربُ طبقةٍ له وحدَه · أقدمُها منذ ٣ أيام</p>
     </div>
 
     <h2 class="m-section-title">مَن تأخّر من مساجدي هذا الأسبوع؟</h2>
@@ -66,7 +78,7 @@
       <p class="m-stat__scope">الأرقام على منطقتك وحدها · يُقفل الأسبوع بعد يومين</p>
       <div class="m-table-wrap">
         <table class="m-table">
-          <caption>السبعةُ المتأخّرون — مرتَّبين بالأقدم تأخّراً، ولكلٍّ مَن يُسأل</caption>
+          <caption>أوّلُ أربعةٍ من السبعة المتأخّرين — بالأقدم تأخّراً، ولكلٍّ مَن يُسأل</caption>
           <thead>
             <tr><th>المسجد</th><th>المربع</th><th>المسؤول ويُسأل</th><th>آخرُ إدخال</th><th>الحال</th></tr>
           </thead>
@@ -104,7 +116,6 @@
       </div>
       <div class="m-stat__row">
         <a class="m-btn is-secondary" href="#" data-cap="dailyLog.view #١١">افتح القائمة كاملةً</a>
-        <a class="m-btn is-ghost" href="#" data-cap="report.export #٨">صدِّر الجدول</a>
       </div>
     </div>
 
@@ -115,7 +126,7 @@
         <span class="m-badge is-danger">✖ شاغر</span>
         <span class="m-item__text">
           <span>مسجد الفاروق (مربع الرستن) بلا أمير منذ ١٩ يوماً — ولذلك لا سجلَّ له.</span>
-          <span class="m-item__sub">مَن يُسأل: أ. ماهر الرستني — مسؤول مربع الرستن</span>
+          <span class="m-item__sub">مربعُ الرستن شاغرٌ هو الآخر — فأنت الأقربُ للتمكين مباشرةً</span>
         </span>
         <span class="m-item__action">
           <a class="m-btn is-secondary" href="#" data-cap="users.provision #٧٠">مكّن أميراً للمسجد</a>
@@ -135,7 +146,6 @@
         <span class="m-badge is-warning">⚠ ٣</span>
         <span class="m-item__text">
           <span>ثلاثُ حلقاتٍ استحقّت زيارةً الآن — أقدمُها لم تُزَر منذ ٤٧ يوماً ودورتُها ٣٠.</span>
-          <span class="m-item__sub">الترتيبُ بالحاجة لا بالاسم</span>
         </span>
         <span class="m-item__action">
           <a class="m-btn is-secondary" href="#" data-cap="visit.conduct #٣٢">لوحةُ زياراتي</a>
@@ -160,14 +170,14 @@
           <span>كيف تقوم وحداتي: أضعفُ مربعاتك تغطيةً «مربع الرستن» بنسبة ٣٤٪.</span>
           <span class="m-item__sub">التغطيةُ نسبةُ الحلقات المزارة ضمن الدورة</span>
         </span>
-        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="visit.view #٣٤">العرضُ القياديّ</a></span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="visit.view #٣٤">تفصيلُ التغطية</a></span>
       </li>
     </ul>
 
     <!-- الفعلُ الأهمُّ للمشرف: مدخلٌ واحدٌ في متناول الإبهام. -->
     <div class="m-thumb">
-      <a class="m-btn is-primary" href="../flows/approval-queue.html" data-cap="report.approve #٤">افتح طابور الاعتماد — ٦</a>
-      <span class="m-thumb__note">ما تعطّل عملُ غيرك عليه · أقدمُه منذ ٣ أيام</span>
+      <a class="m-btn is-primary" href="../flows/approval-queue.html" data-cap="report.approve #٤">افتح طابور الاعتماد — ٥</a>
+      <span class="m-thumb__note">ما تعطّل عملُ غيرك عليه</span>
     </div>
 
   </main>
@@ -292,6 +302,7 @@
     <li><strong>البحثُ ظاهرٌ هنا</strong> وغائبٌ عند الأمير: بابُه <code>network.view #١</code> ومداه نطاقُ صاحبه — لا يكشف ما خارج عدسته.</li>
     <li><strong>فجوةٌ مرفوعة</strong>: عدستُه تنصّ على رئيسيةٍ «بفعل تذكير»، ولا قدرةَ «تذكير» في الكتالوج ولا في أيّ عقد — فلم يُرسم زرٌّ يكذب، ورُفعت <code>CR-DRAFT-design-004</code>. المرسومُ بدلَه: اسمُ من يُسأل بجانب كل متأخّر.</li>
     <li><strong>ترتيبُ الشريط</strong> مأخوذٌ حرفياً من الخريطة الواحدة المحروسة، ويُخرِج على الجوال: الرئيسية · البيان · المكتبة · المنهاج · المسابقة. <em>توصيةُ التصميم للمالك</em> (وهو قرارُه — ترتيبُ أولوية شاشات كل دور): تُقدَّم «الإدارة» و«المالية» على «المكتبة» و«المنهاج» لهذا الدور.</li>
+    <li><strong>تدقيق T34 (قب-٦١)</strong>: العدُّ صُدِّق — سجلُّ الفرقان ينتظر <em>تدخّلاً فوقياً</em> لا اعتمادَه العاديّ، فليس من «ينتظر اعتمادَك أنت»: صار العدّ ٥ (٣ سجلات + زيارتان) هنا وفي الشريط وفي الطابور. وصُحّح تناقضُ بياناتٍ: مربعُ الرستن شاغرٌ في كل الشاشات، فلا يُسمّى له مسؤولٌ في سطر الفاروق (وأ. ماهر الرستني مسؤولُ مربع الوعر حصراً). وحُذف «صدِّر الجدول» من الرئيسية (موضعُه القائمةُ الكاملة في البيان — مدخلٌ واحد)، وقولُ الجدول «السبعة» وهو يعرض أربعةً صار صادقاً، وحُذفت أسطرُ الآليّة («مدخلُه شريط الفعل» · «الترتيبُ بالحاجة») و«العرضُ القياديّ» صار «تفصيلَ التغطية».</li>
   </ul>
 </aside>
 

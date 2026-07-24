@@ -13,6 +13,12 @@
 <input type="radio" name="st" id="st-error">
 <input type="radio" name="st" id="st-loading">
 <input type="checkbox" id="caps-on">
+<input type="radio" name="th" id="th-light" checked>
+<input type="radio" name="th" id="th-dark">
+<input type="radio" name="th" id="th-system">
+<!-- مرساتا إطارَي الفهرس الداكن/بتفضيل الجهاز (قب-٦١) — لا تُرسمان. -->
+<span id="embed-dark" hidden></span>
+<span id="embed-system" hidden></span>
 
 <div class="m-preview" id="embed">
   <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
@@ -24,6 +30,12 @@
   </div>
   <span class="m-preview__label">·</span>
   <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__label">النمط:</span>
+  <div class="m-preview__group">
+    <label for="th-light">فاتح</label>
+    <label for="th-dark">داكن</label>
+    <label for="th-system">بتفضيل جهازك</label>
+  </div>
   <span class="m-preview__spacer"></span>
   <a class="m-link" href="../index.html">← الفهرس</a>
 </div>
@@ -52,37 +64,25 @@
 
     <h1 class="m-section-title m-section-title--first">هل الشبكة بخير هذا الأسبوع؟</h1>
 
-    <div class="m-card is-highlight is-two-thirds">
+    <div class="m-card is-highlight">
       <p class="m-stat__sentence">أدخل <strong>١١٦</strong> مسجداً من <strong>١٤٢</strong> سجلَّهم واعتُمد، مقابل <strong>١٠٤</strong> الأسبوعَ الماضي.</p>
       <p class="m-stat__value is-brand">٨٢٪ ▲</p>
       <p class="m-stat__scope">النسبةُ على الشبكة كلِّها · تعريفُها: مسجدٌ أدخل سجلَّه واعتمده مَن فوقه قبل إقفال الأسبوع</p>
       <div class="m-stat__row">
         <a class="m-btn is-ghost" href="#" data-cap="network.view #١">افتح البيان</a>
-        <a class="m-btn is-ghost" href="#" data-cap="report.export #٨">صدِّر التقرير</a>
       </div>
-    </div>
-
-    <div class="m-card is-third">
-      <p class="m-stat__sentence">الشبكةُ في سطر</p>
-      <div class="m-entity__facts">
-        <span class="m-fact"><span class="m-fact__label">مناطق</span><span class="m-fact__value">٦</span></span>
-        <span class="m-fact"><span class="m-fact__label">مساجد</span><span class="m-fact__value">١٤٢</span></span>
-        <span class="m-fact"><span class="m-fact__label">حلقات</span><span class="m-fact__value">٣٩٨</span></span>
-        <span class="m-fact"><span class="m-fact__label">طلاب</span><span class="m-fact__value">٦٬٤١٠</span></span>
-      </div>
-      <p class="m-stat__scope">أرقامُ بنيةٍ لا أداء — تتغيّر بالتوسّع لا بالأسبوع.</p>
     </div>
 
     <h2 class="m-section-title">أين الاستثناء؟</h2>
 
     <div class="m-card is-two-thirds">
-      <p class="m-stat__scope">ثلاثُ وحداتٍ خارج المسار، مرتَّبةً بأثرها لا باسمها — ولكلٍّ مَن يُسأل.</p>
+      <p class="m-stat__scope">ثلاثُ وحداتٍ خارج المسار — مرتَّبةً بأثرها.</p>
       <ul class="m-list">
         <li class="m-item is-danger">
           <span class="m-badge is-danger">✖ الأثقل</span>
           <span class="m-item__text">
             <span>منطقة حماة: ٤ من ١٢ مسجداً أدخلت هذا الأسبوع — أدنى منطقةٍ في الشبكة منذ ثلاثة أسابيع.</span>
-            <span class="m-item__sub">المسؤول ويُسأل: أ. عمر الديري — مسؤول منطقة حماة · مشرفُ عام القسم: أ. ياسر الشهابي</span>
+            <span class="m-item__sub">المسؤول ويُسأل: أ. مازن العقاد — مسؤول منطقة حماة · مشرفُ عام القسم: أ. ياسر الشهابي</span>
           </span>
           <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="network.view #١">افتح المنطقة</a></span>
         </li>
@@ -90,7 +90,7 @@
           <span class="m-badge is-warning">⚠ شاغر</span>
           <span class="m-item__text">
             <span>مربع الرستن شاغرٌ بلا مسؤول منذ ٢٤ يوماً — وتحته ٧ مساجد بلا اعتمادٍ قريب.</span>
-            <span class="m-item__sub">مَن يُسأل: أ. ماهر الرستني — مسؤول منطقة حمص (وهو الأقرب لتكليف بديل)</span>
+            <span class="m-item__sub">مَن يُسأل: أ. حسان العمري — مسؤول منطقة حمص (وهو الأقربُ لتكليف بديل)</span>
           </span>
           <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="network.view #١">افتح المربع</a></span>
         </li>
@@ -100,13 +100,9 @@
             <span>قسم النساء: تغطيةُ الزيارات ٣٩٪ مقابل ٧١٪ في قسم الذكور.</span>
             <span class="m-item__sub">المسؤولة وتُسأل: أ. هدى القاسم — مشرفة عام قسم النساء</span>
           </span>
-          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="visit.view #٣٤">العرضُ القياديّ</a></span>
+          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="visit.view #٣٤">تفصيلُ التغطية</a></span>
         </li>
       </ul>
-      <div class="m-diagnosis">
-        <span>ما ترى هنا تشخيصٌ لا طابور عمل.</span>
-        <span class="m-diagnosis__who">الاعتمادُ والتكليفُ والإدخالُ أفعالُ طبقاتها — وأنت تسأل عنها من يملكها.</span>
-      </div>
     </div>
 
     <div class="m-card is-third">
@@ -129,28 +125,12 @@
         </span>
         <span class="m-item__action"><a class="m-btn is-secondary" href="#" data-cap="approve.breakGlass #٦">ابتّ في الطلب</a></span>
       </li>
-      <li class="m-item">
-        <span class="m-badge is-neutral">• سياسة</span>
-        <span class="m-item__text">
-          <span>هدفُ النقاط الأسبوعيّ ٧٠ منذ ثلاثة أشهر — وثلثُ المساجد يتجاوزه بفارقٍ كبير.</span>
-          <span class="m-item__sub">تغييرُه إعدادٌ حيٌّ يسري على الشبكة كلِّها من لحظة الحفظ</span>
-        </span>
-        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="settings.manage #٨٢">راجِع الإعدادات</a></span>
-      </li>
-      <li class="m-item is-success">
-        <span class="m-badge is-success">✔ أُقرّت</span>
-        <span class="m-item__text">
-          <span>أقررتَ خطةَ رواتب محرم أمس: ٤٢ مستحقّاً · <span class="m-money">٣٬٤٢٠٬٠٠٠ ل.س</span> — والتسليمُ الآن على المسؤول المالي.</span>
-          <span class="m-item__sub">سُلّم منها <span class="m-money">١٬٢٤٠٬٠٠٠ ل.س</span> · لا شيءَ عليك فيها بعد الإقرار</span>
-        </span>
-        <span class="m-item__action"><a class="m-btn is-ghost" href="../flows/payroll.html" data-cap="payroll.view #٤٥">تابِع التسليم</a></span>
-      </li>
     </ul>
     </div>
 
     <div class="m-thumb">
-      <a class="m-btn is-primary" href="#" data-cap="finance.supervise #٣٨">افتح صندوق قراري — ٣</a>
-      <span class="m-thumb__note">ما لا يُبَتُّ فيه إلا منك — والباقي يمشي بلا انتظارك</span>
+      <a class="m-btn is-primary" href="#" data-cap="finance.supervise #٣٨">افتح صندوق قراري — ٤</a>
+      <span class="m-thumb__note">ما لا يُبَتُّ فيه إلا منك</span>
     </div>
 
   </main>
@@ -215,7 +195,7 @@
           <span class="m-badge is-warning">⚠ فصلُ مهام</span>
           <span class="m-item__text">
             <span>لا يمكنك اعتمادُ مقترحٍ اقترحتَه أنت — المقترحُ رقم ١٤٠٢ ينتظر مُعتمِداً غيرك.</span>
-            <span class="m-item__sub">هذا قفلٌ على الشخص لا على الدور: يحمل الدورُ القدرتين ولا يجمعهما على قيدٍ واحد</span>
+            <span class="m-item__sub">لأنك أنت مقترِحُه: يعتمده شخصٌ غيرُك ولو حمل دورُك القدرتين</span>
           </span>
           <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="finance.supervise #٣٨">افتح بقيّةَ المقترحات</a></span>
         </div>
@@ -227,7 +207,7 @@
         <span>✖ تعذّر حسابُ مؤشر الأسبوع</span>
         <button class="m-btn is-secondary" type="button" data-cap="network.view #١">أعد المحاولة</button>
       </div>
-      <p class="m-stat__scope">لا يُعرض رقمٌ قديمٌ على أنه اليوم — الرقمُ إمّا حيٌّ أو غائبٌ بسببه.</p>
+      <p class="m-stat__scope">أعد المحاولة — ولا يُعرَض رقمٌ قديمٌ مكانَه.</p>
     </div>
 
   </main>
@@ -278,6 +258,7 @@
     <li><strong>فصلُ المهام يظهر في الشاشة</strong>: المديرُ يُقِرّ خطةَ الرواتب ولا يرفعها (لا يملك <code>payroll.run</code>)، ويبتّ في المقترحات ولا يؤلّفها؛ وحالةُ الخطأ ترينا القفلَ على <em>الشخص</em> لا على الدور.</li>
     <li><strong>مدخلٌ واحدٌ لكلِّ فعل</strong> (قب-٥٤/٣): شريطُ الإبهام يفتح صندوقَ القرار، وأسطرُ الصندوق تفتح كلَّ قرارٍ بعينه — لا زرَّين لقرارٍ واحد.</li>
     <li><strong>فجوةُ عقد</strong>: لا عقدَ شاشةٍ لـ<code>/home</code> بعدسة المدير (القائم <code>lenses: ["amir"]</code>) ولا مصدرَ بياناتٍ لمؤشر الصحة — مرفوعةٌ في <code>CR-DRAFT-design-001</code>.</li>
+    <li><strong>تدقيق T34 (قب-٦١)</strong>: حُذفت بطاقةُ «الشبكة في سطر» (تكرارٌ لسطر النطاق فوقها، وأرقامُها «بنيةٌ لا أداء» بنصّها — والرقمُ بلا فعلٍ مكانُه التقارير ق-١٠٨)، وحُذف سطرا «سياسة الهدف» (تحليلٌ بلا مصدرِ بياناتٍ في أيّ عقد، ولا شيءَ فيه «ينتظر») و«أُقرّت خطة الرواتب» (منجزٌ داخلَ صندوق قرار — أثرُه يُتابَع في شاشة الرواتب من الشريط)، فصار الصندوقُ قراراتٍ صرفة وعدُّه ٤ صادقاً في الشريط. وحُذف «صدِّر التقرير» (موضعُه البيان) وكتلةُ «تشخيصٌ لا طابور عمل» الواعظة من الممتلئة (تبقى فكرتُها في الفارغة حيث تُشرَح مرةً). وصُحّح اسمان لاتّساق الشخوص عبر الشاشات (حماة: مازن العقاد · حمص: حسان العمري).</li>
   </ul>
 </aside>
 
