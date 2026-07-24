@@ -105,7 +105,10 @@ describe("هجرةُ سجل اليوم — **على بيانات v1 منقولة
 
     const before = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     const applied = await applyMigrations(target, shippedMigrations())
-    expect(applied).toEqual(["0004_dailyLog.sql"])
+    // **مشتقٌّ لا مسرود** (قب-٥١ · فخّ ٢): كلُّ الهجرات من `0004` فصاعداً تنزل هنا — وسجلُّ
+    // اليوم **إحداها** لا آخرُها. والثابتُ المقصود هو التالي: `after == before` (اللاإتلاف).
+    expect(applied).toEqual(shippedMigrations().filter((m) => m.name >= "0004").map((m) => m.name))
+    expect(applied).toContain("0004_dailyLog.sql")
     const after = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     expect(after).toEqual(before)
     target.close()

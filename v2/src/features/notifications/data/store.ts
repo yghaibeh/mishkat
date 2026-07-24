@@ -59,6 +59,10 @@ export class NotificationStore {
   getUnit(id: string): NotificationUnit | null {
     return this.unitMap.get(id) ?? null
   }
+  /** كلُّ الوحدات المسقَطة — **قراءةٌ لطبقة الاستمرار** (الإسقاط إلى D1) لا مسارُ عمل. */
+  units(): readonly NotificationUnit[] {
+    return Object.freeze([...this.unitMap.values()])
+  }
 
   saveKind(k: NotificationKind): void {
     this.kindMap.set(k.id, Object.freeze({ ...k, tenantId: this.tenantId }))
@@ -135,6 +139,10 @@ export class NotificationStore {
   }
   channelsOf(ownerId: string): readonly LinkedChannel[] {
     return Object.freeze([...this.channelMap.values()].filter((c) => c.personId === ownerId))
+  }
+  /** كلُّ القنوات المربوطة — **قراءةٌ لطبقة الاستمرار** (الإسقاط إلى D1) لا مسارُ عمل. */
+  channels(): readonly LinkedChannel[] {
+    return Object.freeze([...this.channelMap.values()])
   }
 
   // ── الإعلانات ───────────────────────────────────────────────────────────────
