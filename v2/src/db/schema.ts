@@ -43,6 +43,7 @@ import { MEDIA_TABLES } from "./schema/media.js"
 import { NOTIFICATIONS_TABLES } from "./schema/notifications.js"
 import { ORG_TABLES } from "./schema/org.js"
 import { SHARED_TABLES } from "./schema/shared.js"
+import { SUPERVISION_TABLES } from "./schema/supervision.js"
 
 export type { ColumnSpec, ColumnType, TableSpec } from "./schema/columns.js"
 export { ROUTING_COLUMN, TENANT_COLUMN, TENANT_ROOT_PATH } from "./schema/columns.js"
@@ -61,6 +62,7 @@ export const TABLES: readonly TableSpec[] = [
   ...MEDIA_TABLES,
   ...NOTIFICATIONS_TABLES,
   ...LIBRARY_TABLES,
+  ...SUPERVISION_TABLES,
   ...SHARED_TABLES,
 ]
 
