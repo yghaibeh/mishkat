@@ -33,6 +33,7 @@
  */
 
 import type { TableSpec } from "./schema/columns.js"
+import { CIRCLE_LOG_TABLES } from "./schema/circleLog.js"
 import { CIRCLES_TABLES } from "./schema/circles.js"
 import { COMMITTEES_TABLES } from "./schema/committees.js"
 import { CUSTODY_TABLES } from "./schema/custody.js"
@@ -57,6 +58,7 @@ export const TABLES: readonly TableSpec[] = [
   ...INFRASTRUCTURE_TABLES,
   ...ORG_TABLES,
   ...LEDGER_TABLES,
+  ...CIRCLE_LOG_TABLES,
   ...CIRCLES_TABLES,
   ...COMMITTEES_TABLES,
   ...CUSTODY_TABLES,

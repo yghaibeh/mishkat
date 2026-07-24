@@ -58,6 +58,10 @@ export class CircleLogStore {
   getMushaf(id: string): MushafRef | null {
     return this.mushafMap.get(id) ?? null
   }
+  /** الكتالوجُ كلُّه — يقرؤه **الإسقاطُ الدائم** (`circleLogRepository`) كنظيره في السور. */
+  mushafs(): readonly MushafRef[] {
+    return Object.freeze([...this.mushafMap.values()])
+  }
 
   /**
    * **CR-٠٢٠ — فتراتُ اليوم صفوفٌ مرجعية** (ق-٨٩): تُعلنها الشبكةُ فتصير مفتاحاً، ولا تُعلنها
