@@ -112,7 +112,11 @@ describe("هجرةُ الإشراف — **على بيانات v1 منقولة** 
 
     const before = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     const applied = await applyMigrations(target, shippedMigrations())
-    expect(applied).toEqual(["0009_supervision.sql"])
+    // **مشتقٌّ لا مسرود** (الوصفة §٣-٨ · قب-٥١ · فخّ ٢): سردُ «`0009` وحدها» يفترض أنها
+    // **الأخيرة**، فتُحمّرها أوّلُ هجرةِ وحدةٍ تليها. **والثابتُ المقصود هو السطرُ التالي**
+    // (`after == before` — اللاإتلاف) لا عددُ الهجرات.
+    expect(applied).toEqual(shippedMigrations().filter((m) => m.name >= "0009").map((m) => m.name))
+    expect(applied).toContain("0009_supervision.sql")
     const after = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     expect(after).toEqual(before)
     target.close()

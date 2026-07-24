@@ -524,6 +524,30 @@ describe("حوافُّ مستودع الإشراف", () => {
     driver.close()
   })
 
+  it("**شكلُ توجيهٍ واحد** (الوصفة §٤-٠): كلُّ جداول الوحدة بمسار وحدةٍ، ولا كتالوجَ بالجذر", async () => {
+    const driver = await freshDb()
+    await seedSupervisionSession(driver, MAIN)
+    await supervisionSession(driver, MAIN, (store) => visit(store, "u-square", C1, TAHFEEZ_DETAILS))
+
+    // **البياناتُ التشغيلية بمسار وحدتها حصراً**: صفرُ صفٍّ بالجذر في الأهداف والزيارات.
+    for (const table of ["supervision_targets", "supervision_visits"]) {
+      const rows = (await rowsOf(driver, table)) as readonly Record<string, unknown>[]
+      expect(rows.length).toBeGreaterThan(0)
+      const atRoot = rows.filter((r) => String(r["unit_path"]) === "/")
+      expect(`${table}:بالجذر=${atRoot.length}`).toBe(`${table}:بالجذر=0`)
+    }
+
+    // **وإسقاطُ الوحدات شجرةٌ لا كتالوج**: صفُّه الوحيدُ بالجذر هو **عقدةُ الجذر نفسُها**
+    // (مسارُها `/` بحكم كونها الجذر — نظيرُ `custody_units` حرفياً)، لا صفوفَ مرجعيةٍ
+    // شبكيةً تُقرأ بكل نطاق. فلا صنفَ ثانٍ ⟵ **مستودعٌ واحدٌ صحيح**، ولا موجبَ لفصل
+    // `Catalog`/`Entries` (وهو يخصّ `media`/`library`).
+    const units = (await rowsOf(driver, "supervision_units")) as readonly Record<string, unknown>[]
+    expect(units.filter((r) => String(r["unit_path"]) === "/").map((r) => String(r["id"]))).toEqual([
+      "root",
+    ])
+    driver.close()
+  })
+
   it("هدفٌ موقوفٌ لا يدخل لوحةَ التصنيف بعد عبور القاعدة — الإيقافُ يُحترم على المحمَّل", async () => {
     const driver = await freshDb()
     await seedSupervisionSession(driver, MAIN)

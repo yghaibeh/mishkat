@@ -114,6 +114,10 @@ export class DailyLogStore {
   getRoster(unitPath: string): FamilyRoster | null {
     return this.rosterMap.get(unitPath) ?? null
   }
+  /** كلُّ الأعداد المضبوطة — تخدم الإسقاطَ إلى القاعدة (طبقةُ الاستمرار) لا منطقَ الوحدة. */
+  rosters(): readonly FamilyRoster[] {
+    return Object.freeze([...this.rosterMap.values()])
+  }
 
   // ── المعاملة الذرّية ────────────────────────────────────────────────────────
   private snapshot(): Snapshot {
