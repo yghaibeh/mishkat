@@ -9,20 +9,20 @@
  * يبحث في مستودع شبكة الفاعل وحدها، فالكيانُ الغريب ⇒ `NO_SCOPE` ⇒ رفض.
  */
 
-import { LedgerStore } from "../../ledger/data/store.js"
-import { BoxStore, type BoxStores } from "./store.js"
+import { boxStoresFor, type BoxStores } from "./store.js"
 
 export class BoxTenantRegistry {
   private readonly stores = new Map<string, BoxStores>()
 
-  /** مستودعا الشبكة **مقترنَين** — يُنشآن معاً عند أول طلبٍ ثم يُعادان هما نفسُهما. */
+  /**
+   * مستودعا الشبكة **مقترنَين** — يُنشآن معاً عند أول طلبٍ ثم يُعادان هما نفسُهما.
+   * **وبسجلِّ تدقيقٍ واحدٍ مُحقَن** (شرطُ قب-٤٩): البناءُ من `boxStoresFor` وحدَها، فلا
+   * يُنشئ الدفترُ سجلَّه الافتراضيَّ الخاصّ — سجلّان لدفترٍ واحدٍ محوٌ صامتٌ عند القذف.
+   */
   storesFor(tenantId: string): BoxStores {
     const existing = this.stores.get(tenantId)
     if (existing !== undefined) return existing
-    const created: BoxStores = {
-      ledger: new LedgerStore(tenantId),
-      box: new BoxStore(tenantId),
-    }
+    const created = boxStoresFor(tenantId)
     this.stores.set(tenantId, created)
     return created
   }

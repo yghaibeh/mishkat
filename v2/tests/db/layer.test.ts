@@ -24,6 +24,12 @@ import type { SqlRow, SqlStatement } from "../../src/db/sql/driver.js"
 import { MAIN, freshDb, seedSession, session } from "./_harness.js"
 import { OrgStore } from "../../src/features/org/data/store.js"
 
+/**
+ * **اسمٌ لا يمكن أن يصير جدولاً** — بادئتُه وذيلُه شرطتان مزدوجتان، ولا وحدةَ تُسمّي
+ * جدولَها هكذا. وبه يبقى «جدولٌ بلا مخطط يُرمى» ثابتاً **لا ينقضي موضوعُه** بنقلِ وحدة.
+ */
+const NO_SUCH_TABLE = "__جدولٌ_لا_مخططَ_له__"
+
 /** بديلٌ مزيَّف لـD1 يسجّل ما نُودي به — يقيس **شكل النداء** لا نتيجتَه. */
 function fakeD1(): { db: D1Like; calls: string[]; batched: number[] } {
   const calls: string[] = []
@@ -114,8 +120,12 @@ describe("الترميز — لا قراءةَ صامتة", () => {
 
 describe("المخطط ووحدةُ العمل", () => {
   it("جدولٌ بلا مخطط **يُرمى** — لا يُقذف ما لا مخططَ له", () => {
-    expect(hasTable("box_handovers")).toBe(false)
-    expect(() => tableSpec("box_handovers")).toThrow(/جدولٌ بلا مخطط/)
+    // **اسمٌ سِنتينل لا وحدةٌ لم تُنقل بعد** (فخّ ٢ · قاعدةُ قب-٥٠ ٢): كان المثالُ هنا
+    // `box_handovers`، فانقضى موضوعُه يومَ نُقل الصندوق — وكان كلُّ ناقلٍ بعده سيدفع الثمن
+    // نفسَه في هذا الملفّ المشترك. **والثابتُ المقصودُ «جدولٌ بلا مخطط يُرمى» لا اسمُ وحدة**،
+    // فالمثالُ يُستبدل باسمٍ **لا يمكن أن يُنقل**: لا بادئةَ وحدةٍ له ولا شكلَ اسمِ جدول.
+    expect(hasTable(NO_SUCH_TABLE)).toBe(false)
+    expect(() => tableSpec(NO_SUCH_TABLE)).toThrow(/جدولٌ بلا مخطط/)
   })
 
   it("المفتاحُ الطبيعيّ يُركَّب بترتيب إعلانه لا بترتيب الصفّ", () => {
