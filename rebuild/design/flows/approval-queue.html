@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مِشكاة — طابور الاعتماد</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body>
+
+<input type="radio" name="st" id="st-full" checked>
+<input type="radio" name="st" id="st-empty">
+<input type="radio" name="st" id="st-error">
+<input type="radio" name="st" id="st-loading">
+<input type="checkbox" id="caps-on">
+
+<div class="m-preview" id="embed">
+  <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
+  <div class="m-preview__group">
+    <label for="st-full">ممتلئة</label>
+    <label for="st-empty">فارغة تشرح</label>
+    <label for="st-error">خطأٌ إنسانيّ</label>
+    <label for="st-loading">تحميل</label>
+  </div>
+  <span class="m-preview__label">·</span>
+  <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__spacer"></span>
+  <a class="m-link" href="../index.html">← الفهرس</a>
+</div>
+
+<div class="m-stage">
+<div class="m-shell">
+
+  <header class="m-appbar">
+    <span class="m-appbar__brand">مِشكاة</span>
+    <span class="m-appbar__role">▲ مسؤول المنطقة</span>
+    <span class="m-appbar__spacer"></span>
+    <button class="m-appbar__icon is-text" type="button">بحثٌ في نطاقي</button>
+    <button class="m-appbar__icon" type="button" aria-label="إشعاراتي">◉</button>
+  </header>
+
+  <div class="m-scope">
+    <span>نطاقُ الصفحة:</span>
+    <span class="m-scope__unit">منطقة حمص</span>
+    <span>· ما أنت أقربُ طبقةٍ له وحدَه</span>
+    <span class="m-scope__unit m-hijri">الخميس ١٥ محرم ١٤٤٨ هـ</span>
+  </div>
+
+  <!-- ═════════════ ممتلئة ═════════════ -->
+  <main class="m-main m-state is-full">
+
+    <nav class="m-tabs" aria-label="أقسام الطابور">
+      <a href="#" aria-current="page">سجلاتٌ — ٤</a>
+      <a href="#">زياراتٌ — ٢</a>
+    </nav>
+
+    <h1 class="m-section-title m-section-title--first">ابتّ في الأقدم أولاً</h1>
+
+    <div class="m-card is-highlight">
+      <div class="m-stat__row">
+        <span class="m-badge is-warning">⚠ منذ ٣ أيام</span>
+        <span class="m-badge is-neutral">▸ ١ من ٤</span>
+      </div>
+      <p class="m-stat__sentence"><strong>مسجد النور</strong> — مربع الوعر · قدّمه أ. سليم الحموي في ١٢ محرم.</p>
+      <div class="m-entity__facts">
+        <span class="m-fact"><span class="m-fact__label">حصيلةُ الأسبوع</span><span class="m-fact__value">٣٨ نقطة</span></span>
+        <span class="m-fact"><span class="m-fact__label">أنشطة</span><span class="m-fact__value">١٢</span></span>
+        <span class="m-fact"><span class="m-fact__label">حلقات سجّلت</span><span class="m-fact__value">٣ / ٣</span></span>
+      </div>
+
+      <div class="m-table-wrap">
+        <table class="m-table">
+          <caption>ما فيه — لتبتّ وأنت ترى، لا لتفتح صفحةً أخرى</caption>
+          <thead><tr><th>النشاط</th><th>العدد</th><th>النقاط</th></tr></thead>
+          <tbody>
+            <tr><td data-label="النشاط">دروسُ الحلقات</td><td data-label="العدد" class="num">١٨</td><td data-label="النقاط" class="num">١٨</td></tr>
+            <tr><td data-label="النشاط">درسُ المسجد الأسبوعيّ</td><td data-label="العدد" class="num">٢</td><td data-label="النقاط" class="num">٨</td></tr>
+            <tr><td data-label="النشاط">زيارةُ أسرةٍ محتاجة</td><td data-label="العدد" class="num">٤</td><td data-label="النقاط" class="num">١٢</td></tr>
+            <tr><td data-label="النشاط">«حملةُ تنظيف حيّ الوعر» — نشاطٌ خارج القائمة</td><td data-label="العدد" class="num">١</td><td data-label="النقاط">بلا نقاطٍ آلية — تقرّرها أنت</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="m-diagnosis">
+        <span>نشاطٌ حرٌّ واحدٌ يحتاج نظرَك: يُوثَّق بلا نقاطٍ آلية، ويراه معتمِدُ السجل فيقرّر.</span>
+        <span class="m-diagnosis__who">أدخله: أ. سليم الحموي — أمير مسجد النور.</span>
+      </div>
+    </div>
+
+    <h2 class="m-section-title">وبقيّةُ الطابور</h2>
+
+    <ul class="m-list">
+      <li class="m-item">
+        <span class="m-badge is-neutral">• منذ يومين</span>
+        <span class="m-item__text">
+          <span>مسجد أبي بكر — مربع باب السباع — ٥١ نقطة</span>
+          <span class="m-item__sub">قدّمه أ. عمر الديري — ١٣ محرم</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="report.view #٢">افتحه</a></span>
+      </li>
+      <li class="m-item">
+        <span class="m-badge is-neutral">• أمس</span>
+        <span class="m-item__text">
+          <span>مسجد بلال — مربع القصور — ٢٩ نقطة</span>
+          <span class="m-item__sub">قدّمه أ. زياد المصري — ١٤ محرم</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="report.view #٢">افتحه</a></span>
+      </li>
+      <li class="m-item is-info">
+        <span class="m-badge is-info">ℹ طبقةٌ أدنى</span>
+        <span class="m-item__text">
+          <span>مسجد الفرقان — مربع الرستن — ٤٤ نقطة</span>
+          <span class="m-item__sub">الأقربُ إليه مسؤولُ مربع الرستن، والموقعُ شاغرٌ منذ ٢٤ يوماً — فلك أن تعتمده تدخُّلاً فوقياً بسببٍ يُقيَّد في التدقيق.</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-secondary" href="#" data-cap="report.approve.override #٥">تدخُّلٌ فوقيّ</a></span>
+      </li>
+    </ul>
+
+    <h2 class="m-section-title">زياراتٌ بانتظار اعتمادك</h2>
+
+    <ul class="m-list">
+      <li class="m-item">
+        <span class="m-badge is-neutral">• منذ ٤ أيام</span>
+        <span class="m-item__text">
+          <span>زيارةُ حلقة على بصيرة — مسجد خالد بن الوليد · تقييم ٨٤ من ١٠٠</span>
+          <span class="m-item__sub">زارها أ. ماهر الرستني — ١١ محرم — ١٧ حاضراً</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="visit.approve #٣٣">افتحها</a></span>
+      </li>
+      <li class="m-item">
+        <span class="m-badge is-neutral">• أمس</span>
+        <span class="m-item__text">
+          <span>زيارةُ حلقة التحفيظ — مسجد النور · تقييم ٦٢ من ١٠٠</span>
+          <span class="m-item__sub">زارها أ. ماهر الرستني — ١٤ محرم — ٩ حاضرين</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="visit.approve #٣٣">افتحها</a></span>
+      </li>
+    </ul>
+
+    <div class="m-thumb">
+      <button class="m-btn is-primary" type="button" data-cap="report.approve #٤">اعتمد سجلَّ مسجد النور</button>
+      <button class="m-btn is-secondary" type="button" data-cap="report.approve #٤">ردَّه بسببٍ يصله</button>
+      <span class="m-thumb__note">تبتُّ في المعروض أعلاه · وبعد بتّك ينتقل الطابور إلى الذي يليه</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ فارغةٌ تشرح ═════════════ -->
+  <main class="m-main m-state is-empty">
+
+    <nav class="m-tabs" aria-label="أقسام الطابور">
+      <a href="#" aria-current="page">سجلاتٌ — ٠</a>
+      <a href="#">زياراتٌ — ٠</a>
+    </nav>
+
+    <h1 class="m-section-title m-section-title--first">ما ينتظر اعتمادي</h1>
+
+    <div class="m-empty">
+      <svg class="m-mihrab" viewBox="0 0 64 96" aria-hidden="true" focusable="false">
+        <path d="M8 92 V44 C8 24 20 8 32 3 C44 8 56 24 56 44 V92 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(45 32 56)"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <p class="m-empty__title">لا شيءَ ينتظر اعتمادَك الآن</p>
+      <p class="m-empty__hint">ما يصلك هنا: سجلاتُ المربعات والمساجد التي أنت <strong>أقربُ طبقةٍ</strong> لها، وزياراتُ مشرفيك. وما هو فوقك، أو أبعدُ منك بطبقتين وله مسؤولٌ قائم — لا يصلك أصلاً؛ فالفراغُ هنا ليس عطلاً.</p>
+    </div>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">وثمّةَ ما ينتظر غيرَك</p>
+      <div class="m-diagnosis">
+        <span>سجلّان في منطقتك ينتظران مسؤولَ مربع الرستن — والموقعُ شاغر.</span>
+        <span class="m-diagnosis__who">لك أن تعتمدهما تدخُّلاً فوقياً، أو تُكلّف مسؤولاً للمربع فيمشي عملُه بلا انتظارك.</span>
+      </div>
+      <div class="m-stat__row">
+        <a class="m-btn is-ghost" href="#" data-cap="report.approve.override #٥">اعرض ما ينتظر غيرك</a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ خطأٌ إنسانيّ ═════════════ -->
+  <main class="m-main m-state is-error">
+
+    <div class="m-banner is-danger">
+      <span>✖ لم يُرسَل الردّ: السببُ حقلٌ لازمٌ لأنه يصل المقدِّم نصّاً.</span>
+    </div>
+
+    <h1 class="m-section-title m-section-title--first">ردُّ سجلّ مسجد النور</h1>
+
+    <div class="m-card">
+      <div class="m-sheet">
+        <span class="m-sheet__grip" aria-hidden="true"></span>
+        <span class="m-sheet__title">ردُّ السجل إلى أ. سليم الحموي — مسجد النور</span>
+
+        <span class="m-field is-error">
+          <span class="m-field__label">سببُ الردّ (يصل المقدِّمَ كما تكتبه)</span>
+          <span class="m-field__control"> </span>
+          <span class="m-error">✖ اكتب السببَ — الردُّ بلا سببٍ لا يُرسَل</span>
+          <span class="m-hint">مثال: «نشاطُ زيارة الأسرة مكرَّرٌ يومي ١٠ و١١ بالعدد نفسه — احذف أحدهما ثم أعد التقديم».</span>
+        </span>
+
+        <div class="m-sheet__actions">
+          <button class="m-btn is-danger" type="button" data-cap="report.approve #٤">أرسِل الردّ</button>
+          <button class="m-btn is-ghost" type="button" data-cap="report.approve #٤">تراجَع</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="m-card">
+      <ul class="m-list">
+        <li class="m-item is-warning">
+          <span class="m-badge is-warning">⚠ تغيّر</span>
+          <span class="m-item__text">
+            <span>سحَب أميرُ مسجد أبي بكر سجلَّه قبل دقيقتين ليصحّح قيداً — فخرج من طابورك.</span>
+            <span class="m-item__sub">يعود إليك حين يُقدَّم ثانيةً · لا شيءَ عليك الآن</span>
+          </span>
+          <span class="m-item__action"><button class="m-btn is-ghost" type="button" data-cap="report.view #٢">حدِّث الطابور</button></span>
+        </li>
+        <li class="m-item is-danger">
+          <span class="m-badge is-danger">✖ لا يصلك</span>
+          <span class="m-item__text">
+            <span>حاولتَ فتحَ سجلِّ مسجدٍ في منطقة حماة — وهو خارج نطاقك.</span>
+            <span class="m-item__sub">مَن يُسأل: أ. عمر الديري — مسؤول منطقة حماة</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ تحميل ═════════════ -->
+  <main class="m-main m-state is-loading" aria-busy="true">
+    <p class="m-stat__scope">جارٍ تحضير الطابور…</p>
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+    <div class="m-list">
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+    </div>
+  </main>
+
+  <nav class="m-nav" aria-label="التنقّل الرئيسي">
+    <a href="../supervisor/home.html"><span class="m-nav__glyph">⌂</span>الرئيسية</a>
+    <a href="#" aria-current="page"><span class="m-nav__glyph">▦</span>البيان</a>
+    <a href="#"><span class="m-nav__glyph">▤</span>المكتبة</a>
+    <a href="#"><span class="m-nav__glyph">▥</span>المنهاج</a>
+    <a href="#"><span class="m-nav__glyph">◇</span>المسابقة</a>
+    <a href="#" class="is-more"><span class="m-nav__glyph">⋯</span>المزيد</a>
+    <a href="../flows/payroll.html" class="is-overflow"><span class="m-nav__glyph">₪</span>المالية المركزية</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">⬡</span>العُهد</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◎</span>الإعلام</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">⚙</span>الإدارة</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◐</span>حسابي</a>
+  </nav>
+
+</div>
+</div>
+
+<aside class="m-note">
+  <h2>حاشيةُ التصميم — ليست جزءاً من الشاشة</h2>
+  <ul>
+    <li><strong>فجوةُ عقد — <code>CR-DRAFT-design-002</code></strong>: قدرةُ <code>report.approve #٤</code> لها <em>بابٌ</em> معلَنٌ على سطح «البيان»، ولا <em>شاشةَ</em> لها في العقود الـ٣٥ (تظهر زرّاً في رئيسية الأمير فقط). فهذه الشاشةُ مبنيّةٌ من قدراتٍ وحقولٍ قائمةٍ حصراً (<code>report.approve #٤</code> · <code>report.approve.override #٥</code> · <code>report.view #٢</code> · <code>visit.approve #٣٣</code> وأعمدةُ عقد الإشراف وسجل اليوم) — ولم يُخترَع حقلٌ ولا قدرة.</li>
+    <li><strong>واحدٌ في المقدّمة وطابورٌ خلفه</strong>: البتُّ فعلٌ متكرّرٌ سريع، فجُعل الأقدمُ معروضاً كاملاً بأزراره في متناول الإبهام (قب-٥٤/١)، والبقيّةُ أسطرٌ تُفتح — <em>وفعلُ السطر «افتحه» غيرُ فعل البتّ</em>، فلا مدخلان لفعلٍ واحد (قب-٥٤/٣).</li>
+    <li><strong>يبتّ وهو يرى</strong>: خلاصةُ السجل (الأنشطةُ ونقاطُها) داخل البطاقة — فلا يُجبَر على مغادرة الطابور ثم العودة إليه لكل سجل.</li>
+    <li><strong>ع-٢٢ يموت هنا</strong> («لا يوجد ما يُعتمد» عند المشرف بينما المسجد ينتظر): الشاشةُ تقول مداها في سطر النطاق وفي فراغها معاً؛ وما ينتظر <em>غيرَك</em> يُعرض مشخَّصاً بمن يُسأل، مع بابِ التدخّل الفوقيّ لمن يملكه.</li>
+    <li><strong>ع-٣١ يموت هنا</strong> (قدرةٌ يمنحها الخادمُ وتقفلها الواجهة): <code>report.approve.override #٥</code> يحملها مسؤولُ المنطقة — فلها بابٌ مرئيٌّ مسوَّغ، لا صمتٌ يُفهَم نزعاً للصلاحية.</li>
+    <li><strong>الردُّ لا يمرّ بلا سبب</strong>: السببُ يصل المقدِّمَ نصّاً كما كُتب — فتموت حلقةُ «رُدَّ ولا أدري لماذا» التي شكا منها الميدان.</li>
+    <li><strong>الفعلُ الهدّامُ مؤكَّد</strong>: الردُّ يمرّ بورقةٍ سفليةٍ تقول أثرَه ومَن يصله، لا بنقرةٍ عابرة.</li>
+  </ul>
+</aside>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مِشكاة — رئيسية المدير العام</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body>
+
+<input type="radio" name="st" id="st-full" checked>
+<input type="radio" name="st" id="st-empty">
+<input type="radio" name="st" id="st-error">
+<input type="radio" name="st" id="st-loading">
+<input type="checkbox" id="caps-on">
+
+<div class="m-preview" id="embed">
+  <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
+  <div class="m-preview__group">
+    <label for="st-full">ممتلئة</label>
+    <label for="st-empty">فارغة تشرح</label>
+    <label for="st-error">خطأٌ إنسانيّ</label>
+    <label for="st-loading">تحميل</label>
+  </div>
+  <span class="m-preview__label">·</span>
+  <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__spacer"></span>
+  <a class="m-link" href="../index.html">← الفهرس</a>
+</div>
+
+<div class="m-stage">
+<div class="m-shell">
+
+  <header class="m-appbar">
+    <span class="m-appbar__brand">مِشكاة</span>
+    <span class="m-appbar__role">★ المدير العام</span>
+    <span class="m-appbar__spacer"></span>
+    <button class="m-appbar__icon is-text" type="button">بحثٌ في الشبكة</button>
+    <button class="m-appbar__icon" type="button" aria-label="إشعاراتي (٤ جديدة)">◉<span class="m-badge is-danger">٤</span></button>
+  </header>
+
+  <div class="m-scope">
+    <span>نطاقُ الصفحة:</span>
+    <span class="m-scope__unit">الشبكة كلُّها</span>
+    <span>· قسمان — ٦ مناطق — ٢٣ مربعاً — ١٤٢ مسجداً</span>
+    <span class="m-scope__unit m-hijri">الخميس ١٥ محرم ١٤٤٨ هـ</span>
+  </div>
+
+  <!-- ═════════════ ممتلئة ═════════════
+       **مكتبٌ أولاً**: ثلاثةُ أعمدةٍ على ١٢٨٠px تنزل عموداً واحداً على الجوّال. -->
+  <main class="m-main m-state is-full is-desktop-first">
+
+    <h1 class="m-section-title m-section-title--first">هل الشبكة بخير هذا الأسبوع؟</h1>
+
+    <div class="m-card is-highlight is-two-thirds">
+      <p class="m-stat__sentence">أدخل <strong>١١٦</strong> مسجداً من <strong>١٤٢</strong> سجلَّهم واعتُمد، مقابل <strong>١٠٤</strong> الأسبوعَ الماضي.</p>
+      <p class="m-stat__value is-brand">٨٢٪ ▲</p>
+      <p class="m-stat__scope">النسبةُ على الشبكة كلِّها · تعريفُها: مسجدٌ أدخل سجلَّه واعتمده مَن فوقه قبل إقفال الأسبوع</p>
+      <div class="m-stat__row">
+        <a class="m-btn is-ghost" href="#" data-cap="network.view #١">افتح البيان</a>
+        <a class="m-btn is-ghost" href="#" data-cap="report.export #٨">صدِّر التقرير</a>
+      </div>
+    </div>
+
+    <div class="m-card is-third">
+      <p class="m-stat__sentence">الشبكةُ في سطر</p>
+      <div class="m-entity__facts">
+        <span class="m-fact"><span class="m-fact__label">مناطق</span><span class="m-fact__value">٦</span></span>
+        <span class="m-fact"><span class="m-fact__label">مساجد</span><span class="m-fact__value">١٤٢</span></span>
+        <span class="m-fact"><span class="m-fact__label">حلقات</span><span class="m-fact__value">٣٩٨</span></span>
+        <span class="m-fact"><span class="m-fact__label">طلاب</span><span class="m-fact__value">٦٬٤١٠</span></span>
+      </div>
+      <p class="m-stat__scope">أرقامُ بنيةٍ لا أداء — تتغيّر بالتوسّع لا بالأسبوع.</p>
+    </div>
+
+    <h2 class="m-section-title">أين الاستثناء؟</h2>
+
+    <div class="m-card is-two-thirds">
+      <p class="m-stat__scope">ثلاثُ وحداتٍ خارج المسار، مرتَّبةً بأثرها لا باسمها — ولكلٍّ مَن يُسأل.</p>
+      <ul class="m-list">
+        <li class="m-item is-danger">
+          <span class="m-badge is-danger">✖ الأثقل</span>
+          <span class="m-item__text">
+            <span>منطقة حماة: ٤ من ١٢ مسجداً أدخلت هذا الأسبوع — أدنى منطقةٍ في الشبكة منذ ثلاثة أسابيع.</span>
+            <span class="m-item__sub">المسؤول ويُسأل: أ. عمر الديري — مسؤول منطقة حماة · مشرفُ عام القسم: أ. ياسر الشهابي</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="network.view #١">افتح المنطقة</a></span>
+        </li>
+        <li class="m-item is-warning">
+          <span class="m-badge is-warning">⚠ شاغر</span>
+          <span class="m-item__text">
+            <span>مربع الرستن شاغرٌ بلا مسؤول منذ ٢٤ يوماً — وتحته ٧ مساجد بلا اعتمادٍ قريب.</span>
+            <span class="m-item__sub">مَن يُسأل: أ. ماهر الرستني — مسؤول منطقة حمص (وهو الأقرب لتكليف بديل)</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="network.view #١">افتح المربع</a></span>
+        </li>
+        <li class="m-item is-warning">
+          <span class="m-badge is-warning">⚠ تغطية</span>
+          <span class="m-item__text">
+            <span>قسم النساء: تغطيةُ الزيارات ٣٩٪ مقابل ٧١٪ في قسم الذكور.</span>
+            <span class="m-item__sub">المسؤولة وتُسأل: أ. هدى القاسم — مشرفة عام قسم النساء</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="visit.view #٣٤">العرضُ القياديّ</a></span>
+        </li>
+      </ul>
+      <div class="m-diagnosis">
+        <span>ما ترى هنا تشخيصٌ لا طابور عمل.</span>
+        <span class="m-diagnosis__who">الاعتمادُ والتكليفُ والإدخالُ أفعالُ طبقاتها — وأنت تسأل عنها من يملكها.</span>
+      </div>
+    </div>
+
+    <div class="m-card is-third">
+      <h2 class="m-empty__title">ما الذي ينتظر قراري أنا؟</h2>
+
+    <ul class="m-list">
+      <li class="m-item is-info">
+        <span class="m-badge is-info">ℹ ٣</span>
+        <span class="m-item__text">
+          <span>ثلاثةُ مقترحاتٍ مالية تنتظر بتَّك — أكبرُها صرفُ <span class="m-money">٦٥٠٬٠٠٠ ل.س</span> لتجهيز حلقات منطقة حمص.</span>
+          <span class="m-item__sub">اقترحها: أ. فادي الحلبي · الرفضُ بسببٍ يصل المقترِح</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-secondary" href="#" data-cap="finance.supervise #٣٨">افتح المقترحات</a></span>
+      </li>
+      <li class="m-item is-danger">
+        <span class="m-badge is-danger">✖ كسرُ زجاج</span>
+        <span class="m-item__text">
+          <span>طلبُ تعديلٍ على أسبوعٍ مقفل: مشرفةُ عام قسم النساء تطلب تصحيحَ عدد حاضراتٍ أُدخل خطأً (٣٢٠ بدل ٣٢).</span>
+          <span class="m-item__sub">يُسجَّل في التدقيق باسمك وسببك، ويُعلَن في سجل الوحدة أنه تصحيحٌ محكوم</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-secondary" href="#" data-cap="approve.breakGlass #٦">ابتّ في الطلب</a></span>
+      </li>
+      <li class="m-item">
+        <span class="m-badge is-neutral">• سياسة</span>
+        <span class="m-item__text">
+          <span>هدفُ النقاط الأسبوعيّ ٧٠ منذ ثلاثة أشهر — وثلثُ المساجد يتجاوزه بفارقٍ كبير.</span>
+          <span class="m-item__sub">تغييرُه إعدادٌ حيٌّ يسري على الشبكة كلِّها من لحظة الحفظ</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="settings.manage #٨٢">راجِع الإعدادات</a></span>
+      </li>
+      <li class="m-item is-success">
+        <span class="m-badge is-success">✔ أُقرّت</span>
+        <span class="m-item__text">
+          <span>أقررتَ خطةَ رواتب محرم أمس: ٤٢ مستحقّاً · <span class="m-money">٣٬٤٢٠٬٠٠٠ ل.س</span> — والتسليمُ الآن على المسؤول المالي.</span>
+          <span class="m-item__sub">سُلّم منها <span class="m-money">١٬٢٤٠٬٠٠٠ ل.س</span> · لا شيءَ عليك فيها بعد الإقرار</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="../flows/payroll.html" data-cap="payroll.view #٤٥">تابِع التسليم</a></span>
+      </li>
+    </ul>
+    </div>
+
+    <div class="m-thumb">
+      <a class="m-btn is-primary" href="#" data-cap="finance.supervise #٣٨">افتح صندوق قراري — ٣</a>
+      <span class="m-thumb__note">ما لا يُبَتُّ فيه إلا منك — والباقي يمشي بلا انتظارك</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ فارغةٌ تشرح ═════════════ -->
+  <main class="m-main m-state is-empty is-desktop-first">
+
+    <h1 class="m-section-title m-section-title--first">هل الشبكة بخير هذا الأسبوع؟</h1>
+
+    <div class="m-card">
+      <p class="m-stat__sentence">لم يُقفَل أسبوعٌ كاملٌ بعد — فلا مقارنةَ بالماضي حتى يمرّ أسبوعان.</p>
+      <p class="m-stat__value">— </p>
+      <p class="m-stat__scope">النسبةُ على الشبكة كلِّها · تظهر حين يُقفَل أولُ أسبوع</p>
+    </div>
+
+    <h2 class="m-section-title">أين الاستثناء؟</h2>
+
+    <div class="m-empty">
+      <svg class="m-mihrab" viewBox="0 0 64 96" aria-hidden="true" focusable="false">
+        <path d="M8 92 V44 C8 24 20 8 32 3 C44 8 56 24 56 44 V92 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(45 32 56)"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <p class="m-empty__title">لا استثناءَ يُذكر هذا الأسبوع</p>
+      <p class="m-empty__hint">كلُّ مناطق الشبكة داخل المسار: لا وحدةَ شاغرة، ولا منطقةَ دون النصف، ولا تغطيةَ زياراتٍ متأخرة. وهذا خبرٌ لا فراغ.</p>
+    </div>
+
+    <h2 class="m-section-title">ما الذي ينتظر قراري أنا؟</h2>
+
+    <div class="m-empty is-half is-third">
+      <p class="m-empty__title">لا قرارَ ينتظرك الآن</p>
+      <p class="m-empty__hint">خطةُ الرواتب لم تُرفع بعد (يرفعها المسؤول المالي آخر الشهر)، ولا مقترحَ مالياً معلَّقاً، ولا طلبَ كسرِ زجاج.</p>
+    </div>
+
+    <div class="m-empty is-half is-third">
+      <p class="m-empty__title">ولا صندوقَ عملٍ يوميٍّ هنا</p>
+      <p class="m-empty__hint">الاعتمادُ الروتينيّ والتكليفُ والإدخالُ أفعالُ الطبقات التي تحتك — لا تظهر لك ولا تنتظرك، وهذا هو المقصود.</p>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ خطأٌ إنسانيّ ═════════════ -->
+  <main class="m-main m-state is-error is-desktop-first">
+
+    <div class="m-banner is-danger">
+      <span>✖ لم يُقَرّ كسرُ الزجاج: الطلبُ بلا سببٍ مكتوب.</span>
+    </div>
+
+    <h1 class="m-section-title m-section-title--first">ما الذي ينتظر قراري أنا؟</h1>
+
+    <div class="m-card">
+      <div class="m-list">
+        <div class="m-item is-danger">
+          <span class="m-badge is-danger">✖ يلزم سبب</span>
+          <span class="m-item__text">
+            <span>كسرُ الزجاج لا يمرّ بلا سببٍ مكتوبٍ يُقيَّد في التدقيق باسمك — اكتب السببَ ثم أعد البتّ.</span>
+            <span class="m-item__sub">الطلب: تصحيحُ عدد حاضراتٍ في أسبوعٍ مقفل — قسم النساء</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-secondary" href="#" data-cap="approve.breakGlass #٦">اكتب السببَ وأعد البتّ</a></span>
+        </div>
+        <div class="m-item is-warning">
+          <span class="m-badge is-warning">⚠ فصلُ مهام</span>
+          <span class="m-item__text">
+            <span>لا يمكنك اعتمادُ مقترحٍ اقترحتَه أنت — المقترحُ رقم ١٤٠٢ ينتظر مُعتمِداً غيرك.</span>
+            <span class="m-item__sub">هذا قفلٌ على الشخص لا على الدور: يحمل الدورُ القدرتين ولا يجمعهما على قيدٍ واحد</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="finance.supervise #٣٨">افتح بقيّةَ المقترحات</a></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="m-card">
+      <div class="m-banner is-danger">
+        <span>✖ تعذّر حسابُ مؤشر الأسبوع</span>
+        <button class="m-btn is-secondary" type="button" data-cap="network.view #١">أعد المحاولة</button>
+      </div>
+      <p class="m-stat__scope">لا يُعرض رقمٌ قديمٌ على أنه اليوم — الرقمُ إمّا حيٌّ أو غائبٌ بسببه.</p>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ تحميل ═════════════ -->
+  <main class="m-main m-state is-loading is-desktop-first" aria-busy="true">
+    <p class="m-stat__scope">جارٍ تحضير البيانات…</p>
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton is-value"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+    <div class="m-list">
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+    </div>
+  </main>
+
+  <nav class="m-nav" aria-label="التنقّل الرئيسي">
+    <a href="#" aria-current="page"><span class="m-nav__glyph">⌂</span>الرئيسية</a>
+    <a href="#"><span class="m-nav__glyph">⚙</span>الإدارة</a>
+    <a href="#"><span class="m-nav__glyph">▦</span>البيان</a>
+    <a href="#"><span class="m-nav__glyph">▤</span>المكتبة</a>
+    <a href="#"><span class="m-nav__glyph">▥</span>المنهاج</a>
+    <a href="#" class="is-more"><span class="m-nav__glyph">⋯</span>المزيد</a>
+    <a href="../flows/payroll.html" class="is-overflow"><span class="m-nav__glyph">₪</span>المالية المركزية</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◇</span>المسابقة</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">⬡</span>العُهد</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◎</span>الإعلام</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◐</span>حسابي</a>
+  </nav>
+
+</div>
+</div>
+
+<aside class="m-note">
+  <h2>حاشيةُ التصميم — ليست جزءاً من الشاشة</h2>
+  <ul>
+    <li><strong>«المديرُ لا يُكلَّف» ثابتٌ يُرى بالعين</strong>: لا «النشاطات» في شريطه (لا يملك <code>duties.manage</code> ولا <code>exam.manage</code>)، ولا زرَّ اعتمادٍ روتينيّ ولا تكليفَ زيارةٍ ولا إدخالَ يوميّ ولا نشرَ تغطية. الحالةُ الفارغة تقول ذلك صراحةً بدل أن يظنّه المديرُ نقصاً.</li>
+    <li><strong>استثناءاتٌ لا جداول</strong>: ثلاثُ وحداتٍ مرتَّبةٍ بأثرها، كلٌّ بسطرٍ يجيب «لماذا هذه الوحدة؟» و«من يُسأل» — وهي كتلةُ تشخيصٍ لا طابورَ عمل.</li>
+    <li><strong>المؤشرُ المركّب يقول تعريفَه</strong>: «مسجدٌ أدخل واعتُمد قبل الإقفال» — رقمٌ له تعريفٌ وجمهورٌ وفعل، لا مقياسٌ غامضٌ لا يُحاسَب عليه أحد.</li>
+    <li><strong>فصلُ المهام يظهر في الشاشة</strong>: المديرُ يُقِرّ خطةَ الرواتب ولا يرفعها (لا يملك <code>payroll.run</code>)، ويبتّ في المقترحات ولا يؤلّفها؛ وحالةُ الخطأ ترينا القفلَ على <em>الشخص</em> لا على الدور.</li>
+    <li><strong>مدخلٌ واحدٌ لكلِّ فعل</strong> (قب-٥٤/٣): شريطُ الإبهام يفتح صندوقَ القرار، وأسطرُ الصندوق تفتح كلَّ قرارٍ بعينه — لا زرَّين لقرارٍ واحد.</li>
+    <li><strong>فجوةُ عقد</strong>: لا عقدَ شاشةٍ لـ<code>/home</code> بعدسة المدير (القائم <code>lenses: ["amir"]</code>) ولا مصدرَ بياناتٍ لمؤشر الصحة — مرفوعةٌ في <code>CR-DRAFT-design-001</code>.</li>
+  </ul>
+</aside>
+
+</body>
+</html>

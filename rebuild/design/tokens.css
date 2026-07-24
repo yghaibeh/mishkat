@@ -1,0 +1,944 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * مِشكاة — لغةُ التصميم في ملفٍّ واحد (T30)
+ *
+ * §١ الرموز: **منقولةٌ حرفياً** من الهوية المعتمدة (قب-٢٠) كما وُلِّدت في
+ *    `v2/evidence/identity-preview.html` — لا قيمةَ واحدةَ مبتكرةً هنا.
+ * §٢ التمديد: خمسةُ رموزٍ احتاجها الطابعُ (قب-٢٥) ولا مقابلَ لها في الهوية —
+ *    **مرفوعةٌ في `CR-DRAFT-design-003`** ولا تُعتمد بهذا الملف.
+ * §٣ الطبقة المكوّنية: كلُّ قاعدةٍ فيها تستدعي `var(--mishkat-…)` — **صفر قيمةٍ
+ *    بصريةٍ خام** (§١-٩ من `SPEC_design_system`، بُعدُ الرموز في G20).
+ *
+ * تغييرُ الهوية غداً **سطرٌ هنا** لا ثلاثون ملفاً: كلُّ نموذجٍ يستورد هذا الملف وحده.
+ * RTL أولاً: كلُّ محورٍ منطقيّ (`inline`/`block`) لا يمينَ ولا يسار.
+ * الخطُّ: نفسُ رصّة الهوية بلا `@font-face` — **صفرُ خطٍّ خارجيّ وصفرُ بايت**،
+ * وسقوطٌ آمنٌ إلى خطّ النظام العربيّ (شبكةُ الميدان — §٤-٣).
+ * ════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────── §١ رموزُ الهوية (قب-٢٠) ─────────────────────── */
+
+:root {
+  /* ١ — اللون: أدوارٌ دلاليّة (الوضع الفاتح أساساً) */
+  --mishkat-color-surface-base: #FBFAF7;
+  --mishkat-color-surface-raised: #FFFFFF;
+  --mishkat-color-surface-sunken: #F1EFE9;
+  --mishkat-color-surface-inverse: #1E2A24;
+  --mishkat-color-text-primary: #1B2420;
+  --mishkat-color-text-secondary: #4C5A52;
+  --mishkat-color-text-disabled: #8A948E;
+  --mishkat-color-text-on-accent: #FFFFFF;
+  --mishkat-color-text-on-inverse: #F3F6F4;
+  --mishkat-color-border-subtle: #E2DED5;
+  --mishkat-color-border-strong: #5F6B65;
+  --mishkat-color-border-focus: #1F5C43;
+  --mishkat-color-brand: #2E6B4F;
+  --mishkat-color-brand-hover: #22553D;
+  --mishkat-color-brand-muted: #E4EEE8;
+  --mishkat-color-success: #1F6B45;
+  --mishkat-color-success-muted: #E6F1EA;
+  --mishkat-color-warning: #7A5104;
+  --mishkat-color-warning-muted: #FAF0DC;
+  --mishkat-color-danger: #A32B22;
+  --mishkat-color-danger-muted: #FBE9E7;
+  --mishkat-color-info: #1C5A78;
+  --mishkat-color-info-muted: #E5EFF5;
+  --mishkat-color-neutral: #4C5A52;
+  --mishkat-color-neutral-muted: #ECEFED;
+  /* ٢ — الخط: رصّةٌ عربيةٌ أولاً وسلّمٌ مسمّى */
+  --mishkat-font-family: "Cairo", "Noto Naskh Arabic", system-ui, sans-serif;
+  --mishkat-font-numeral-system: arab;
+  --mishkat-font-weight-regular: 400;
+  --mishkat-font-weight-medium: 500;
+  --mishkat-font-weight-bold: 700;
+  --mishkat-font-display-size: 1.75rem;
+  --mishkat-font-display-line-height: 1.6;
+  --mishkat-font-display-weight: 700;
+  --mishkat-font-title-size: 1.25rem;
+  --mishkat-font-title-line-height: 1.7;
+  --mishkat-font-title-weight: 500;
+  --mishkat-font-body-size: 1rem;
+  --mishkat-font-body-line-height: 1.9;
+  --mishkat-font-body-weight: 400;
+  --mishkat-font-caption-size: 0.875rem;
+  --mishkat-font-caption-line-height: 1.7;
+  --mishkat-font-caption-weight: 400;
+  --mishkat-font-numeric-size: 1rem;
+  --mishkat-font-numeric-line-height: 1.6;
+  --mishkat-font-numeric-weight: 500;
+  /* ٣ — المسافة: سلّمٌ هندسيٌّ واحد */
+  --mishkat-space-2xs: 0.25rem;
+  --mishkat-space-xs: 0.5rem;
+  --mishkat-space-sm: 0.75rem;
+  --mishkat-space-md: 1rem;
+  --mishkat-space-lg: 1.5rem;
+  --mishkat-space-xl: 2rem;
+  --mishkat-space-2xl: 3rem;
+  --mishkat-space-3xl: 4rem;
+  /* ٤ — الحجم: لمسٌ وأيقونةٌ وحاويةٌ وكسر */
+  --mishkat-size-touch-min: 2.75rem;
+  --mishkat-size-touch-comfortable: 3rem;
+  --mishkat-size-icon-sm: 1rem;
+  --mishkat-size-icon-md: 1.25rem;
+  --mishkat-size-icon-lg: 1.5rem;
+  --mishkat-size-container-narrow: 38rem;
+  --mishkat-size-container-wide: 72rem;
+  --mishkat-size-container-full: 100%;
+  --mishkat-size-bp-mobile: 22.5rem;
+  --mishkat-size-bp-tablet: 48rem;
+  --mishkat-size-bp-desktop: 64rem;
+  /* ٥ — الظل: ارتفاعٌ دلاليّ */
+  --mishkat-elevation-flat: none;
+  --mishkat-elevation-raised: 0 1px 2px rgba(27, 36, 32, 0.08), 0 1px 3px rgba(27, 36, 32, 0.06);
+  --mishkat-elevation-overlay: 0 4px 12px rgba(27, 36, 32, 0.12);
+  --mishkat-elevation-modal: 0 12px 32px rgba(27, 36, 32, 0.18);
+  /* ٦ — الزاوية: عائلةٌ واحدة */
+  --mishkat-radius-none: 0;
+  --mishkat-radius-sm: 0.25rem;
+  --mishkat-radius-md: 0.75rem;
+  --mishkat-radius-lg: 1rem;
+  --mishkat-radius-pill: 9999px;
+  --mishkat-radius-circle: 50%;
+  /* ٧ — الحركة: هادئةٌ مقتصدة */
+  --mishkat-motion-duration-instant: 0ms;
+  --mishkat-motion-duration-fast: 120ms;
+  --mishkat-motion-duration-base: 200ms;
+  --mishkat-motion-duration-slow: 320ms;
+  --mishkat-motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --mishkat-motion-ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --mishkat-color-surface-base: #121815;
+    --mishkat-color-surface-raised: #1B231F;
+    --mishkat-color-surface-sunken: #0C1210;
+    --mishkat-color-surface-inverse: #F1EFE9;
+    --mishkat-color-text-primary: #EAF0EC;
+    --mishkat-color-text-secondary: #B3BFB8;
+    --mishkat-color-text-disabled: #6E7B74;
+    --mishkat-color-text-on-accent: #06120C;
+    --mishkat-color-text-on-inverse: #1B2420;
+    --mishkat-color-border-subtle: #2A322D;
+    --mishkat-color-border-strong: #8A968F;
+    --mishkat-color-border-focus: #8AD3AE;
+    --mishkat-color-brand: #6FC49B;
+    --mishkat-color-brand-hover: #8AD3AE;
+    --mishkat-color-brand-muted: #1D3A2C;
+    --mishkat-color-success: #6FC49B;
+    --mishkat-color-success-muted: #17301F;
+    --mishkat-color-warning: #E0A94B;
+    --mishkat-color-warning-muted: #33260C;
+    --mishkat-color-danger: #F08A80;
+    --mishkat-color-danger-muted: #3A1E1B;
+    --mishkat-color-info: #7BC0E0;
+    --mishkat-color-info-muted: #15303D;
+    --mishkat-color-neutral: #A8B4AD;
+    --mishkat-color-neutral-muted: #212925;
+    --mishkat-elevation-flat: none;
+    --mishkat-elevation-raised: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --mishkat-elevation-overlay: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --mishkat-elevation-modal: 0 12px 32px rgba(0, 0, 0, 0.7);
+  }
+}
+
+[data-theme="dark"] {
+  --mishkat-color-surface-base: #121815;
+  --mishkat-color-surface-raised: #1B231F;
+  --mishkat-color-surface-sunken: #0C1210;
+  --mishkat-color-surface-inverse: #F1EFE9;
+  --mishkat-color-text-primary: #EAF0EC;
+  --mishkat-color-text-secondary: #B3BFB8;
+  --mishkat-color-text-disabled: #6E7B74;
+  --mishkat-color-text-on-accent: #06120C;
+  --mishkat-color-text-on-inverse: #1B2420;
+  --mishkat-color-border-subtle: #2A322D;
+  --mishkat-color-border-strong: #8A968F;
+  --mishkat-color-border-focus: #8AD3AE;
+  --mishkat-color-brand: #6FC49B;
+  --mishkat-color-brand-hover: #8AD3AE;
+  --mishkat-color-brand-muted: #1D3A2C;
+  --mishkat-color-success: #6FC49B;
+  --mishkat-color-success-muted: #17301F;
+  --mishkat-color-warning: #E0A94B;
+  --mishkat-color-warning-muted: #33260C;
+  --mishkat-color-danger: #F08A80;
+  --mishkat-color-danger-muted: #3A1E1B;
+  --mishkat-color-info: #7BC0E0;
+  --mishkat-color-info-muted: #15303D;
+  --mishkat-color-neutral: #A8B4AD;
+  --mishkat-color-neutral-muted: #212925;
+  --mishkat-elevation-flat: none;
+  --mishkat-elevation-raised: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --mishkat-elevation-overlay: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --mishkat-elevation-modal: 0 12px 32px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mishkat-motion-duration-fast: 0ms;
+    --mishkat-motion-duration-base: 0ms;
+    --mishkat-motion-duration-slow: 0ms;
+  }
+}
+
+/* ────────────── §٢ تمديدٌ مرفوعٌ لا معتمَد — CR-DRAFT-design-003 ──────────────
+ * خمسةُ رموزٍ لزمت لتنفيذ الطابع (قب-٢٥) والتخطيط، ولا مقابلَ لها في قب-٢٠.
+ * تُجمَع هنا **مسمّاةً وموسومة** كي لا تتسرّب أرقاماً في الطبقة المكوّنية،
+ * وكي يراها المالكُ في موضعٍ واحد فيقرّ أو ينقض. (`x` = extension.)
+ * ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* شعرةُ الحدّ — مستعملةٌ أصلاً في معاينة الهوية (`border: 1px`) بلا اسم. */
+  --mishkat-x-hairline: 1px;
+  /* عرضُ رفّ التنقّل على الحاسوب — بين `container-narrow` وحدود الشاشة. */
+  --mishkat-x-nav-rail: 15rem;
+  /* وهجُ زاوية البطاقة المهمّة (قب-٢٥ §٣) — نسبةُ مزجٍ لا لونٌ جديد. */
+  --mishkat-x-glow-mix: 14%;
+  /* شفافيةُ المحراب في الحالة الفارغة (قب-٢٥ §٢) — «مكانٌ ينتظر أن يُعمَر». */
+  --mishkat-x-mihrab-alpha: 0.22;
+  /* الهيكلُ العظميّ (§٣-٣): نسبةُ مزجِ لونِ الحشو مع السطح. */
+  --mishkat-x-skeleton-mix: 55%;
+  /* ارتفاعُ الشريط السفليّ — يرفع شريطَ الفعل فوقه ليبقى في متناول الإبهام (قب-٥٤/١). */
+  --mishkat-x-navbar-h: calc(var(--mishkat-size-touch-comfortable) + var(--mishkat-space-lg));
+  /* عرضُ إطار الجوّال في الفهرس (قب-٥٤/١: «الفهرسُ يعرض بإطار جوّال»). */
+  --mishkat-x-phone-w: 24.375rem;
+  --mishkat-x-phone-h: 44rem;
+}
+
+/* ──────────────────────── §٣ الطبقة المكوّنية (المكتبة) ───────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  direction: rtl;
+  font-family: var(--mishkat-font-family);
+  font-size: var(--mishkat-font-body-size);
+  line-height: var(--mishkat-font-body-line-height);
+  color: var(--mishkat-color-text-primary);
+  background-color: var(--mishkat-color-surface-base);
+  -webkit-text-size-adjust: 100%;
+}
+
+body { margin: 0; }
+
+/* لا تمريرَ أفقيٌّ للصفحة أبداً (§٤-١) — العريضُ يمرّر داخل حاويته. */
+body { overflow-x: hidden; }
+
+:focus-visible {
+  outline: 2px solid var(--mishkat-color-border-focus);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+
+/* ── القشرة الواحدة (ك-٦ · ق-١١٤) ─────────────────────────────────────────── */
+
+/* **القشرةُ ثابتةٌ والمحتوى وحده يتبدّل** (ق-١١٤): في كل نموذجٍ هنا تُكتب القشرةُ **مرةً
+ * واحدة** وتتبدّل تحتها حالاتُ الحقيقة الأربع — فلا صفحةٌ تبدّل ترويستها ويضيع طريقُ العودة. */
+.m-shell {
+  min-block-size: 100vh;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  background: var(--mishkat-color-surface-base);
+}
+
+.m-appbar {
+  display: flex;
+  align-items: center;
+  gap: var(--mishkat-space-sm);
+  padding: var(--mishkat-space-sm) var(--mishkat-space-md);
+  /* السطحُ المرتفع لا المعكوس: يصحّ الوضعان معاً بلا شريطٍ يبيضّ في الداكن (§١-٣). */
+  background: var(--mishkat-color-surface-raised);
+  color: var(--mishkat-color-text-primary);
+  /* الفاصلُ المتلاشي (قب-٢٥ §٣) — تدرّجٌ من لونِ العلامة إلى الشفاف. */
+  border-block-end: var(--mishkat-x-hairline) solid transparent;
+  border-image: linear-gradient(to left, var(--mishkat-color-brand), transparent) 1;
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 3;
+}
+
+.m-appbar__brand {
+  font-size: var(--mishkat-font-title-size);
+  font-weight: var(--mishkat-font-bold, var(--mishkat-font-weight-bold));
+  letter-spacing: 0;
+}
+.m-appbar__role {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mishkat-space-2xs);
+  padding: var(--mishkat-space-2xs) var(--mishkat-space-sm);
+  border-radius: var(--mishkat-radius-pill);
+  background: var(--mishkat-color-brand);
+  color: var(--mishkat-color-text-on-accent);
+  font-size: var(--mishkat-font-caption-size);
+}
+.m-appbar__spacer { margin-inline-start: auto; }
+/* زرٌّ نصيٌّ في القشرة — نصٌّ لا رمزٌ قد يغيب عن خطّ النظام (ذ-٣: لا معنى يُحمل برمزٍ وحده). */
+.m-appbar__icon.is-text {
+  min-inline-size: 0;
+  padding-inline: var(--mishkat-space-sm);
+  border-radius: var(--mishkat-radius-pill);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-secondary);
+}
+.m-appbar__icon {
+  min-inline-size: var(--mishkat-size-touch-min);
+  min-block-size: var(--mishkat-size-touch-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--mishkat-radius-md);
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--mishkat-font-body-size);
+  cursor: pointer;
+}
+
+/* سطرُ النطاق المنطوق (ق-١١٠): كلُّ رقمٍ في الصفحة على هذا النطاق وحدَه. */
+.m-scope {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--mishkat-space-xs);
+  padding: var(--mishkat-space-xs) var(--mishkat-space-md);
+  background: var(--mishkat-color-surface-sunken);
+  color: var(--mishkat-color-text-secondary);
+  font-size: var(--mishkat-font-caption-size);
+  border-block-end: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+}
+.m-scope__unit { color: var(--mishkat-color-text-primary); font-weight: var(--mishkat-font-weight-medium); }
+
+.m-main {
+  padding: var(--mishkat-space-md);
+  padding-block-end: var(--mishkat-space-3xl);
+  display: grid;
+  gap: var(--mishkat-space-md);
+  align-content: start;
+  max-inline-size: var(--mishkat-size-container-wide);
+  inline-size: 100%;
+  margin-inline: auto;
+}
+
+.m-section-title {
+  font-size: var(--mishkat-font-title-size);
+  font-weight: var(--mishkat-font-title-weight);
+  line-height: var(--mishkat-font-title-line-height);
+  color: var(--mishkat-color-text-primary);
+  margin-block-start: var(--mishkat-space-sm);
+}
+.m-section-title--first { margin-block-start: 0; }
+
+/* الشريط: سفليٌّ إبهاميّ على الجوال (§٣-١٠/§٤-٢). */
+.m-nav {
+  position: sticky;
+  inset-block-end: 0;
+  display: flex;
+  background: var(--mishkat-color-surface-raised);
+  border-block-start: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  box-shadow: var(--mishkat-elevation-overlay);
+  z-index: 3;
+}
+.m-nav a {
+  flex: 1 1 0;
+  min-block-size: var(--mishkat-size-touch-comfortable);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mishkat-space-2xs);
+  padding: var(--mishkat-space-2xs);
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-secondary);
+  text-decoration: none;
+}
+.m-nav a[aria-current="page"] {
+  color: var(--mishkat-color-brand);
+  font-weight: var(--mishkat-font-weight-medium);
+  box-shadow: inset 0 2px 0 0 var(--mishkat-color-brand);
+}
+.m-nav__glyph { font-size: var(--mishkat-size-icon-md); line-height: 1; }
+
+/* خمسُ خاناتٍ في متناول الإبهام والباقي في «المزيد» (§٣-١٠ · `MOBILE_PRIMARY_SLOTS`). */
+.m-nav .is-overflow { display: none; }
+@media (min-width: 64rem) {
+  .m-nav .is-overflow { display: flex; }
+  .m-nav .is-more { display: none; }
+}
+
+/* ── الأزرار والروابط (ذ-١/ذ-٢) ────────────────────────────────────────────── */
+
+.m-btn {
+  min-block-size: var(--mishkat-size-touch-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mishkat-space-2xs);
+  padding-inline: var(--mishkat-space-md);
+  border-radius: var(--mishkat-radius-md);
+  border: var(--mishkat-x-hairline) solid transparent;
+  font-family: inherit;
+  font-size: var(--mishkat-font-body-size);
+  font-weight: var(--mishkat-font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--mishkat-motion-duration-fast) var(--mishkat-motion-ease-standard);
+}
+.m-btn.is-primary { background: var(--mishkat-color-brand); color: var(--mishkat-color-text-on-accent); }
+.m-btn.is-primary:hover { background: var(--mishkat-color-brand-hover); }
+.m-btn.is-secondary {
+  background: var(--mishkat-color-surface-sunken);
+  color: var(--mishkat-color-text-primary);
+  border-color: var(--mishkat-color-border-strong);
+}
+.m-btn.is-ghost { background: transparent; color: var(--mishkat-color-text-primary); }
+.m-btn.is-ghost:hover { background: var(--mishkat-color-surface-sunken); }
+.m-btn.is-danger { background: var(--mishkat-color-danger); color: var(--mishkat-color-text-on-accent); }
+.m-btn.is-loading { color: var(--mishkat-color-text-on-accent); opacity: 0.8; pointer-events: none; }
+
+.m-link {
+  color: var(--mishkat-color-brand);
+  text-decoration: underline;
+  text-underline-offset: var(--mishkat-space-2xs);
+}
+
+/* ── البطاقة والكيان (ز-٣/ز-٥) ─────────────────────────────────────────────── */
+
+.m-card {
+  background: var(--mishkat-color-surface-raised);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  border-radius: var(--mishkat-radius-md);
+  padding: var(--mishkat-space-md);
+  box-shadow: var(--mishkat-elevation-raised);
+  display: grid;
+  gap: var(--mishkat-space-sm);
+}
+
+/* «وهجٌ خفيف في زاوية البطاقة المهمّة» (قب-٢٥ §٣) — شكلٌ يُرسم، صفرُ صورة. */
+.m-card.is-highlight {
+  background-image: radial-gradient(
+    circle at right top,
+    color-mix(in oklab, var(--mishkat-color-brand) var(--mishkat-x-glow-mix), transparent),
+    transparent 45%
+  );
+}
+
+.m-stat__sentence {
+  font-size: var(--mishkat-font-body-size);
+  color: var(--mishkat-color-text-primary);
+}
+.m-stat__value {
+  font-size: var(--mishkat-font-display-size);
+  font-weight: var(--mishkat-font-display-weight);
+  line-height: var(--mishkat-font-display-line-height);
+  font-variant-numeric: tabular-nums;
+}
+.m-stat__value.is-warning { color: var(--mishkat-color-warning); }
+.m-stat__value.is-danger { color: var(--mishkat-color-danger); }
+.m-stat__value.is-brand { color: var(--mishkat-color-brand); }
+.m-stat__scope {
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-secondary);
+}
+.m-stat__row { display: flex; flex-wrap: wrap; gap: var(--mishkat-space-xs); align-items: center; }
+
+.m-entity__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mishkat-space-md);
+  padding-block: var(--mishkat-space-2xs);
+}
+.m-fact { display: grid; gap: var(--mishkat-space-2xs); }
+.m-fact__label { font-size: var(--mishkat-font-caption-size); color: var(--mishkat-color-text-secondary); }
+.m-fact__value {
+  font-size: var(--mishkat-font-title-size);
+  font-weight: var(--mishkat-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── سطرُ القائمة المفهوم (ز-٤) ────────────────────────────────────────────── */
+
+.m-list { display: grid; gap: var(--mishkat-space-xs); }
+
+.m-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mishkat-space-sm);
+  padding: var(--mishkat-space-sm) var(--mishkat-space-md);
+  background: var(--mishkat-color-surface-raised);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  border-radius: var(--mishkat-radius-md);
+}
+.m-item__text { flex: 1 1 14rem; display: grid; gap: var(--mishkat-space-2xs); }
+.m-item__sub { font-size: var(--mishkat-font-caption-size); color: var(--mishkat-color-text-secondary); }
+.m-item__action { margin-inline-start: auto; display: flex; gap: var(--mishkat-space-xs); flex-wrap: wrap; }
+
+/* النبرةُ تُسنَد **بحدٍّ وأيقونةٍ ونصّ** لا باللون وحده (§٣-٩/§٤-٥). */
+.m-item.is-warning { border-inline-start: var(--mishkat-space-2xs) solid var(--mishkat-color-warning); }
+.m-item.is-danger { border-inline-start: var(--mishkat-space-2xs) solid var(--mishkat-color-danger); }
+.m-item.is-success { border-inline-start: var(--mishkat-space-2xs) solid var(--mishkat-color-success); }
+.m-item.is-info { border-inline-start: var(--mishkat-space-2xs) solid var(--mishkat-color-info); }
+
+/* ── شريطُ الفعل الإبهاميّ (قب-٥٤/١ + §٤-٢) ────────────────────────────────────
+ * **الفعلُ الأهمُّ للدور مدخلٌ واحدٌ لا مدخلان** (قب-٥٤/٣): يسكن هنا وحدَه، ويلتصق
+ * فوق الشريط السفليّ فيُبلَغ بإبهامٍ واحدٍ **بلا تمرير** مهما طال المحتوى.
+ * ولا يُكرَّر الفعلُ نفسُه زرّاً في البطاقات — البطاقةُ تجيب السؤال، وهذا يفعل.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.m-thumb {
+  position: sticky;
+  inset-block-end: var(--mishkat-x-navbar-h);
+  z-index: 2;
+  display: grid;
+  gap: var(--mishkat-space-2xs);
+  padding: var(--mishkat-space-sm);
+  border-radius: var(--mishkat-radius-lg);
+  background: var(--mishkat-color-surface-raised);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  box-shadow: var(--mishkat-elevation-overlay);
+}
+.m-thumb .m-btn { inline-size: 100%; min-block-size: var(--mishkat-size-touch-comfortable); }
+.m-thumb__note {
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-secondary);
+  text-align: center;
+}
+@media (min-width: 64rem) {
+  .m-thumb { inset-block-end: var(--mishkat-space-md); max-inline-size: var(--mishkat-size-container-narrow); }
+}
+
+/* ── الشارة (ذ-٤) — أيقونةٌ ونصٌّ دائماً ───────────────────────────────────── */
+
+.m-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mishkat-space-2xs);
+  padding: var(--mishkat-space-2xs) var(--mishkat-space-sm);
+  border-radius: var(--mishkat-radius-pill);
+  font-size: var(--mishkat-font-caption-size);
+  white-space: nowrap;
+}
+.m-badge.is-success { background: var(--mishkat-color-success-muted); color: var(--mishkat-color-success); }
+.m-badge.is-warning { background: var(--mishkat-color-warning-muted); color: var(--mishkat-color-warning); }
+.m-badge.is-danger { background: var(--mishkat-color-danger-muted); color: var(--mishkat-color-danger); }
+.m-badge.is-info { background: var(--mishkat-color-info-muted); color: var(--mishkat-color-info); }
+.m-badge.is-neutral { background: var(--mishkat-color-neutral-muted); color: var(--mishkat-color-neutral); }
+
+/* التاريخُ الهجريّ (ذ-٥) والمبلغ (ذ-٦) — تنسيقٌ مركزيٌّ لا محليّ. */
+.m-hijri, .m-money { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.m-money { font-weight: var(--mishkat-font-numeric-weight); }
+
+/* ── الجدول (ك-١): بطاقاتٌ مكدّسة على الجوال ───────────────────────────────── */
+
+.m-table-wrap { overflow-x: auto; }
+.m-table { inline-size: 100%; border-collapse: collapse; font-size: var(--mishkat-font-body-size); }
+.m-table caption {
+  text-align: start;
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-secondary);
+  padding-block-end: var(--mishkat-space-xs);
+}
+.m-table th, .m-table td {
+  text-align: start;
+  padding: var(--mishkat-space-sm);
+  border-block-end: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  vertical-align: top;
+}
+.m-table th {
+  font-weight: var(--mishkat-font-weight-medium);
+  color: var(--mishkat-color-text-secondary);
+  font-size: var(--mishkat-font-caption-size);
+}
+.m-table tbody tr:last-child td { border-block-end: 0; }
+.m-table .num { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 47.99rem) {
+  .m-table, .m-table tbody, .m-table tr, .m-table td { display: block; inline-size: 100%; }
+  .m-table thead { position: absolute; inline-size: var(--mishkat-x-hairline); block-size: var(--mishkat-x-hairline); overflow: hidden; clip-path: inset(50%); }
+  .m-table tr {
+    background: var(--mishkat-color-surface-raised);
+    border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+    border-radius: var(--mishkat-radius-md);
+    padding: var(--mishkat-space-xs);
+    margin-block-end: var(--mishkat-space-xs);
+  }
+  .m-table td { border-block-end: 0; padding: var(--mishkat-space-2xs) var(--mishkat-space-xs); display: flex; gap: var(--mishkat-space-sm); }
+  .m-table td::before {
+    content: attr(data-label);
+    flex: 0 0 8rem;
+    color: var(--mishkat-color-text-secondary);
+    font-size: var(--mishkat-font-caption-size);
+  }
+}
+
+/* ── الحالة الفارغة (ك-٧) — مِحرابٌ ينتظر أن يُعمَر (قب-٢٥ §٢) ──────────────── */
+
+.m-empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--mishkat-space-sm);
+  padding: var(--mishkat-space-xl) var(--mishkat-space-md);
+  background: var(--mishkat-color-surface-raised);
+  border: var(--mishkat-x-hairline) dashed var(--mishkat-color-border-subtle);
+  border-radius: var(--mishkat-radius-md);
+}
+.m-mihrab {
+  inline-size: var(--mishkat-space-2xl);
+  block-size: auto;
+  color: var(--mishkat-color-brand);
+  opacity: var(--mishkat-x-mihrab-alpha);
+}
+.m-empty__title { font-size: var(--mishkat-font-title-size); font-weight: var(--mishkat-font-title-weight); }
+.m-empty__hint { font-size: var(--mishkat-font-caption-size); color: var(--mishkat-color-text-secondary); max-inline-size: var(--mishkat-size-container-narrow); }
+
+/* ── كتلةُ التشخيص (ك-٨) — للمطّلع: الحال ومن يُسأل ───────────────────────── */
+
+.m-diagnosis {
+  display: grid;
+  gap: var(--mishkat-space-2xs);
+  padding: var(--mishkat-space-sm) var(--mishkat-space-md);
+  background: var(--mishkat-color-info-muted);
+  border-radius: var(--mishkat-radius-md);
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-primary);
+}
+.m-diagnosis__who { color: var(--mishkat-color-text-secondary); }
+
+/* ── التنبيهات (ك-٤) ───────────────────────────────────────────────────────── */
+
+.m-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mishkat-space-sm);
+  padding: var(--mishkat-space-sm) var(--mishkat-space-md);
+  border-radius: var(--mishkat-radius-md);
+  font-size: var(--mishkat-font-body-size);
+}
+.m-banner.is-danger { background: var(--mishkat-color-danger-muted); color: var(--mishkat-color-danger); }
+.m-banner.is-warning { background: var(--mishkat-color-warning-muted); color: var(--mishkat-color-warning); }
+.m-banner.is-info { background: var(--mishkat-color-info-muted); color: var(--mishkat-color-info); }
+.m-banner .m-btn { margin-inline-start: auto; }
+
+/* ── النموذج والحقل (ز-١/ز-٢/ز-٦) ──────────────────────────────────────────── */
+
+.m-form { display: grid; gap: var(--mishkat-space-md); }
+.m-fields { display: grid; gap: var(--mishkat-space-md); }
+@media (min-width: 48rem) { .m-fields.is-two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.m-field { display: grid; gap: var(--mishkat-space-2xs); }
+.m-field__label { font-size: var(--mishkat-font-caption-size); color: var(--mishkat-color-text-secondary); }
+.m-field__control {
+  min-block-size: var(--mishkat-size-touch-min);
+  padding: var(--mishkat-space-xs) var(--mishkat-space-sm);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-strong);
+  border-radius: var(--mishkat-radius-md);
+  background: var(--mishkat-color-surface-raised);
+  color: var(--mishkat-color-text-primary);
+  font-family: inherit;
+  font-size: var(--mishkat-font-body-size);
+}
+.m-field__control:disabled { background: var(--mishkat-color-surface-sunken); color: var(--mishkat-color-text-disabled); }
+.m-field.is-error .m-field__control { border-color: var(--mishkat-color-danger); }
+.m-hint { font-size: var(--mishkat-font-caption-size); color: var(--mishkat-color-text-secondary); }
+.m-error {
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-danger);
+  display: flex;
+  gap: var(--mishkat-space-2xs);
+  align-items: center;
+}
+
+/* اختيارٌ لمسيٌّ من مجموعةٍ صغيرة (الحضور) — رقائقُ لا قائمةٌ منسدلة. */
+.m-choice { display: flex; flex-wrap: wrap; gap: var(--mishkat-space-xs); }
+.m-choice label {
+  min-block-size: var(--mishkat-size-touch-min);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--mishkat-space-md);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-strong);
+  border-radius: var(--mishkat-radius-pill);
+  cursor: pointer;
+  font-size: var(--mishkat-font-body-size);
+}
+.m-choice input { position: absolute; opacity: 0; pointer-events: none; }
+.m-choice input:checked + label,
+.m-choice label.is-selected {
+  background: var(--mishkat-color-brand);
+  color: var(--mishkat-color-text-on-accent);
+  border-color: var(--mishkat-color-brand);
+}
+.m-choice input:focus-visible + label { outline: 2px solid var(--mishkat-color-border-focus); outline-offset: 2px; }
+
+/* ── الورقة السفلية (ك-٣) — الحوارُ على الجوال ورقةٌ يصلها الإبهام ─────────── */
+
+.m-sheet {
+  background: var(--mishkat-color-surface-raised);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  border-start-start-radius: var(--mishkat-radius-lg);
+  border-start-end-radius: var(--mishkat-radius-lg);
+  box-shadow: var(--mishkat-elevation-modal);
+  padding: var(--mishkat-space-md);
+  display: grid;
+  gap: var(--mishkat-space-md);
+}
+.m-sheet__grip {
+  inline-size: var(--mishkat-space-xl);
+  block-size: var(--mishkat-space-2xs);
+  border-radius: var(--mishkat-radius-pill);
+  background: var(--mishkat-color-border-subtle);
+  justify-self: center;
+}
+.m-sheet__title { font-size: var(--mishkat-font-title-size); font-weight: var(--mishkat-font-title-weight); }
+.m-sheet__actions { display: flex; gap: var(--mishkat-space-xs); flex-wrap: wrap; }
+
+/* ── التبويبات (ك-٥) — شريطٌ ثانويٌّ داخل الصفحة لا بديلٌ عن القشرة ────────── */
+
+.m-tabs { display: flex; gap: var(--mishkat-space-xs); overflow-x: auto; padding-block-end: var(--mishkat-space-2xs); }
+.m-tabs a {
+  padding: var(--mishkat-space-xs) var(--mishkat-space-md);
+  border-radius: var(--mishkat-radius-pill);
+  text-decoration: none;
+  color: var(--mishkat-color-text-secondary);
+  background: var(--mishkat-color-surface-sunken);
+  white-space: nowrap;
+  min-block-size: var(--mishkat-size-touch-min);
+  display: inline-flex;
+  align-items: center;
+}
+.m-tabs a[aria-current="page"] { background: var(--mishkat-color-brand-muted); color: var(--mishkat-color-brand); }
+
+/* ── مراحلُ الدورة (شريطُ المراحل — علاج ع-٢١) ─────────────────────────────── */
+
+.m-stepper { display: grid; gap: var(--mishkat-space-xs); }
+.m-step {
+  display: flex;
+  align-items: center;
+  gap: var(--mishkat-space-sm);
+  padding: var(--mishkat-space-xs) var(--mishkat-space-sm);
+  border-radius: var(--mishkat-radius-md);
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-secondary);
+  background: var(--mishkat-color-surface-sunken);
+}
+.m-step__dot {
+  inline-size: var(--mishkat-size-icon-md);
+  block-size: var(--mishkat-size-icon-md);
+  border-radius: var(--mishkat-radius-circle);
+  border: var(--mishkat-space-2xs) solid var(--mishkat-color-border-subtle);
+  flex: none;
+}
+.m-step.is-done { color: var(--mishkat-color-success); }
+.m-step.is-done .m-step__dot { background: var(--mishkat-color-success); border-color: var(--mishkat-color-success); }
+.m-step.is-current {
+  color: var(--mishkat-color-text-primary);
+  background: var(--mishkat-color-brand-muted);
+  font-weight: var(--mishkat-font-weight-medium);
+}
+.m-step.is-current .m-step__dot { border-color: var(--mishkat-color-brand); }
+@media (min-width: 48rem) { .m-stepper { grid-auto-flow: column; grid-auto-columns: 1fr; } }
+
+/* ── الهيكلُ العظميّ (§٣-٣) — بنيةٌ تُدرَك مبكراً لا دوّامةٌ تخفيها ────────── */
+
+.m-skeleton {
+  border-radius: var(--mishkat-radius-sm);
+  background: color-mix(in oklab, var(--mishkat-color-surface-sunken) var(--mishkat-x-skeleton-mix), var(--mishkat-color-border-subtle));
+  block-size: var(--mishkat-font-body-size);
+  animation: m-pulse var(--mishkat-motion-duration-slow) var(--mishkat-motion-ease-standard) infinite alternate;
+}
+.m-skeleton.is-title { block-size: var(--mishkat-font-title-size); inline-size: 60%; }
+.m-skeleton.is-value { block-size: var(--mishkat-font-display-size); inline-size: 35%; }
+.m-skeleton.is-line-short { inline-size: 45%; }
+@keyframes m-pulse { from { opacity: 0.55; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .m-skeleton { animation: none; } }
+
+/* ── أدواتُ المعاينة (خارج المنتج — للمالك وحده) ───────────────────────────── */
+
+.m-preview {
+  padding: var(--mishkat-space-sm) var(--mishkat-space-md);
+  background: var(--mishkat-color-surface-sunken);
+  border-block-end: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mishkat-space-sm);
+  align-items: center;
+  font-size: var(--mishkat-font-caption-size);
+}
+/* داخل إطار الجوّال في الفهرس (`…#embed`) يختفي شريطُ المعاينة فتبقى الشاشةُ وحدها — بـCSS خالص. */
+.m-preview:target { display: none; }
+.m-preview__label { color: var(--mishkat-color-text-secondary); }
+.m-preview__spacer { margin-inline-start: auto; }
+.m-preview__group { display: flex; flex-wrap: wrap; gap: var(--mishkat-space-2xs); }
+.m-preview__group input { position: absolute; opacity: 0; pointer-events: none; }
+.m-preview__group label {
+  min-block-size: var(--mishkat-size-touch-min);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--mishkat-space-sm);
+  border-radius: var(--mishkat-radius-pill);
+  border: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+  background: var(--mishkat-color-surface-raised);
+  cursor: pointer;
+}
+/* المفاتيحُ في رأس الصفحة والملصقاتُ في الشريط — فالوسمُ يُحدَّد بـ`:has` لا بالجوار. */
+body:has(#st-full:checked) label[for="st-full"],
+body:has(#st-empty:checked) label[for="st-empty"],
+body:has(#st-error:checked) label[for="st-error"],
+body:has(#st-loading:checked) label[for="st-loading"],
+body:has(#caps-on:checked) label[for="caps-on"] {
+  background: var(--mishkat-color-surface-inverse);
+  color: var(--mishkat-color-text-on-inverse);
+  border-color: var(--mishkat-color-surface-inverse);
+}
+.m-preview__group input:focus-visible + label { outline: 2px solid var(--mishkat-color-border-focus); outline-offset: 2px; }
+
+/* الحالاتُ الأربع: تبديلٌ بـCSS خالص (لا جافاسكربت). */
+.m-state { display: none; }
+#st-full:checked ~ .m-stage .m-state.is-full,
+#st-empty:checked ~ .m-stage .m-state.is-empty,
+#st-error:checked ~ .m-stage .m-state.is-error,
+#st-loading:checked ~ .m-stage .m-state.is-loading { display: grid; gap: var(--mishkat-space-md); }
+
+/* إظهارُ القدرة الحارسة لكل عنصرٍ تفاعليّ (برهانُ «الواجهة لا تكذب»). */
+#caps-on:checked ~ .m-stage [data-cap]::after {
+  content: " ⟨" attr(data-cap) "⟩";
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-info);
+  font-weight: var(--mishkat-font-weight-regular);
+}
+
+/* حاشيةُ التصميم — ليست جزءاً من الشاشة. */
+.m-note {
+  margin: var(--mishkat-space-md);
+  padding: var(--mishkat-space-md);
+  border: var(--mishkat-x-hairline) dashed var(--mishkat-color-border-strong);
+  border-radius: var(--mishkat-radius-md);
+  background: var(--mishkat-color-surface-sunken);
+  font-size: var(--mishkat-font-caption-size);
+  color: var(--mishkat-color-text-secondary);
+  display: grid;
+  gap: var(--mishkat-space-xs);
+  max-inline-size: var(--mishkat-size-container-wide);
+  margin-inline: auto;
+}
+.m-note h2 { font-size: var(--mishkat-font-body-size); color: var(--mishkat-color-text-primary); }
+.m-note ul { display: grid; gap: var(--mishkat-space-2xs); }
+.m-note li::before { content: "— "; }
+.m-note code {
+  font-family: inherit;
+  color: var(--mishkat-color-info);
+  background: var(--mishkat-color-info-muted);
+  border-radius: var(--mishkat-radius-sm);
+  padding-inline: var(--mishkat-space-2xs);
+}
+
+/* ── التوسّع: الكسرُ يوسّع ولا يعيد التصميم (§٤-١) ─────────────────────────── */
+
+@media (min-width: 48rem) {
+  .m-main { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: var(--mishkat-space-lg); }
+  .m-main > * { grid-column: span 2; }
+  .m-main > .is-half { grid-column: span 1; }
+}
+
+@media (min-width: 64rem) {
+  .m-shell { grid-template-columns: var(--mishkat-x-nav-rail) 1fr; grid-template-rows: auto auto 1fr; }
+  .m-appbar { grid-column: 1 / -1; }
+  .m-scope { grid-column: 1 / -1; }
+  .m-nav {
+    grid-column: 1;
+    grid-row: 3;
+    position: sticky;
+    inset-block-start: var(--mishkat-space-3xl);
+    inset-block-end: auto;
+    align-self: start;
+    flex-direction: column;
+    border-block-start: 0;
+    border-inline-start: var(--mishkat-x-hairline) solid var(--mishkat-color-border-subtle);
+    box-shadow: none;
+    background: transparent;
+    padding: var(--mishkat-space-md) var(--mishkat-space-xs);
+    gap: var(--mishkat-space-2xs);
+  }
+  .m-nav a {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--mishkat-space-sm);
+    padding-inline: var(--mishkat-space-sm);
+    border-radius: var(--mishkat-radius-md);
+    font-size: var(--mishkat-font-body-size);
+  }
+  .m-nav a[aria-current="page"] { background: var(--mishkat-color-brand-muted); box-shadow: none; }
+  .m-main { grid-column: 2; grid-row: 3; }
+
+  /* **شاشةٌ مكتبٌ أولاً** (المديرُ العام — تدقيقُ «الجهاز الأوّل»): لوحةُ تحليلٍ بثلاثة
+   * أعمدة، تنزل عموداً واحداً على الجوّال **بلا قصٍّ ولا فقدِ محتوى**. */
+  .m-main.is-desktop-first { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .m-main.is-desktop-first > * { grid-column: span 3; }
+  .m-main.is-desktop-first > .is-third { grid-column: span 1; }
+  .m-main.is-desktop-first > .is-two-thirds { grid-column: span 2; }
+  /* وعلى المكتب لا يلزم شريطُ إبهامٍ لاصق — يصير بطاقةً في مكانها من العمود. */
+  .m-main.is-desktop-first .m-thumb { position: static; max-inline-size: none; }
+}
+
+/* ── فهرسُ النماذج (index.html وحده) ───────────────────────────────────────── */
+
+.m-index { max-inline-size: var(--mishkat-size-container-wide); margin-inline: auto; padding: var(--mishkat-space-lg) var(--mishkat-space-md) var(--mishkat-space-3xl); display: grid; gap: var(--mishkat-space-lg); }
+.m-index__title { font-size: var(--mishkat-font-display-size); font-weight: var(--mishkat-font-display-weight); }
+.m-index__lede { color: var(--mishkat-color-text-secondary); max-inline-size: var(--mishkat-size-container-narrow); }
+.m-stack { display: grid; gap: var(--mishkat-space-lg); }
+.m-grid { display: grid; gap: var(--mishkat-space-md); }
+@media (min-width: 48rem) { .m-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .m-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.m-index a.m-card { text-decoration: none; color: inherit; }
+.m-index a.m-card:hover { border-color: var(--mishkat-color-brand); }
+/* ── إطارُ الجهاز في الفهرس (قب-٥٤/١ + تدقيقُ «الجهازِ الأوّل») ────────────────
+ * لكل دورٍ **جهازٌ أوّل**: الأميرُ والمحفّظ والمشرفُ جوّالٌ أولاً، والمديرُ العامُّ
+ * مكتبٌ أولاً. فيُعرض كلُّ نموذجٍ بإطار جهازه افتراضاً، ويبدّل المالكُ الأحجامَ
+ * الثلاثةَ ليطمئنّ أن السلاسة تامّةٌ في الثلاثة.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+.m-frame-wrap { overflow-x: auto; padding-block: var(--mishkat-space-2xs); }
+.m-frame {
+  inline-size: calc(var(--w) * var(--s));
+  block-size: calc(var(--h) * var(--s));
+  margin-inline: auto;
+  border: var(--mishkat-space-2xs) solid var(--mishkat-color-surface-inverse);
+  border-radius: var(--mishkat-radius-lg);
+  overflow: hidden;
+  background: var(--mishkat-color-surface-base);
+  box-shadow: var(--mishkat-elevation-overlay);
+}
+.m-frame iframe {
+  inline-size: var(--w);
+  block-size: var(--h);
+  border: 0;
+  display: block;
+  transform: scale(var(--s));
+  transform-origin: top right;
+}
+
+/* مقاساتُ الأجهزة الثلاثة — القيمُ مقاساتُ أجهزةٍ حقيقية لا أرقامٌ جمالية. */
+.m-frame { --w: 390px; --h: 780px; --s: 1; }
+
+body:has(#dev-auto:checked) .m-frame.is-first-desktop,
+body:has(#dev-desktop:checked) .m-frame { --w: 1280px; --h: 800px; --s: 0.56; }
+body:has(#dev-tablet:checked) .m-frame { --w: 768px; --h: 1024px; --s: 0.5; }
+body:has(#dev-mobile:checked) .m-frame { --w: 390px; --h: 780px; --s: 1; }
+
+@media (max-width: 47.99rem) {
+  body:has(#dev-auto:checked) .m-frame.is-first-desktop,
+  body:has(#dev-desktop:checked) .m-frame { --s: 0.28; }
+  body:has(#dev-tablet:checked) .m-frame { --s: 0.42; }
+}
+@media (max-width: 26rem) {
+  .m-frame { --s: 0.88; }
+  body:has(#dev-mobile:checked) .m-frame { --s: 0.88; }
+}
+.m-index__role { font-size: var(--mishkat-font-caption-size); color: var(--mishkat-color-brand); }
+.m-index__q { font-size: var(--mishkat-font-title-size); font-weight: var(--mishkat-font-title-weight); }
+.m-index__meta { font-size: var(--mishkat-font-caption-size); color: var(--mishkat-color-text-secondary); }

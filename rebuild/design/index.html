@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مِشكاة — نماذجُ شاشات الأدوار (T30)</title>
+<link rel="stylesheet" href="tokens.css">
+</head>
+<body>
+
+<!-- مبدّلُ الأجهزة: بـCSS خالص (`:has`) — لا سطرَ جافاسكربت. -->
+<input type="radio" name="dev" id="dev-auto" checked>
+<input type="radio" name="dev" id="dev-mobile">
+<input type="radio" name="dev" id="dev-tablet">
+<input type="radio" name="dev" id="dev-desktop">
+
+<div class="m-preview">
+  <span class="m-preview__label">اعرض النماذج على:</span>
+  <div class="m-preview__group">
+    <label for="dev-auto">جهازِ كل دورٍ الأوّل</label>
+    <label for="dev-mobile">جوّال ٣٩٠</label>
+    <label for="dev-tablet">تابلت ٧٦٨</label>
+    <label for="dev-desktop">مكتب ١٢٨٠</label>
+  </div>
+</div>
+
+<div class="m-index">
+
+  <header>
+    <p class="m-index__role">مِشكاة v2 — المهمة T30 — نماذجُ HTML ساكنة</p>
+    <h1 class="m-index__title">شاشةٌ على مقاس الدور — سبعةُ نماذجَ للاعتماد</h1>
+    <p class="m-index__lede">
+      كلُّ شاشةٍ هنا تُجيب <strong>سؤالَ دورها الواحد</strong>، مبنيّةً على الهوية المعتمدة
+      (خُضرة مسجدية — خط عصري هندسي — أرقام عربية-هندية)، ومعروضةً افتراضاً
+      <strong>بإطار جهاز دورها الأوّل</strong>: الأميرُ والمحفّظُ والمشرفُ على الجوّال،
+      والمديرُ العامُّ على المكتب. وبدِّل الأحجامَ من الأعلى لتطمئنّ أن السلاسة تامّةٌ في الثلاثة.
+    </p>
+  </header>
+
+  <section class="m-card">
+    <h2 class="m-index__q">كيف تقرأ هذه النماذج</h2>
+    <ul class="m-list">
+      <li class="m-item"><span class="m-item__text"><span><strong>حالاتُ الحقيقة الأربع</strong> في أعلى كل نموذج: ممتلئة — فارغةٌ تشرح — خطأٌ إنسانيّ — تحميل، تُبدَّل بنقرة.</span><span class="m-item__sub">الفارغةُ والخطأُ هما ما أهمله v1، ولذلك رُسما بالتفصيل نفسِه لا أقلّ. (يظهر شريطُ التبديل حين تفتح الشاشةَ بحجمها الكامل.)</span></span></li>
+      <li class="m-item"><span class="m-item__text"><span><strong>«أظهِر قدرةَ كل زر»</strong>: يكشف بجانب كل زرٍّ ورابطٍ <em>القدرةَ</em> التي تُظهره من المصفوفة الذهبية.</span><span class="m-item__sub">برهانُ «الواجهة لا تكذب»: لا زرَّ في شاشةِ دورٍ سيرفضه الخادم.</span></span></li>
+      <li class="m-item"><span class="m-item__text"><span><strong>الفعلُ الأهمُّ في متناول الإبهام</strong>: شريطٌ لاصقٌ فوق شريط التنقّل يحمل فعلَ الدور الأهمَّ وحدَه، يُبلَغ بيدٍ واحدةٍ بلا تمرير.</span><span class="m-item__sub">وعلى المكتب يصير بطاقةً في مكانها — لا شريطَ عائماً بلا داعٍ.</span></span></li>
+      <li class="m-item"><span class="m-item__text"><span><strong>الوضعان الفاتح والداكن</strong> يتبعان إعدادَ جهازك — النماذجُ تصحّ فيهما معاً.</span><span class="m-item__sub">لا شاشةَ تفترض خلفيةً بيضاء.</span></span></li>
+      <li class="m-item"><span class="m-item__text"><span><strong>صفرُ خطوطٍ خارجية وصفرُ صورٍ وصفرُ جافاسكربت</strong>: كلُّ ما تراه أشكالٌ تُرسم في الصفحة.</span><span class="m-item__sub">أولُ تحميلٍ كامل ≈ ١٤ ك.ب مضغوطة — من ميزانية ١٥٠ ك.ب.</span></span></li>
+    </ul>
+  </section>
+
+  <h2 class="m-index__q">الرئيساتُ الأربع — ما يفتحه كلُّ دورٍ صباحاً</h2>
+
+  <div class="m-stack">
+
+    <article class="m-card">
+      <p class="m-index__role">◆ أميرُ المسجد — ٤٢ قدرة — جهازُه الأوّل: الجوّال</p>
+      <p class="m-index__q">«ما حالُ مسجدي اليومَ وما المطلوبُ مني الآن؟»</p>
+      <div class="m-frame-wrap">
+        <div class="m-frame is-first-mobile"><iframe src="amir/home.html#embed" title="رئيسية أمير المسجد" loading="lazy"></iframe></div>
+      </div>
+      <p class="m-index__meta">يعالج: ع-٤ — ع-٥ — ع-٦ — ع-٧ — ع-٨ — ع-١٩ — ع-٢٦ — ع-٢٧ — ع-٢٨</p>
+      <a class="m-btn is-secondary" href="amir/home.html">افتحها بحجمها الكامل</a>
+    </article>
+
+    <article class="m-card">
+      <p class="m-index__role">◈ المحفّظ/المعلّم — ٩ قدرات — جهازُه الأوّل: الجوّال</p>
+      <p class="m-index__q">«حلقتي اليوم — من حضر وما سجّلت؟»</p>
+      <div class="m-frame-wrap">
+        <div class="m-frame is-first-mobile"><iframe src="teacher/home.html#embed" title="رئيسية المحفّظ" loading="lazy"></iframe></div>
+      </div>
+      <p class="m-index__meta">يعالج: ع-١١ — ع-٢٩</p>
+      <a class="m-btn is-secondary" href="teacher/home.html">افتحها بحجمها الكامل</a>
+    </article>
+
+    <article class="m-card">
+      <p class="m-index__role">▲ المشرف (مسؤول المنطقة) — ٤٥ قدرة — جهازُه الأوّل: الجوّال، والمكتبُ يليه</p>
+      <p class="m-index__q">«ما ينتظر اعتمادي، ومَن تأخّر، وأين الشواغر؟»</p>
+      <div class="m-frame-wrap">
+        <div class="m-frame is-first-mobile"><iframe src="supervisor/home.html#embed" title="رئيسية المشرف" loading="lazy"></iframe></div>
+      </div>
+      <p class="m-index__meta">يعالج: ع-٢٢ — ع-٣١ — ع-٣٢ — ع-٣٣</p>
+      <a class="m-btn is-secondary" href="supervisor/home.html">افتحها بحجمها الكامل</a>
+    </article>
+
+    <article class="m-card">
+      <p class="m-index__role">★ المديرُ العام — ٤٧ قدرة — جهازُه الأوّل: <strong>سطحُ المكتب</strong></p>
+      <p class="m-index__q">«صحةُ الشبكة رقماً، وأين الاستثناء؟»</p>
+      <div class="m-frame-wrap">
+        <div class="m-frame is-first-desktop"><iframe src="admin/home.html#embed" title="رئيسية المدير العام" loading="lazy"></iframe></div>
+      </div>
+      <p class="m-index__meta">ثلاثةُ أعمدةٍ على المكتب تنزل عموداً واحداً على الجوّال بلا فقدِ محتوى — بدِّل الحجمَ لتراه. يعالج: ع-١ — ع-٣٤</p>
+      <a class="m-btn is-secondary" href="admin/home.html">افتحها بحجمها الكامل</a>
+    </article>
+
+  </div>
+
+  <h2 class="m-index__q">شاشاتُ التدفّق الثلاث — حيث يُنجَز العمل</h2>
+
+  <div class="m-stack">
+
+    <article class="m-card">
+      <p class="m-index__role">◈ المحفّظ — تسجيلُ يوم الحلقة — جهازُه الأوّل: الجوّال</p>
+      <p class="m-index__q">«حضورٌ وتسميعٌ بأقلِّ نقرات»</p>
+      <div class="m-frame-wrap">
+        <div class="m-frame is-first-mobile"><iframe src="flows/circle-day.html#embed" title="تسجيل يوم الحلقة" loading="lazy"></iframe></div>
+      </div>
+      <p class="m-index__meta">يعالج: ع-٢ (الازدواج) — ع-٣ — ع-٩ (حدُّ العلامة) — ع-١٠ — ع-١٢ — ع-٢٣</p>
+      <a class="m-btn is-secondary" href="flows/circle-day.html">افتحها بحجمها الكامل</a>
+    </article>
+
+    <article class="m-card">
+      <p class="m-index__role">▲ المشرف — طابورُ الاعتماد — جهازُه الأوّل: الجوّال</p>
+      <p class="m-index__q">«ابتّ في الأقدم وأنت ترى ما فيه»</p>
+      <div class="m-frame-wrap">
+        <div class="m-frame is-first-mobile"><iframe src="flows/approval-queue.html#embed" title="طابور الاعتماد" loading="lazy"></iframe></div>
+      </div>
+      <p class="m-index__meta">يعالج: ع-١٥ — ع-٢٢ — ع-٣١</p>
+      <a class="m-btn is-secondary" href="flows/approval-queue.html">افتحها بحجمها الكامل</a>
+    </article>
+
+    <article class="m-card">
+      <p class="m-index__role">₪ المسؤول المالي — رواتبُ الشهر — جهازُه الأوّل: المكتب (ويعمل على الجوّال)</p>
+      <p class="m-index__q">«أين وصلت الدورة، ولماذا هذا صفر؟»</p>
+      <div class="m-frame-wrap">
+        <div class="m-frame is-first-desktop"><iframe src="flows/payroll.html#embed" title="رواتب الشهر" loading="lazy"></iframe></div>
+      </div>
+      <p class="m-index__meta">يعالج: ع-٢١ (الدورة ظاهرة) — ع-٢٥ (الصفرُ يشرح نفسه) — ع-١٣ — ع-١٤ — ع-٢٤</p>
+      <a class="m-btn is-secondary" href="flows/payroll.html">افتحها بحجمها الكامل</a>
+    </article>
+
+  </div>
+
+  <section class="m-card">
+    <h2 class="m-index__q">وما يحتاج قرارَك</h2>
+    <ul class="m-list">
+      <li class="m-item is-info"><span class="m-item__text"><span><strong>أربعُ فجواتِ عقدٍ مرفوعة</strong> (<code>CR-DRAFT-design-001…004</code>) — أبرزُها أن ثلاثاً من الرئيسات الأربع بلا عقدِ شاشة، وأن «طابور الاعتماد» بابٌ بلا شاشة.</span><span class="m-item__sub">تفصيلُها ومسوّغُها في <a class="m-link" href="README.md">README.md</a> — ولم يُرسَم في النماذج شيءٌ كأنه موجودٌ وهو ليس كذلك.</span></span></li>
+      <li class="m-item"><span class="m-item__text"><span><strong>ترتيبُ الشريط لكل دور</strong>: مرسومٌ كما تُخرجه الخريطة المحروسة اليوم، ومعه توصيةٌ بتقديم «الإدارة» و«المالية» على «المكتبة» و«المنهاج» للمشرف.</span><span class="m-item__sub">هذا قرارٌ تعرف من الميدان ما يصحّحه.</span></span></li>
+      <li class="m-item"><span class="m-item__text"><span><strong>«لونُ الدور» في الشريط العلويّ</strong> (قب-٢٥): لم يُنفَّذ لوناً — لأن ألوان الهوية الخمسة تحمل معانيَ حالاتٍ لا هوياتِ أدوار. مُيِّز الدورُ برقاقةٍ باسمه ورمزه.</span><span class="m-item__sub">إن أردتَ لوناً لكل دورٍ فهي عائلةُ رموزٍ جديدة تُقَرّ (<code>CR-DRAFT-design-003</code>).</span></span></li>
+    </ul>
+    <a class="m-btn is-primary" href="README.md">اقرأ قراراتِ التصميم ومسوّغَها</a>
+  </section>
+
+</div>
+
+</body>
+</html>

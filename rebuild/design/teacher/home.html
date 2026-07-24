@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مِشكاة — رئيسية المحفّظ/المعلّم</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body>
+
+<input type="radio" name="st" id="st-full" checked>
+<input type="radio" name="st" id="st-empty">
+<input type="radio" name="st" id="st-error">
+<input type="radio" name="st" id="st-loading">
+<input type="checkbox" id="caps-on">
+
+<div class="m-preview" id="embed">
+  <span class="m-preview__label">حالاتُ الحقيقة الأربع:</span>
+  <div class="m-preview__group">
+    <label for="st-full">ممتلئة</label>
+    <label for="st-empty">فارغة تشرح</label>
+    <label for="st-error">خطأٌ إنسانيّ</label>
+    <label for="st-loading">تحميل</label>
+  </div>
+  <span class="m-preview__label">·</span>
+  <div class="m-preview__group"><label for="caps-on">أظهِر قدرةَ كل زر</label></div>
+  <span class="m-preview__spacer"></span>
+  <a class="m-link" href="../index.html">← الفهرس</a>
+</div>
+
+<div class="m-stage">
+<div class="m-shell">
+
+  <header class="m-appbar">
+    <span class="m-appbar__brand">مِشكاة</span>
+    <span class="m-appbar__role">◈ محفّظ</span>
+    <span class="m-appbar__spacer"></span>
+    <button class="m-appbar__icon" type="button" aria-label="إشعاراتي (١ جديد)">◉<span class="m-badge is-danger">١</span></button>
+  </header>
+
+  <div class="m-scope">
+    <span>نطاقُ الصفحة:</span>
+    <span class="m-scope__unit">حلقاتي أنا</span>
+    <span>· حلقتان في مسجد خالد بن الوليد</span>
+    <span class="m-scope__unit m-hijri">الخميس ١٥ محرم ١٤٤٨ هـ</span>
+  </div>
+
+  <!-- ═════════════ ممتلئة ═════════════ -->
+  <main class="m-main m-state is-full">
+
+    <h1 class="m-section-title m-section-title--first">ماذا أسجّل الآن؟</h1>
+
+    <div class="m-card is-highlight">
+      <p class="m-stat__sentence">حلقةٌ واحدةٌ من حلقتَيك لم يُسجَّل يومُها بعد.</p>
+      <p class="m-stat__value is-brand">١ / ٢</p>
+      <p class="m-stat__scope">ما أُسنِد إليك أنت وحدك · حلقةُ التحفيظ بعد المغرب</p>
+    </div>
+
+    <ul class="m-list">
+      <li class="m-item is-warning">
+        <span class="m-badge is-warning">⚠ لم يُسجَّل</span>
+        <span class="m-item__text">
+          <span>حلقةُ التحفيظ — ٢١ طالباً · بعد المغرب</span>
+          <span class="m-item__sub">آخرُ جلسةٍ سُجّلت: ١٣ محرم — حضر ١٧ — تسجيلُها في شريط الفعل أسفلَ الشاشة</span>
+        </span>
+      </li>
+      <li class="m-item is-success">
+        <span class="m-badge is-success">✔ سُجّل اليوم</span>
+        <span class="m-item__text">
+          <span>حلقةُ على بصيرة — ١٨ طالباً · بعد العصر</span>
+          <span class="m-item__sub">حضر ١٦ — غاب ٢ — متوسّطُ العلامات ٨٫٤ من ١٠</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="../flows/circle-day.html" data-cap="circle.teach #١٨">راجِع ما سجّلت</a></span>
+      </li>
+    </ul>
+
+    <h2 class="m-section-title">مَن من طلابي يحتاج انتباهاً؟</h2>
+
+    <div class="m-card">
+      <ul class="m-list">
+        <li class="m-item is-danger">
+          <span class="m-badge is-danger">✖ غياب</span>
+          <span class="m-item__text">
+            <span>عمّار خالد — غاب ٣ من آخر ٤ مجالس في حلقة التحفيظ</span>
+            <span class="m-item__sub">آخرُ حضورٍ له: ٧ محرم · لوليّ أمره رابطُ متابعةٍ ساري</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="circle.teach #١٨">سجلُّه التراكميّ</a></span>
+        </li>
+        <li class="m-item is-warning">
+          <span class="m-badge is-warning">⚠ تأخّرٌ في المنهج</span>
+          <span class="m-item__text">
+            <span>يوسف الشامي — تأخّر مجلسَين عن حلقته في «على بصيرة»</span>
+            <span class="m-item__sub">وصلت الحلقةُ المجلسَ ١٤، وهو عند ١٢</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="circle.teach #١٨">تقدّمُه في المنهج</a></span>
+        </li>
+        <li class="m-item is-info">
+          <span class="m-badge is-info">ℹ بلا وليّ</span>
+          <span class="m-item__text">
+            <span>مصعب الحموي — لا رابطَ لوليّ أمره بعد</span>
+            <span class="m-item__sub">الرابطُ للقراءة فقط ولا يكشف إلا طالبَه</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-secondary" href="#" data-cap="guardianLink.manage #٢٠">أصدِر رابطاً لوليّ أمره</a></span>
+        </li>
+      </ul>
+      <p class="m-stat__scope">طلابُ حلقاتك أنت وحدك — لا مقارنةَ بحلقةٍ أخرى ولا ترتيبَ بين الطلاب.</p>
+    </div>
+
+    <h2 class="m-section-title">أين وصلنا وماذا نأخذ في الجلسة القادمة؟</h2>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">حلقةُ على بصيرة — المجلس القادم</p>
+      <p class="m-stat__value">١٥</p>
+      <p class="m-stat__scope">منهاج «على بصيرة» · أُنجز ١٤ مجلساً من ٤٠ — تُملأ مصفوفةُ التقدّم آلياً حين يُعتمد درسٌ ذو مجلس</p>
+      <div class="m-stat__row"><a class="m-btn is-ghost" href="#" data-cap="circle.teach #١٨">مصفوفةُ تقدّم المنهج</a></div>
+    </div>
+
+    <div class="m-card is-half">
+      <p class="m-stat__sentence">حلقةُ التحفيظ — أين وصل الحفظ</p>
+      <p class="m-stat__value">جزء ٢٦</p>
+      <p class="m-stat__scope">أقلُّ الطلاب تقدّماً عند سورة الملك · وأكثرُهم عند النبأ</p>
+      <div class="m-stat__row"><a class="m-btn is-ghost" href="#" data-cap="circle.teach #١٨">تفصيلُ الحفظ بالطالب</a></div>
+    </div>
+
+    <h2 class="m-section-title">ما المطلوب مني ومن طلابي؟</h2>
+
+    <ul class="m-list">
+      <li class="m-item">
+        <span class="m-badge is-neutral">• مطلوبٌ مني</span>
+        <span class="m-item__text">
+          <span>واجبُ «مراجعة جزء عمّ» ينتهي بعد يومين — سلّم ٩ من ٢١ طالباً</span>
+          <span class="m-item__sub">أنشأتَه في ١٠ محرم</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-secondary" href="#" data-cap="duties.manage #٢٤">متابعةُ التسليم</a></span>
+      </li>
+      <li class="m-item">
+        <span class="m-badge is-neutral">• متى شئت</span>
+        <span class="m-item__text">
+          <span>اختبارُ التجويد الشهريّ لم يُنشأ بعد لهذا الشهر</span>
+          <span class="m-item__sub">التصحيحُ فوريٌّ للطالب عند التسليم</span>
+        </span>
+        <span class="m-item__action"><a class="m-btn is-ghost" href="#" data-cap="exam.manage #٢١">أنشئ اختباراً</a></span>
+      </li>
+    </ul>
+
+    <!-- الفعلُ الأهمُّ للمحفّظ: مدخلٌ واحدٌ في متناول الإبهام، بلا نظيرٍ في البطاقات. -->
+    <div class="m-thumb">
+      <a class="m-btn is-primary" href="../flows/circle-day.html" data-cap="circle.teach #١٨">سجّل يومَ حلقة التحفيظ</a>
+      <span class="m-thumb__note">حلقتُك التي لم تُسجَّل اليوم · نقرةٌ واحدةٌ من أي موضعٍ في الصفحة</span>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ فارغةٌ تشرح ═════════════ -->
+  <main class="m-main m-state is-empty">
+
+    <h1 class="m-section-title m-section-title--first">ماذا أسجّل الآن؟</h1>
+
+    <div class="m-empty">
+      <svg class="m-mihrab" viewBox="0 0 64 96" aria-hidden="true" focusable="false">
+        <path d="M8 92 V44 C8 24 20 8 32 3 C44 8 56 24 56 44 V92 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(45 32 56)"/>
+        <rect x="22" y="46" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <p class="m-empty__title">لا حلقةَ أُسنِدت إليك بعد</p>
+      <p class="m-empty__hint">ما يُسنَد إليك يظهر هنا بسجلّه وطلابه من فوره — لا شيءَ عليك أن تُنشئه.</p>
+      <div class="m-diagnosis">
+        <span>مَن يُسنِد الحلقةَ إليك: أميرُ مسجدك.</span>
+        <span class="m-diagnosis__who">مسجد خالد بن الوليد — أ. عبد الرحمن الحمصي.</span>
+      </div>
+    </div>
+
+    <h2 class="m-section-title">مَن من طلابي يحتاج انتباهاً؟</h2>
+    <div class="m-empty is-half">
+      <p class="m-empty__title">لا طلابَ بعد</p>
+      <p class="m-empty__hint">أسماءُ من يحتاج انتباهاً تظهر هنا بعد أول جلستَين مسجَّلتَين — قبلهما لا تُقاس مواظبةٌ ولا تقدّم.</p>
+    </div>
+
+    <div class="m-empty is-half">
+      <p class="m-empty__title">ولا تقدّمَ في المنهج بعد</p>
+      <p class="m-empty__hint">مصفوفةُ المنهج تُملأ آلياً حين يُعتمد درسٌ ذو مجلس — فأولُ جلسةٍ تفتحها.</p>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ خطأٌ إنسانيّ ═════════════ -->
+  <main class="m-main m-state is-error">
+
+    <div class="m-banner is-warning">
+      <span>⚠ أنت خارج الاتصال — سجّل يومَك كالمعتاد، ويُرسَل بالترتيب عند عودة الشبكة.</span>
+    </div>
+
+    <h1 class="m-section-title m-section-title--first">ماذا أسجّل الآن؟</h1>
+
+    <div class="m-card">
+      <p class="m-stat__sentence">جلسةُ اليوم في حلقة التحفيظ لم تُقبل بعد — فيها ما يحتاج تصحيحَك.</p>
+      <div class="m-list">
+        <div class="m-item is-danger">
+          <span class="m-badge is-danger">✖ خارج الحدّ</span>
+          <span class="m-item__text">
+            <span>علامةُ الحفظ لعمّار خالد: ١٢ — والحدُّ المعتمد ١٠.</span>
+            <span class="m-item__sub">الحدُّ من إعدادات الشبكة لا من الشاشة؛ صحّحه ليُحفظ السطر.</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-secondary" href="../flows/circle-day.html" data-cap="circle.teach #١٨">افتح السطر وصحّح</a></span>
+        </div>
+        <div class="m-item is-warning">
+          <span class="m-badge is-warning">⚠ ناقص</span>
+          <span class="m-item__text">
+            <span>ثلاثةُ طلابٍ بلا حالةِ حضور: مصعب · أنس · بلال.</span>
+            <span class="m-item__sub">الحضورُ حقلٌ لازمٌ لكل طالبٍ في الجلسة.</span>
+          </span>
+          <span class="m-item__action"><a class="m-btn is-secondary" href="../flows/circle-day.html" data-cap="circle.teach #١٨">أكمِل الحضور</a></span>
+        </div>
+      </div>
+      <p class="m-stat__scope">ما أدخلتَه محفوظٌ عندك ولم يضِع — يُرسَل حين يصحّ السطرُ وتعود الشبكة.</p>
+    </div>
+
+    <div class="m-card">
+      <div class="m-banner is-danger">
+        <span>✖ تعذّر عرض ملاحظات الإشراف</span>
+        <button class="m-btn is-secondary" type="button" data-cap="circle.teach #١٨">أعد المحاولة</button>
+      </div>
+      <p class="m-stat__scope">أعد المحاولة، فإن تكرّر فأبلغ مسؤولك — وبقيّةُ الصفحة تعمل.</p>
+    </div>
+
+  </main>
+
+  <!-- ═════════════ تحميل ═════════════ -->
+  <main class="m-main m-state is-loading" aria-busy="true">
+    <p class="m-stat__scope">جارٍ تحضير البيانات…</p>
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton is-value"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+    <div class="m-list">
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+      <div class="m-item"><span class="m-item__text"><span class="m-skeleton"></span><span class="m-skeleton is-line-short"></span></span></div>
+    </div>
+    <div class="m-card">
+      <span class="m-skeleton is-title"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton"></span>
+      <span class="m-skeleton is-line-short"></span>
+    </div>
+  </main>
+
+  <nav class="m-nav" aria-label="التنقّل الرئيسي">
+    <a href="#" aria-current="page"><span class="m-nav__glyph">⌂</span>الرئيسية</a>
+    <a href="../flows/circle-day.html"><span class="m-nav__glyph">◈</span>حلقاتي</a>
+    <a href="#"><span class="m-nav__glyph">✦</span>النشاطات</a>
+    <a href="#"><span class="m-nav__glyph">▤</span>المكتبة</a>
+    <a href="#"><span class="m-nav__glyph">▥</span>المنهاج</a>
+    <a href="#" class="is-more"><span class="m-nav__glyph">⋯</span>المزيد</a>
+    <a href="#" class="is-overflow"><span class="m-nav__glyph">◐</span>حسابي</a>
+  </nav>
+
+</div>
+</div>
+
+<aside class="m-note">
+  <h2>حاشيةُ التصميم — ليست جزءاً من الشاشة</h2>
+  <ul>
+    <li><strong>عدسةُ ملكيةٍ لا نطاق</strong> (ع-١١): كلُّ ما هنا يفتحه <code>circle.teach #١٨</code> الشخصية — «حلقاتي» ليست موطناً ثانياً للحلقة بل مرشّحُ ملكيةٍ على الكيان نفسه.</li>
+    <li><strong>تسعُ قدراتٍ لا أكثر</strong>: <code>circle.teach</code> · <code>exam.manage</code> · <code>duties.manage</code> · <code>guardianLink.manage</code> + الخمسُ الشخصية. فلا «البيان» ولا «الإدارة» ولا «مسجدي» في شريطه — <em>غيابٌ بالبناء لا إخفاءٌ بالعرض</em>.</li>
+    <li><strong>لا عدّادَ ماليٍّ في وجه شاشة التدريس</strong> (محظورُ عدسته): «ساعاتي» و«كشفُ راتبي» في «حسابي» وحده.</li>
+    <li><strong>ملاحظاتُ المشرف ليست هنا</strong> (قب-٥٤/٣): موطنُها تبويبُها في «سجلّ الحلقة» — تُقرأ ولا تُحرَّر (ب-٣٥أ)، ولا تُكرَّر كتلةً في الرئيسية.</li>
+    <li><strong>مدخلٌ واحدٌ لكلِّ فعل</strong> (قب-٥٤/٣): «سجّل يومَ الحلقة» في شريط الإبهام وحده — فلا زرَّ له في بطاقة الجواب ولا في سطر الحلقة المعلَّقة؛ وسطرُ الحلقة المسجَّلة يحمل فعلاً <em>آخر</em> («راجِع ما سجّلت»).</li>
+    <li><strong>الطالبُ يُذكر باسمه وسببه</strong> لا برقمٍ مجرّد — ولا مقارنةَ أقرانٍ ولا ترتيبَ بين الطلاب (لا تشهير).</li>
+    <li><strong>الخطأُ الإنسانيّ</strong> هو أشيعُ ما يقع للمحفّظ: علامةٌ فوق الحدّ (ع-٩) وحضورٌ ناقص — يُعرضان بالسطر والسبب ووجهةِ العلاج، وما أُدخل لا يضيع.</li>
+    <li><strong>فجوةُ عقد</strong>: لا عقدَ شاشةٍ لـ<code>/home</code> بعدسة المعلّم (العقدُ القائم <code>lenses: ["amir"]</code>) — مرفوعةٌ في <code>CR-DRAFT-design-001</code>. وكلُّ حقلٍ استُعمل هنا مأخوذٌ من عقودٍ قائمة (<code>circle.logMineView</code> · <code>circleLog.student*</code>).</li>
+  </ul>
+</aside>
+
+</body>
+</html>
