@@ -82,6 +82,10 @@ export function grantIncentive(
       targetType: "payrollIncentive",
       targetId: incentive.id,
       reason: null,
+      // **لا حالَ قبله**: الحافزُ واقعةٌ تُلحَق — وهو **خارج أجر المعلّم بالبناء** (ق-٧٧)،
+      // فاللقطةُ تقول صاحبَه ومانحَه لا مبلغاً (ق-٦٠).
+      before: null,
+      after: `${incentive.personId} \u00b7 ${incentive.grantedBy}`,
     })
     return payrollOk(incentive)
   })

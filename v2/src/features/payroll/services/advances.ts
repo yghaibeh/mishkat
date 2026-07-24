@@ -100,6 +100,10 @@ export function grantAdvance(
       targetType: "payrollAdvance",
       targetId: advance.id,
       reason: null,
+      // **لا ذمّةَ قبله**: السلفةُ تُمنح الآن مفتوحةً — و`null` قيمةٌ معلنةٌ لا إغفال.
+      // ولا مبلغَ في اللقطة: **القيدُ مصدرُ كلِّ رقم** (ق-٦٠)، ولقطةٌ بمبلغٍ نسخةٌ ثالثة.
+      before: null,
+      after: `${advance.personId} \u00b7 open`,
     });
     return payrollOk(stores.payroll.getAdvance(advance.id)!);
   });

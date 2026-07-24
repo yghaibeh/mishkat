@@ -261,6 +261,9 @@ export function postJournal(
           targetType: "journalEntry",
           targetId: entryId,
           reason: input.reasonAr ?? null,
+          // **لا حالَ قبله**: القيدُ يُفتح ويُختم في هذا المقطع — و`null` تقول ذلك صراحةً.
+          before: null,
+          after: entryLabel(sealed),
         })
         return sealed
       }),
@@ -329,6 +332,9 @@ export function reverseEntry(
           targetType: "journalEntry",
           targetId: original.id,
           reason: reasonAr,
+          // الهدفُ **الأصلُ** لا العكس: فحالُه انتقلت `posted` ⟵ `reversedBy:…`.
+          before: entryLabel(original),
+          after: entryLabel(store.getEntry(original.id)!),
         })
         return sealed
       }),
@@ -336,6 +342,14 @@ export function reverseEntry(
   } catch (e) {
     return asBusinessError(e)
   }
+}
+
+/**
+ * لقطةُ حالِ القيد — **سندُه وحالُ عكسِه** (ق-٨٣ · CR-028). والعكسُ **حالةٌ لا حذف**
+ * (المادة ٧/٤)، فـ«قبل/بعد» هنا يُظهران انتقالَها بلا نسخةٍ ثانيةٍ من المبلغ (ق-٦٠).
+ */
+function entryLabel(entry: JournalEntry): string {
+  return `${entry.voucherNo} \u00b7 ${entry.reversedBy === null ? "posted" : `reversedBy:${entry.reversedBy}`}`
 }
 
 /** برهانُ التوازن — يصمد بعد كل عملية (ق-٧٢ روحاً، §٦.١): Σمدين = Σدائن لكل عملة. */

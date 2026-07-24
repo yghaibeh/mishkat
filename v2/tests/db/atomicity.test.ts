@@ -50,6 +50,10 @@ function appendHandoverRecord(org: OrgStore, targetId: string): void {
     targetType: "entry",
     targetId,
     reason: null,
+    // **تصريحٌ إلزاميّ** (CR-028): قيدُ اختبارٍ لا كيانَ مخزَّناً وراءه —
+    // فـ«لا لقطةَ تنطبق» **تُقال بقيمةٍ معلنة** ولا يُسكَت عنها.
+    before: null,
+    after: null,
   })
 }
 
