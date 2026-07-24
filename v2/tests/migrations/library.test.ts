@@ -128,7 +128,10 @@ describe("هجرةُ المكتبة — **على بيانات v1 منقولة** 
 
     const before = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     const applied = await applyMigrations(target, shippedMigrations())
-    // **تحتوي** لا **تساوي**: في الموجة هجراتٌ أخرى تنزل معها؛ المقصودُ أنّ `0007` نزلت.
+    // **مشتقٌّ لا مسرود** (الوصفة §٣-٨ · قب-٥١ · فخّ ٢): كلُّ الهجرات من `0007` فصاعداً تنزل
+    // هنا — والمكتبةُ **إحداها** لا آخرُها. وسردُ «0007 وحدها» يفترض أنها الأخيرة، فتُحمّرها
+    // أوّلُ هجرةِ وحدةٍ تليها. **والثابتُ المقصود هو التالي: `after == before`** (اللاإتلاف).
+    expect(applied).toEqual(shippedMigrations().filter((m) => m.name >= "0007").map((m) => m.name))
     expect(applied).toContain("0007_library.sql")
     const after = await target.all({ sql: "SELECT id FROM journal_entries ORDER BY id", params: [] })
     expect(after).toEqual(before)

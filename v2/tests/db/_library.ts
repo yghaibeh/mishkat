@@ -12,7 +12,10 @@
  * **حتميّ** (TESTING_POLICY §٥): المعرّفاتُ من عدّاد المستودع، ولحظةُ العالم مثبَّتة.
  */
 
-import { persistentLibrary } from "../../src/db/repositories/libraryRepository.js"
+import {
+  persistentLibraryCatalog,
+  persistentLibraryEntries,
+} from "../../src/db/repositories/libraryRepository.js"
 import type { SqliteDriver } from "../../src/db/sql/sqliteDriver.js"
 import { UnitOfWork, type Scope } from "../../src/db/unitOfWork.js"
 import { LibraryStore } from "../../src/features/library/data/store.js"
@@ -51,13 +54,32 @@ export function seedLibraryReferences(store: LibraryStore): void {
   for (const f of FORMATS) store.saveFormat({ tenantId, ...f })
 }
 
+/**
+ * وحدةُ عملٍ تشغيلية — **مصدران** (الوصفة §٤-٠): الكتالوجُ بالجذر والتشغيليُّ بالوحدة.
+ * وكلاهما يُقذفان في **دفعةٍ واحدة**، فالذرّيةُ عابرةٌ للمصدرين كما هي في العُهد.
+ */
 export function libraryUnitOfWork(
   driver: SqliteDriver,
   store: LibraryStore,
   scope: Scope,
 ): UnitOfWork {
   const uow = new UnitOfWork(driver, scope)
-  uow.enlist(persistentLibrary(store))
+  uow.enlist(persistentLibraryCatalog(store))
+  uow.enlist(persistentLibraryEntries(store))
+  return uow
+}
+
+/**
+ * **وحدةُ عملِ الكتالوج وحدَه** — وهي **الغرضُ المقيسُ من الفصل** (§٤-٠): جلسةٌ نطاقُها
+ * الجذرُ تقرأ القواميسَ الثلاثة **ولا تُحمّل صفَّ مادةٍ ولا خطَّ زمنٍ واحداً**.
+ */
+export function libraryCatalogUnitOfWork(
+  driver: SqliteDriver,
+  store: LibraryStore,
+  scopePath = "/",
+): UnitOfWork {
+  const uow = new UnitOfWork(driver, { tenantId: store.tenantId, scopePath })
+  uow.enlist(persistentLibraryCatalog(store))
   return uow
 }
 

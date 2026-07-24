@@ -15,7 +15,10 @@
  */
 
 import { describe, expect, it } from "vitest"
-import { persistentLibrary } from "../../src/db/repositories/libraryRepository.js"
+import {
+  persistentLibraryCatalog,
+  persistentLibraryEntries,
+} from "../../src/db/repositories/libraryRepository.js"
 import { UnitOfWork } from "../../src/db/unitOfWork.js"
 import { LibraryStore } from "../../src/features/library/data/store.js"
 import { createMaterial, archiveMaterial, updateMaterial } from "../../src/features/library/services/materials.js"
@@ -60,19 +63,37 @@ function completeFlow(store: LibraryStore, materialId: string, personId: string)
   if (!done.ok) throw new Error(`تعذّر الإنجاز: ${done.error.code}`)
 }
 
-/** قراءةُ عبارات المستودع مقابل أساسه — بها يُقاس **ما يُكتب** لا ما يُقرأ. */
+/**
+ * قراءةُ عبارات **المصدر التشغيليّ** مقابل أساسه — بها يُقاس **ما يُكتب** لا ما يُقرأ.
+ * ويُنجَز الكتالوجُ معه لأنّ الإنشاءَ يحتاج القواميسَ، لكنّ المقيسَ عباراتُ التشغيليّ.
+ */
 async function statementsAfter(
   driver: Awaited<ReturnType<typeof freshDb>>,
   tenantId: string,
   fn: (store: LibraryStore) => void,
 ): Promise<readonly SqlStatement[]> {
   const store = new LibraryStore(tenantId)
-  const source = persistentLibrary(store)
+  const entries = persistentLibraryEntries(store)
   const uow = new UnitOfWork(driver, { tenantId, scopePath: "/" })
-  uow.enlist(source)
+  uow.enlist(persistentLibraryCatalog(store))
+  uow.enlist(entries)
   await uow.hydrate()
   fn(store)
-  return uow.statementsFor(source.name, source.project())
+  return uow.statementsFor(entries.name, entries.project())
+}
+
+/** وحدةُ عملٍ بمصدريها، ومعها مقبضُ المصدر التشغيليّ — لتزوير إسقاطه في اختبارات «لا محو». */
+async function hydratedEntries(
+  driver: Awaited<ReturnType<typeof freshDb>>,
+  tenantId: string,
+): Promise<{ uow: UnitOfWork; entries: ReturnType<typeof persistentLibraryEntries> }> {
+  const store = new LibraryStore(tenantId)
+  const entries = persistentLibraryEntries(store)
+  const uow = new UnitOfWork(driver, { tenantId, scopePath: "/" })
+  uow.enlist(persistentLibraryCatalog(store))
+  uow.enlist(entries)
+  await uow.hydrate()
+  return { uow, entries }
 }
 
 // ═══ الإلزاميّ ١ — ق-٩٦: خطُّ الزمن لا يُمحى، والحالةُ تحديثٌ لا صفٌّ جديد ═══════════
@@ -86,14 +107,10 @@ describe("ق-٩٦ — خطُّ الزمن لا يُمحى: الاختفاءُ ي
       completeFlow(store, id, "u-amir")
     })
 
-    const store = new LibraryStore(MAIN)
-    const source = persistentLibrary(store)
-    const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
-    uow.enlist(source)
-    await uow.hydrate()
-    const forged = new Map(source.project())
+    const { uow, entries } = await hydratedEntries(driver, MAIN)
+    const forged = new Map(entries.project())
     forged.set("library_progress", new Map())
-    expect(() => uow.statementsFor(source.name, forged)).toThrow(/library_progress/)
+    expect(() => uow.statementsFor(entries.name, forged)).toThrow(/library_progress/)
     driver.close()
   })
 
@@ -102,14 +119,10 @@ describe("ق-٩٦ — خطُّ الزمن لا يُمحى: الاختفاءُ ي
     await seedLibrarySession(driver, MAIN)
     await librarySession(driver, MAIN, (store) => makeLink(store))
 
-    const store = new LibraryStore(MAIN)
-    const source = persistentLibrary(store)
-    const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
-    uow.enlist(source)
-    await uow.hydrate()
-    const forged = new Map(source.project())
+    const { uow, entries } = await hydratedEntries(driver, MAIN)
+    const forged = new Map(entries.project())
     forged.set("library_materials", new Map())
-    expect(() => uow.statementsFor(source.name, forged)).toThrow(/library_materials/)
+    expect(() => uow.statementsFor(entries.name, forged)).toThrow(/library_materials/)
     driver.close()
   })
 
@@ -377,7 +390,7 @@ describe("الذرّية — فشلٌ في منتصف عمليةٍ لا يترك
   it("وحدةُ عملٍ خليطةٌ تُرمى — لا تُقذف مكتبةٌ ومستودعٌ بلا مخطط", async () => {
     const driver = await freshDb()
     const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
-    uow.enlist(persistentLibrary(new LibraryStore(MAIN)))
+    uow.enlist(persistentLibraryEntries(new LibraryStore(MAIN)))
     uow.enlist({
       name: "مستودعٌ بلا مخطط",
       rowBudget: 10,
@@ -555,19 +568,60 @@ describe("الحتميّة تنجو عبور القاعدة — العدّادُ
 
 // ═══ الإلزاميّ ٨ — ميزانيةُ التحميل (G23) ═══════════════════════════════════════
 
-describe("ميزانيةُ التحميل — المكتبةُ تُعلن سقفَها وتُقاس عليه (G23)", () => {
-  it("سقفُ المكتبة موجبٌ ومُعلَنٌ في المصنع — لا مستودعَ بلا سقف", () => {
-    const source = persistentLibrary(new LibraryStore(MAIN))
-    expect(`${source.name}:${source.rowBudget > 0}`).toBe("library:true")
+describe("ميزانيةُ التحميل — لكلِّ مصدرٍ سقفُه المُسنَد إلى حمولته (G23 · §٤-٠)", () => {
+  it("**مصدران لا واحد**، ولكلٍّ سقفٌ موجبٌ مُعلَنٌ في مصنعه — والكتالوجُ أضيقُ من التشغيليّ", () => {
+    const store = new LibraryStore(MAIN)
+    const catalog = persistentLibraryCatalog(store)
+    const entries = persistentLibraryEntries(store)
+    expect(`${catalog.name}:${catalog.rowBudget > 0}`).toBe("library.catalog:true")
+    expect(`${entries.name}:${entries.rowBudget > 0}`).toBe("library.entries:true")
+    // سقفُ الكتالوج **أصغرُ بمراتب**: قواميسُ مغلقةٌ لا تنمو مع الميدان.
+    expect(catalog.rowBudget < entries.rowBudget).toBe(true)
+    // ولا جدولَ مشترَكٌ بين المصدرين — شكلُ التوجيه هو الفاصل، لا الذوق.
+    const names = (s: typeof catalog): string[] =>
+      s.tables.map((t) => (typeof t === "string" ? t : t.table))
+    expect(names(catalog).filter((t) => names(entries).includes(t))).toEqual([])
   })
 
-  it("**وتجاوزُه رميةٌ تُسمّي الوحدةَ والجدولَ الأكبر** — لا «تجاوزٌ» مبهمة", async () => {
+  it("**وتجاوزُه رميةٌ تُسمّي المصدرَ والجدولَ الأكبر** — لا «تجاوزٌ» مبهمة", async () => {
     const driver = await freshDb()
     await seedLibrarySession(driver, MAIN)
     const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
-    uow.enlist({ ...persistentLibrary(new LibraryStore(MAIN)), rowBudget: 2 })
-    await expect(uow.hydrate()).rejects.toThrow(/وحدةُ عمل «library»/)
+    uow.enlist({ ...persistentLibraryEntries(new LibraryStore(MAIN)), rowBudget: 2 })
+    await expect(uow.hydrate()).rejects.toThrow(/وحدةُ عمل «library\.entries»/)
     await expect(uow.hydrate()).rejects.toThrow(/library_units=/)
+    driver.close()
+  })
+
+  /**
+   * **الغرضُ المقيسُ من الفصل** (§٤-٠ · CR-029): قبله كانت قراءةُ الكتالوج بالجذر تجرّ
+   * `LIKE '/%'` ⟵ موادَّ الشبكة وخطوطَ زمنها. وبعده **لا تلمسها أصلاً**.
+   */
+  it("**جلسةُ الكتالوج بالجذر لا تُحمّل صفَّ مادةٍ ولا خطَّ زمنٍ واحداً** — وهذا هو الفصل", async () => {
+    const driver = await freshDb()
+    await seedLibrarySession(driver, MAIN)
+    // حمولةٌ تشغيليةٌ **أكبرُ من سقف الكتالوج المُصطنَع أدناه** — وإلا كان الحارسُ لا يقدر أن يحمرّ.
+    await librarySession(driver, MAIN, (store) => {
+      for (let i = 0; i < 60; i += 1) makeLink(store, { unitId: "khalid", titleAr: `مادة ${i}` })
+      completeFlow(store, "mat-1", "u-amir")
+      completeFlow(store, "mat-1", "u-teacher")
+    })
+    // (والاستلامُ يُختم لكلِّ مادةٍ تبلغ الشخصَ — فخطوطُ الزمن ستّون لكلِّ واحدٍ منهما.)
+    expect((await rowsOf(driver, "library_materials")).length).toBe(60)
+    expect((await rowsOf(driver, "library_progress")).length).toBe(120)
+
+    // كتالوجٌ وحدَه بالجذر — **وبسقفٍ ٥٠ عمداً**: يسع القواميسَ (~١٠) ولا يسع الستّين مادة.
+    // فلو عاد الكتالوجُ يملك جدولاً تشغيلياً (حالُ ما قبل الفصل) **لرمت الميزانيةُ هنا**.
+    const store = new LibraryStore(MAIN)
+    const uow = new UnitOfWork(driver, { tenantId: MAIN, scopePath: "/" })
+    uow.enlist({ ...persistentLibraryCatalog(store), rowBudget: 50 })
+    await uow.hydrate() // لا يرمي: لم يُحمَّل إلا الكتالوج
+    expect(store.categories().length).toBeGreaterThan(0)
+    expect(store.audiences().length).toBeGreaterThan(0)
+    // **ولا صفَّ تشغيليٍّ واحد** عبر إلى الذاكرة.
+    expect(store.materials()).toEqual([])
+    expect(store.progress()).toEqual([])
+    expect(store.units()).toEqual([])
     driver.close()
   })
 })
@@ -585,12 +639,12 @@ describe("حوافُّ مستودع المكتبة — والسلبُ أكثرُ
       openedAt: null,
       completedAt: null,
     })
-    expect(() => persistentLibrary(store).project()).toThrow(/مفتاحُ توجيهٍ لا يُشتقّ/)
+    expect(() => persistentLibraryEntries(store).project()).toThrow(/مفتاحُ توجيهٍ لا يُشتقّ/)
   })
 
   it("تحميلٌ من لا شيء لا يرمي ولا يخترع — قاعدةٌ فارغةٌ مستودعٌ فارغٌ وعدّادٌ من الصفر", () => {
     const store = new LibraryStore(MAIN)
-    persistentLibrary(store).load(new Map())
+    persistentLibraryEntries(store).load(new Map())
     expect(store.materials()).toEqual([])
     expect(store.progress()).toEqual([])
     expect(store.nextId("mat")).toBe("mat-1")
