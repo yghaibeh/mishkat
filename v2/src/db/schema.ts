@@ -38,6 +38,7 @@ import { CIRCLES_TABLES } from "./schema/circles.js"
 import { COMMITTEES_TABLES } from "./schema/committees.js"
 import { CUSTODY_TABLES } from "./schema/custody.js"
 import { DAILY_LOG_TABLES } from "./schema/dailyLog.js"
+import { EDUCATION_TABLES } from "./schema/education.js"
 import { INFRASTRUCTURE_TABLES } from "./schema/infrastructure.js"
 import { LEDGER_TABLES } from "./schema/ledger.js"
 import { LIBRARY_TABLES } from "./schema/library.js"
@@ -63,6 +64,7 @@ export const TABLES: readonly TableSpec[] = [
   ...COMMITTEES_TABLES,
   ...CUSTODY_TABLES,
   ...DAILY_LOG_TABLES,
+  ...EDUCATION_TABLES,
   ...MEDIA_TABLES,
   ...NOTIFICATIONS_TABLES,
   ...LIBRARY_TABLES,
