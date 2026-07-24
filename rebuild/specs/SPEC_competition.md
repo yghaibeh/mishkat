@@ -295,7 +295,7 @@ ScoreEvent = { id, contestantId, typeId, periodKey,        // periodKey هجري
    من المقام في المعدلات؟ ⟵ قرار مفتوح **ق-م-٤**.
 3. **النقطة تُفسَّر دائماً**: لكل حدثٍ راصدٌ ووقتٌ ونطاقٌ ونسخةُ وزن ⇒ سؤال «لماذا فاز فلان؟»
    له جوابٌ سطرٌ سطر. (في v1 كان `recordedBy` يُسجَّل ولا يُعرض.)
-4. **الرصد الرجعي مقفول** بعد `competition.score.backdate_lock_days` (اتساقاً مع ب-٣٩د)،
+4. **الرصد الرجعي مقفول** بعد `records.backdate_lock_days` (اتساقاً مع ب-٣٩د)،
    وفتحُه بـ`records.correct` المدقَّقة (قب-٩) لا بصلاحية عادية.
 
 ### ٢-٤-٣ الأوزان بالإعداد والبيانات، وبأثر قادم
@@ -494,7 +494,7 @@ Award = { id, competitionId, stageId?, categoryId?, rank?, titleAr,
 | «أحالة المسابقة تسمح بهذا الفعل؟» | آلة حالات §٢-١-١ | لا رصد على مسابقة `مغلقة` ولو ملك الراصد قدرته |
 | «أهذا المتباري من مسجدي؟» | مُحلِّل النطاق — يشتق `mosquePath` **من المتباري المخزَّن** لا من مدخل العميل | يقتل صنف خ (كتابة على معرّف غير متحقَّق) |
 | «أفي نافذة التسجيل؟» | نافذة `enrollmentOpens/Closes` | طلبٌ بعد الإغلاق يُرفض بسببٍ مفهوم |
-| «أانقضى قفل الرصد الرجعي؟» | `competition.score.backdate_lock_days` | التجاوز بـ`records.correct` حصراً |
+| «أانقضى قفل الرصد الرجعي؟» | `records.backdate_lock_days` | التجاوز بـ`records.correct` حصراً |
 | «أنا مَن يوافق؟» | كون الفاعل أميرَ **مسجدِ الطلب** | نمط ق-١٤ (الأقرب المؤهَّل) |
 
 ---
@@ -623,7 +623,7 @@ ContestantStanding = { contestantId, categoryId, competitionId,
 2. **حتميّة**: الرصيد **مشتقٌّ قابل لإعادة البناء** من الأحداث المخزَّنة (ق-٤١)، ومجدولٌ ليليّ
    يعيد بناء عينةٍ ويطابقها — **تفاوتٌ = إنذار**. (الرصيد المادي بلا مطابقة كذبةٌ مؤجلة.)
 3. **القراءة**: صفحةٌ مرتَّبة على فهرس `(competitionId, categoryId, totalPoints DESC, كاسرات التعادل)`
-   بحجم `competition.leaderboard.page_size` — كلفةٌ **مستقلة عن عدد المشتركين**.
+   بحجم `platform.page_size.default` — كلفةٌ **مستقلة عن عدد المشتركين**.
 4. **رتبتي أنا**: لا تُحسب رتب الجميع؛ رتبةُ المتباري = `عدد من رصيدهم أعلى منه + ١` باستعلامٍ
    عدّيٍّ واحد على الفهرس نفسه.
 5. **التجميد عند الإعلان**: مقتطف اللوحة يُثبَّت (§٢-٥-٣) فلا يُعاد حسابه أبداً بعد الإغلاق.
@@ -656,16 +656,16 @@ ContestantStanding = { contestantId, categoryId, competitionId,
 
 | المعرّف | الوصف | النوع | الافتراضي | المستوى | نطاق المحرِّر | السريان | المصدر |
 |---|---|---|---|---|---|---|---|
-| `competition.defaults.min_age` | أدنى سنٍّ افتراضي للفئة الجديدة | number | **١٥** | global | الجذر | فوري | وثيقة العميل (ثالثاً) · `server/services/competition.ts:11` ⟵ **يحلّ محل** `competition.min_age` |
-| `competition.defaults.max_age` | أقصى سنٍّ افتراضي للفئة الجديدة | number | **٤٠** | global | الجذر | فوري | وثيقة العميل (ثالثاً) · `server/services/competition.ts:12` ⟵ **يحلّ محل** `competition.max_age` |
+| `competition.min_age` | أدنى سنٍّ افتراضي للفئة الجديدة | number | **١٥** | global | الجذر | فوري | وثيقة العميل (ثالثاً) · `server/services/competition.ts:11` ⟵ **يحلّ محل** `competition.min_age` |
+| `competition.max_age` | أقصى سنٍّ افتراضي للفئة الجديدة | number | **٤٠** | global | الجذر | فوري | وثيقة العميل (ثالثاً) · `server/services/competition.ts:12` ⟵ **يحلّ محل** `competition.max_age` |
 | `competition.max_active` | سقف المسابقات النشطة معاً | number | **٥٠** | global | الجذر | فوري | قب-٣ (حدُّ مقياسٍ معلن) |
 | `competition.enrollment.approval_sla_days` | مهلة بتّ طلب الالتحاق قبل انقضائه | duration | **٧** أيام | section | الجذر/القسم | فوري | §٤-١ خطوة ٩ · نظير `approval.escalation_days` |
 | `competition.enrollment.reminder_after_days` | متى يُذكَّر الأمير بطلبٍ معلّق | duration | **٢** يوم | section | الجذر/القسم | فوري | نظير ق-١١ |
-| `competition.public_registration.max_per_phone` | سقف الطلبات لكل رقم هاتف | number | **٣** | global | الجذر | فوري | **ق-٣٢** |
+| `identity.registration.max_pending_per_phone` | سقف الطلبات لكل رقم هاتف | number | **٣** | global | الجذر | فوري | **ق-٣٢** |
 | `competition.public_registration.throttle_per_hour` | سقف طلبات الرابط العام لكل مصدر في الساعة | number | **٢٠** | global | الجذر | فوري | ق-٣٢ (توسعةٌ لسطح الإساءة الأكبر) |
-| `competition.score.backdate_lock_days` | بعد كم يوم يُقفل الرصد الرجعي | duration | **١٤** يوماً | section | الجذر/القسم | فوري | **ب-٣٩د** (نفس الرقم — لا رقمٌ ثانٍ للمسابقة) |
+| `records.backdate_lock_days` | بعد كم يوم يُقفل الرصد الرجعي | duration | **١٤** يوماً | section | الجذر/القسم | فوري | **ب-٣٩د** (نفس الرقم — لا رقمٌ ثانٍ للمسابقة) |
 | `competition.excuse.requires_reason` | إلزام سببٍ نصّي عند وسم العذر | toggle | **صحيح** | global | الجذر | فوري | وثيقة العميل («الأعذار **المقبولة**» — والقبول قرارٌ يُبرَّر) |
-| `competition.leaderboard.page_size` | حجم صفحة لوحة الترتيب | number | **٥٠** | global | الجذر | فوري | §٥-١ |
+| `platform.page_size.default` | حجم صفحة لوحة الترتيب | number | **٥٠** | global | الجذر | فوري | §٥-١ |
 | `competition.leaderboard.visibility_default` | الافتراضي: لمن تُعرض اللوحة | enum | **`scope`** (لا عرض عام) | global | الجذر | فوري | §٢-١ ⟵ **ق-م-٦** |
 | `competition.prize.posts_to_finance` | هل يولّد إعلانُ الفائز مقترحَ صرفٍ في الطابور المالي | toggle | **صحيح** | global | الجذر | فوري | §٢-٦ ⟵ **ق-م-١٠** |
 

@@ -17,9 +17,10 @@ import { SUPERVISION } from "../../features/supervision/text.js"
 import { EDUCATION } from "../../features/education/text.js"
 import { CIRCLE_LOG } from "../../features/circleLog/text.js"
 import { PAYROLL } from "../../features/payroll/text.js"
+import { COMPETITION } from "../../features/competition/text.js"
 
 const DOMAINS = [
-  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, LEDGER_JOURNAL, BOX, DAILY_LOG, CIRCLES, COMMITTEES, CUSTODY, EDUCATION, LIBRARY, MEDIA, NOTIFY, SUPERVISION, CIRCLE_LOG, PAYROLL,
+  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, LEDGER_JOURNAL, BOX, DAILY_LOG, CIRCLES, COMMITTEES, CUSTODY, EDUCATION, LIBRARY, MEDIA, NOTIFY, SUPERVISION, CIRCLE_LOG, PAYROLL, COMPETITION,
 ] as const
 
 const SOURCE = {
@@ -42,6 +43,7 @@ const SOURCE = {
   ...SUPERVISION,
   ...CIRCLE_LOG,
   ...PAYROLL,
+  ...COMPETITION,
 } as const
 
 
