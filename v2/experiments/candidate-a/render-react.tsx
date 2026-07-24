@@ -12,7 +12,12 @@ function reactProps(attrs: Readonly<Record<string, string>>, key: string): Recor
   for (const [name, value] of Object.entries(attrs)) {
     if (name === "class") props.className = value
     else if (name === "disabled") props.disabled = true
-    else props[name] = value
+    else if (name === "required") props.required = true
+    else if (name === "value") {
+      // مِقبضٌ غيرُ مُتحكَّمٍ به عمداً: القيمةُ تُزرع مرةً ويقودها المستخدم بعدها —
+      // فالمقيسُ إعادةُ تصييرِ **ما حول** المِقبض (المجاميع والرسائل) في المرشّحَين معاً.
+      props.defaultValue = value
+    } else props[name] = value
   }
   return props
 }
@@ -22,6 +27,9 @@ export function renderNode(node: UiNode, key = "0"): ReactNode {
   const children: ReactNode[] = []
   if (r.text.length > 0) {
     children.push(createElement("span", { key: "t", className: "mk-text" }, r.text))
+  }
+  if (r.control !== null) {
+    children.push(createElement(r.control.tag, reactProps(r.control.attrs, "c")))
   }
   node.children.forEach((child, i) => children.push(renderNode(child, `${key}.${i}`)))
   return createElement(r.tag, reactProps(r.attrs, key), ...children)

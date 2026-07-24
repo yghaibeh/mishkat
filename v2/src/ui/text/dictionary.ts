@@ -5,7 +5,7 @@
  * صراحةً** (مفتاحٌ يُعرَّف مرتين خطأُ مصدرٍ مزدوج — المادة ١/٢، لا سكوتَ عليه بالكتابة فوقه).
  */
 
-import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG } from "./domains.js"
+import { COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, LEDGER_JOURNAL, BOX, DAILY_LOG } from "./domains.js"
 // قاموسُ وحدةٍ يعيش في وحدتها ويُدمج هنا (قب-٣١ §٣-أ: سطرُ تسجيلٍ لا نصوص).
 import { CIRCLES } from "../../features/circles/text.js"
 import { COMMITTEES } from "../../features/committees/text.js"
@@ -19,7 +19,7 @@ import { CIRCLE_LOG } from "../../features/circleLog/text.js"
 import { PAYROLL } from "../../features/payroll/text.js"
 
 const DOMAINS = [
-  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, BOX, DAILY_LOG, CIRCLES, COMMITTEES, CUSTODY, EDUCATION, LIBRARY, MEDIA, NOTIFY, SUPERVISION, CIRCLE_LOG, PAYROLL,
+  COMMON, SHELL, STATES, AMIR_HOME, ORG, LEDGER, LEDGER_JOURNAL, BOX, DAILY_LOG, CIRCLES, COMMITTEES, CUSTODY, EDUCATION, LIBRARY, MEDIA, NOTIFY, SUPERVISION, CIRCLE_LOG, PAYROLL,
 ] as const
 
 const SOURCE = {
@@ -29,6 +29,7 @@ const SOURCE = {
   ...AMIR_HOME,
   ...ORG,
   ...LEDGER,
+  ...LEDGER_JOURNAL,
   ...BOX,
   ...DAILY_LOG,
   ...CIRCLES,

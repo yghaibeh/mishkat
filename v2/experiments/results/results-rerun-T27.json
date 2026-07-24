@@ -1,0 +1,172 @@
+{
+  "method": {
+    "tool": "vite build (esbuild minify)، mode=production، target=es2022، sourcemap=false",
+    "gzip": "zlib.gzipSync level=9",
+    "brotli": "zlib.brotliCompressSync quality=11",
+    "screen": "رئيسية أمير المسجد — src/features/home/screens/screens.ts بقدرات الدور amir",
+    "sharedByBoth": "shared/tree.ts · shared/mapping.ts · shared/page.ts · shared/outbox.ts",
+    "note": "الخطّ مُضمَّن data: داخل ورقة الرموز ⟵ صفر طلب شبكيّ له (قب-٢٠)."
+  },
+  "fence": {
+    "componentsInLibrary": 26,
+    "textKeys": 511,
+    "proofScreenNodes": 31,
+    "proofScreenInteractiveNodes": 20,
+    "proofScreenJsonBytes": 8205,
+    "proofScreenHtmlBytes": 5812,
+    "fontFamily": "Cairo",
+    "fontBase64Bytes": 40952,
+    "fontDecodedBytes": 30712,
+    "registeredScreens": 35,
+    "surfaces": 17,
+    "roles": 16,
+    "screenRolePairs": 560,
+    "allScreenRoleHtmlBytes": 828092
+  },
+  "css": {
+    "raw": 48594,
+    "gzip": 33609,
+    "brotli": 32605
+  },
+  "cssWithoutEmbeddedFont": {
+    "raw": 7620,
+    "gzip": 2187,
+    "brotli": 1722
+  },
+  "variants": {
+    "أ-١ React 19 + ترطيب": {
+      "html": {
+        "raw": 6203,
+        "gzip": 1373,
+        "brotli": 1023
+      },
+      "js": [
+        {
+          "file": "entry-client.js",
+          "raw": 269372,
+          "gzip": 81037,
+          "brotli": 69627
+        }
+      ],
+      "jsTotal": {
+        "raw": 269372,
+        "gzip": 81037,
+        "brotli": 69627
+      },
+      "css": {
+        "raw": 48594,
+        "gzip": 33609,
+        "brotli": 32605
+      },
+      "firstLoad": {
+        "raw": 324169,
+        "gzip": 116019,
+        "brotli": 103255
+      },
+      "requests": 3
+    },
+    "أ-٢ React 19 + TanStack Router": {
+      "html": {
+        "raw": 6210,
+        "gzip": 1378,
+        "brotli": 1029
+      },
+      "js": [
+        {
+          "file": "entry-client-router.js",
+          "raw": 355305,
+          "gzip": 109281,
+          "brotli": 94482
+        }
+      ],
+      "jsTotal": {
+        "raw": 355305,
+        "gzip": 109281,
+        "brotli": 94482
+      },
+      "css": {
+        "raw": 48594,
+        "gzip": 33609,
+        "brotli": 32605
+      },
+      "firstLoad": {
+        "raw": 410109,
+        "gzip": 144268,
+        "brotli": 128116
+      },
+      "requests": 3
+    },
+    "ب Hono + جزيرة": {
+      "html": {
+        "raw": 6197,
+        "gzip": 1368,
+        "brotli": 1020
+      },
+      "js": [
+        {
+          "file": "island.js",
+          "raw": 752,
+          "gzip": 466,
+          "brotli": 385
+        }
+      ],
+      "jsTotal": {
+        "raw": 752,
+        "gzip": 466,
+        "brotli": 385
+      },
+      "css": {
+        "raw": 48594,
+        "gzip": 33609,
+        "brotli": 32605
+      },
+      "firstLoad": {
+        "raw": 55543,
+        "gzip": 35443,
+        "brotli": 34010
+      },
+      "requests": 3
+    }
+  },
+  "serverBundles": {
+    "أ react-dom/server": {
+      "raw": 636421,
+      "gzip": 189693,
+      "brotli": 115928
+    },
+    "ب Hono": {
+      "raw": 96321,
+      "gzip": 29026,
+      "brotli": 24787
+    }
+  },
+  "serverRenderMs": {
+    "أ react-dom/server": 0.069,
+    "ب سلسلة HTML": 0.053
+  },
+  "deps": {
+    "candidate-a": {
+      "runtimePackages": 13,
+      "totalInstalledPackages": 74,
+      "nodeModulesKb": 51856,
+      "versions": {
+        "@tanstack/react-router": "1.168.25",
+        "react-dom": "19.2.0",
+        "react": "19.2.0"
+      }
+    },
+    "candidate-b": {
+      "runtimePackages": 1,
+      "totalInstalledPackages": 14,
+      "nodeModulesKb": 20904,
+      "versions": {
+        "hono": "4.12.31"
+      }
+    }
+  },
+  "domIdentical": {
+    "a1VsB": true,
+    "htmlBodyBytesA1": 6203,
+    "htmlBodyBytesB": 6197
+  }
+}
