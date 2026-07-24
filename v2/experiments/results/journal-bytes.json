@@ -1,0 +1,159 @@
+{
+  "method": {
+    "tool": "vite build (esbuild minify)، mode=production، target=es2022، sourcemap=false",
+    "gzip": "zlib.gzipSync level=9",
+    "brotli": "zlib.brotliCompressSync quality=11",
+    "screen": "‏/finance/journal/new — قب-٢٦ · SPEC_finance_ledger §٩",
+    "sharedByBoth": "shared/journal-tree.ts · shared/journal-model.ts · shared/mapping.ts · shared/page.ts · shared/outbox.ts",
+    "note": "الخطّ مُضمَّن data: داخل ورقة الرموز ⟵ صفر طلب شبكيّ له (قب-٢٠)."
+  },
+  "tree": {
+    "linesInMeasuredDraft": 8,
+    "nodes": 69,
+    "interactiveNodes": 54,
+    "fields": 35,
+    "currencies": 3,
+    "validationIssuesOnMeasuredDraft": 0,
+    "uiNodeJsonBytes": 19346,
+    "outboxPayloadBytes": 1167,
+    "nodesAt50Lines": 322,
+    "outboxPayloadBytesAt50": 6186
+  },
+  "css": {
+    "raw": 48594,
+    "gzip": 33609,
+    "brotli": 32605
+  },
+  "variants": {
+    "أ React 19 + حالةٌ وإعادةُ تصيير": {
+      "html": {
+        "raw": 17731,
+        "gzip": 1977,
+        "brotli": 1430
+      },
+      "js": [
+        {
+          "file": "entry-client-journal.js",
+          "raw": 262148,
+          "gzip": 80333,
+          "brotli": 69183
+        }
+      ],
+      "jsTotal": {
+        "raw": 262148,
+        "gzip": 80333,
+        "brotli": 69183
+      },
+      "css": {
+        "raw": 48594,
+        "gzip": 33609,
+        "brotli": 32605
+      },
+      "firstLoad": {
+        "raw": 328473,
+        "gzip": 115919,
+        "brotli": 103218
+      },
+      "requests": 3
+    },
+    "أ+موجّه (الشكلُ الواقعيّ)": {
+      "html": {
+        "raw": 17738,
+        "gzip": 1981,
+        "brotli": 1436
+      },
+      "js": [
+        {
+          "file": "entry-client-journal-router.js",
+          "raw": 348028,
+          "gzip": 108485,
+          "brotli": 93885
+        }
+      ],
+      "jsTotal": {
+        "raw": 348028,
+        "gzip": 108485,
+        "brotli": 93885
+      },
+      "css": {
+        "raw": 48594,
+        "gzip": 33609,
+        "brotli": 32605
+      },
+      "firstLoad": {
+        "raw": 414360,
+        "gzip": 144075,
+        "brotli": 127926
+      },
+      "requests": 3
+    },
+    "ب Hono + جزيرةٌ أمريّة": {
+      "html": {
+        "raw": 17802,
+        "gzip": 1971,
+        "brotli": 1423
+      },
+      "js": [
+        {
+          "file": "journal-island.js",
+          "raw": 67032,
+          "gzip": 19285,
+          "brotli": 16520
+        }
+      ],
+      "jsTotal": {
+        "raw": 67032,
+        "gzip": 19285,
+        "brotli": 16520
+      },
+      "css": {
+        "raw": 48594,
+        "gzip": 33609,
+        "brotli": 32605
+      },
+      "firstLoad": {
+        "raw": 133428,
+        "gzip": 54865,
+        "brotli": 50548
+      },
+      "requests": 3
+    }
+  },
+  "serverBundles": {
+    "أ react-dom/server": {
+      "raw": 627709,
+      "gzip": 188366,
+      "brotli": 114664
+    },
+    "ب Hono": {
+      "raw": 87445,
+      "gzip": 27700,
+      "brotli": 23852
+    }
+  },
+  "serverRenderMs": {
+    "أ react-dom/server": 0.2951,
+    "ب سلسلة HTML": 0.2694
+  },
+  "interactionLayer": {
+    "أ candidate-a/journal-app.tsx": 53,
+    "ب candidate-b/journal-island.ts": 150,
+    "مشترك": {
+      "shared/journal-model.ts": 183,
+      "shared/journal-tree.ts": 220
+    }
+  },
+  "manifests": {
+    "أ": "/var/folders/4x/gdzjtyks5zzdchhkjrl7ycj40000gn/T/mishkat-t27-journal/site-a/first-load.manifest.json",
+    "أ+موجّه": "/var/folders/4x/gdzjtyks5zzdchhkjrl7ycj40000gn/T/mishkat-t27-journal/site-a-router/first-load.manifest.json",
+    "ب": "/var/folders/4x/gdzjtyks5zzdchhkjrl7ycj40000gn/T/mishkat-t27-journal/site-b/first-load.manifest.json"
+  },
+  "domIdentical": {
+    "aVsBBytes": false,
+    "aVsBNormalized": true,
+    "htmlBytesA": 17731,
+    "htmlBytesB": 17802,
+    "deltaBytes": 71
+  },
+  "outDir": "/var/folders/4x/gdzjtyks5zzdchhkjrl7ycj40000gn/T/mishkat-t27-journal"
+}

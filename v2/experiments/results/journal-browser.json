@@ -1,0 +1,162 @@
+{
+  "method": {
+    "browser": "/Users/muhammad/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "runsPerCell": 7,
+    "aggregate": "الوسيط",
+    "network": "CDP Network.emulateNetworkConditions (نطاقٌ وذهابٌ وإياب)، والكاش مُعطَّل في كل تشغيلة",
+    "cpu": "CDP Emulation.setCPUThrottlingRate — ١× جهازُ القياس، ٦× وسطُ مدى ADR-002r المعلن (٥×–٨×)",
+    "targetLines": 50,
+    "scenarios": [
+      {
+        "id": "س-١",
+        "label": "الوسيط المنشور",
+        "mbps": 12.68,
+        "rttMs": 120
+      },
+      {
+        "id": "س-٢",
+        "label": "ميدانٌ ضعيف (المرجع)",
+        "mbps": 1.5,
+        "rttMs": 300
+      },
+      {
+        "id": "س-٣",
+        "label": "أسوأ حالة",
+        "mbps": 0.4,
+        "rttMs": 400
+      }
+    ]
+  },
+  "load": {
+    "س-١ · معالج 1× · أ": {
+      "readyMs": 315.2,
+      "domInteractiveMs": 125.9,
+      "loadEndMs": 315.7,
+      "transferBytes": 104482,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-١ · معالج 1× · ب": {
+      "readyMs": 280.9,
+      "domInteractiveMs": 126.1,
+      "loadEndMs": 288.3,
+      "transferBytes": 51812,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-١ · معالج 6× · أ": {
+      "readyMs": 337,
+      "domInteractiveMs": 139.8,
+      "loadEndMs": 340.4,
+      "transferBytes": 104482,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-١ · معالج 6× · ب": {
+      "readyMs": 293.2,
+      "domInteractiveMs": 140.2,
+      "loadEndMs": 317.9,
+      "transferBytes": 51812,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٢ · معالج 1× · أ": {
+      "readyMs": 1176.5,
+      "domInteractiveMs": 317.5,
+      "loadEndMs": 1177.4,
+      "transferBytes": 104482,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٢ · معالج 1× · ب": {
+      "readyMs": 893.5,
+      "domInteractiveMs": 315.7,
+      "loadEndMs": 902.4,
+      "transferBytes": 51812,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٢ · معالج 6× · أ": {
+      "readyMs": 1182.7,
+      "domInteractiveMs": 326.5,
+      "loadEndMs": 1185.4,
+      "transferBytes": 104482,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٢ · معالج 6× · ب": {
+      "readyMs": 903.1,
+      "domInteractiveMs": 322.7,
+      "loadEndMs": 927.8,
+      "transferBytes": 51812,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٣ · معالج 1× · أ": {
+      "readyMs": 2939.8,
+      "domInteractiveMs": 448.5,
+      "loadEndMs": 2940.4,
+      "transferBytes": 104482,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٣ · معالج 1× · ب": {
+      "readyMs": 1877.7,
+      "domInteractiveMs": 436.6,
+      "loadEndMs": 1885.8,
+      "transferBytes": 51812,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٣ · معالج 6× · أ": {
+      "readyMs": 2946.5,
+      "domInteractiveMs": 450.3,
+      "loadEndMs": 2949.6,
+      "transferBytes": 104482,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    },
+    "س-٣ · معالج 6× · ب": {
+      "readyMs": 1907.5,
+      "domInteractiveMs": 454.9,
+      "loadEndMs": 1926.5,
+      "transferBytes": 51812,
+      "domElements": 172,
+      "fields": 35,
+      "lines": 8
+    }
+  },
+  "interaction": {
+    "معالج 1× · أ": {
+      "keystrokeAt8LinesMs": 0.7,
+      "addFiftiethLineMs": 1.9,
+      "keystrokeAt50LinesMs": 2
+    },
+    "معالج 1× · ب": {
+      "keystrokeAt8LinesMs": 0.6,
+      "addFiftiethLineMs": 1.3,
+      "keystrokeAt50LinesMs": 1.4
+    },
+    "معالج 6× · أ": {
+      "keystrokeAt8LinesMs": 3.3,
+      "addFiftiethLineMs": 9.3,
+      "keystrokeAt50LinesMs": 8.5
+    },
+    "معالج 6× · ب": {
+      "keystrokeAt8LinesMs": 2.2,
+      "addFiftiethLineMs": 6.5,
+      "keystrokeAt50LinesMs": 5.6
+    }
+  }
+}

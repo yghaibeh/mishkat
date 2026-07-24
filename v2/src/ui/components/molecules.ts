@@ -21,6 +21,12 @@ export type FieldProps = {
   readonly state?: FieldState
   readonly messageKey?: TextKey
   readonly required?: boolean
+  /**
+   * القيمةُ المعروضة في المِقبض — **منسّقةٌ سلفاً** في طبقة النصوص لا هنا (§٥-٣).
+   * بلا هذا الحقل لا يستطيع الحقلُ أن يُصيَّر مملوءاً على الخادم، فيُصيَّر كلُّ نموذجٍ
+   * فارغاً — والصفحةُ الفارغة تُخفي حمولةَ النصّ الحقيقية (نظيرُ «لقطةٌ مملوءةٌ لا فارغة»).
+   */
+  readonly valueAr?: string
 }
 
 export function field(props: FieldProps): UiNode {
@@ -46,6 +52,7 @@ export function field(props: FieldProps): UiNode {
       kind: props.kind,
       state,
       required: String(props.required === true),
+      ...(props.valueAr === undefined ? {} : { valueAr: props.valueAr }),
     },
     children,
   })
