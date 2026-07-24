@@ -38,6 +38,10 @@ export class CirclesStore {
   getUnit(id: string): CirclesUnit | null {
     return this.unitMap.get(id) ?? null
   }
+  /** الإسقاطُ كلُّه — يقرؤه **الإسقاطُ الدائم** (`circlesRepository`) كما في العُهد والمكتبة. */
+  units(): readonly CirclesUnit[] {
+    return Object.freeze([...this.unitMap.values()])
+  }
 
   // ── كتالوجُ الأنواع: **بياناتٌ مرجعية** (قب-٢٢) ─────────────────────────────
   /** إضافةُ نوعٍ **صفٌّ** لا سطرُ كود — ولا حقلَ تفعيلٍ يُكتب لأنه غيرُ موجود (ع-٨). */
