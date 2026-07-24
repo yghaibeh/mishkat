@@ -2,12 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "mishkat",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["wrangler", "dev", "--persist-to", "./.wrangler-state", "--port", "8789", "--ip", "127.0.0.1"],
-      "cwd": "app",
-      "port": 8789,
-      "autoPort": false
+      "name": "design",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8901", "--directory", "rebuild/design"],
+      "port": 8901
     }
   ]
 }
