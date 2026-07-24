@@ -11,7 +11,10 @@
  * **حتميّ** (TESTING_POLICY §٥): لحظةُ العالم مثبَّتة، والمعرّفاتُ من عدّاد المستودع.
  */
 
-import { persistentDailyLog } from "../../src/db/repositories/dailyLogRepository.js"
+import {
+  persistentDailyCatalog,
+  persistentDailyEntries,
+} from "../../src/db/repositories/dailyLogRepository.js"
 import type { SqliteDriver } from "../../src/db/sql/sqliteDriver.js"
 import { UnitOfWork, type Scope } from "../../src/db/unitOfWork.js"
 import { DailyLogStore } from "../../src/features/dailyLog/data/store.js"
@@ -55,13 +58,32 @@ export function seedDailyLogInto(store: DailyLogStore): void {
   for (const activity of seeded.activities()) store.saveActivity({ ...activity, tenantId })
 }
 
+/**
+ * وحدةُ عملٍ تشغيلية — **مصدران** (الوصفة §٤-٠ · CR-029): الكتالوجُ بالجذر والقيودُ بالوحدة.
+ * وكلاهما يُقذفان في **دفعةٍ واحدة**، فالذرّيةُ عابرةٌ للمصدرين كما هي في العُهد.
+ */
 export function dailyLogUnitOfWork(
   driver: SqliteDriver,
   stores: DailyLogStores,
   scope: Scope,
 ): UnitOfWork {
   const uow = new UnitOfWork(driver, scope)
-  uow.enlist(persistentDailyLog(stores.dailyLog))
+  uow.enlist(persistentDailyCatalog(stores.dailyLog))
+  uow.enlist(persistentDailyEntries(stores.dailyLog))
+  return uow
+}
+
+/**
+ * **وحدةُ عملِ الكتالوج وحدَه** — وهي **الغرضُ المقيسُ من الفصل** (§٤-٠): جلسةُ
+ * `activityCatalog.view` نطاقُها الجذرُ، تقرأ المخطّطاتِ والأنشطةَ **ولا تُحمّل قيداً واحداً**.
+ */
+export function dailyCatalogUnitOfWork(
+  driver: SqliteDriver,
+  store: DailyLogStore,
+  scopePath = "/",
+): UnitOfWork {
+  const uow = new UnitOfWork(driver, { tenantId: store.tenantId, scopePath })
+  uow.enlist(persistentDailyCatalog(store))
   return uow
 }
 

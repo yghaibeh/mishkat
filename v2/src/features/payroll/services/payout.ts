@@ -175,6 +175,10 @@ export function disburse(
       targetType: "payrollPayout",
       targetId: payout.id,
       reason: null,
+      // **لا حالَ قبله**: سجلُّ الصرف واقعةٌ تُلحَق ولا تنتقل حالُها بعدُ. و«مدفوعٌ» يُشتقّ
+      // من هذا السجلّ (ق-٦٥) — فاللقطةُ تقول **مَن صُرف لهم وفي أيِّ فترة** لا مبلغاً.
+      before: null,
+      after: `${input.periodId} \u00b7 ${payout.personIds.length}`,
     })
     return payrollOk(payout)
   })

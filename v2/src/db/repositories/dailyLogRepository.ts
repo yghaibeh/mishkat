@@ -4,16 +4,40 @@
  * لا صنفَ جديدٌ ولا وكيلٌ ولا اعتراضُ نداءات: المستودعُ الذي تراه الخدمةُ هو `DailyLogStore`
  * نفسُه حرفياً، وهذا الملفُّ **يُسقطه ويُحمّله** لا غير (`db/README.md` الحسم ١، الطبقة ٢).
  *
- * ### ثلاثةُ فروقٍ عن العُهد تستحقّ أن تُقال — لأنها قرارٌ لا نسخ
- * ١. **الكتالوجُ شبكيٌّ فيُوجَّه إلى الجذر** (`daily_schemes`/`daily_activities`). المخطّطُ
- *    يُختار بـ«أعمقُ نطاقٍ يحتوي الوحدة» (ق-٤٢)، فمسجدٌ في `/men/homs/sq2/khalid/` يحتاج
- *    مخطّطاً نطاقُه `/men/` — **سلفٌ لا خلَف**. والتحميلُ يجلب الأحفادَ والجذرَ لا الأسلاف،
- *    فلو وُجِّه المخطّطُ إلى نطاقه لَمَا حمّلته جلسةُ المسجد ⟵ `NO_SCHEME_FOR_SCOPE`. فيسكن
- *    الجذرَ صراحةً (نظيرُ `org_accounts` — README الحسم ٢)، ونطاقُ سريانه `scope_path`
- *    **عمودُ بيانات** يُقرأ بـ`contains`، لا مفتاحَ توجيه. **صفرُ توجيهٍ مشتقٍّ يرمي هنا**:
- *    الكتالوجُ ثابتُ الجذر، والقيدُ والعددُ يحملان مسارَهما المخزَّن (لا يُخترع ولا يُشتقّ).
+ * ---
+ *
+ * ## **مصدران لا واحد** — الوصفة §٤-٠ (القاعدةُ التي استُخرجت من هذه الوحدة · CR-029)
+ *
+ * *«المستودعُ يملك بياناتٍ ذاتَ شكلِ توجيهٍ واحد»*، وجداولُ سجل اليوم **صنفان**:
+ *  · **كتالوجٌ مرجعيٌّ شبكيّ** (`daily_schemes`/`daily_activities`) — نطاقُه **الجذرُ `'/'`**،
+ *    ويُقرأ من كلِّ وحدة.
+ *  · **قيودٌ تشغيليةٌ بالوحدة** (`daily_units`/`daily_rosters`/`daily_entries`) — نطاقُها
+ *    **مسارُ وحدتها**، و`daily_entries` **أضخمُ جدولِ عملياتٍ بعد التدقيق** (ملحق ADR أ).
+ *
+ * **ولمّا جمعهما مصدرٌ واحدٌ فَرَضَ أضيقُهما نطاقاً على أوسعِهما حملَه**: وحدةُ العمل تُحمَّل
+ * **بنطاقٍ واحد**، فجلسةُ `activityCatalog.view` — ونطاقُها **الجذرُ صراحةً** — كانت تُحمّل
+ * `LIKE '/%'` ⟵ **كلَّ قيود الشبكة** (~٨٣٢ ألفاً للسنتين) لا الكتالوجَ وحدَه. **والعلاجُ ليس
+ * رفعَ السقف** (*سقفٌ بحجم الشبكة لا يحرس شيئاً* — درسُ `library`) **بل هذا الفصل**، فلكلِّ
+ * مصدرٍ سقفُه المُسنَد إلى **حمولته الحقيقية**.
+ *
+ * > **ولم يُنقدح زنادُ CR-026**: نصُّه (قب-٤٨) *«إخفاقٌ **يتعذّر** إصلاحُه بتضييق النطاق»* —
+ * > وهذا يُضيَّق بالفصل نفسِه. والزنادُ صمّامُ أمانٍ لا يُحرق على حالةٍ لها علاجٌ أرخصُ وأصحّ.
+ * > **والثغرةُ كانت مُصرَّحةً لا واقعة** يومَ الدمج (لا سطحَ يُركَّب على وحدةِ عملٍ حقيقية بعد)،
+ * > فنُفِّذ الفصلُ في T26-ج كما نصّ قرارُ CR-029 — **قبل** أن يُركَّب السطح لا بعده.
+ *
+ * ---
+ *
+ * ### وثلاثةُ فروقٍ أخرى عن نموذج العُهد تستحقّ أن تُقال — لأنها قرارٌ لا نسخ
+ * ١. **الكتالوجُ شبكيٌّ فيُوجَّه إلى الجذر**. المخطّطُ يُختار بـ«أعمقُ نطاقٍ يحتوي الوحدة»
+ *    (ق-٤٢)، فمسجدٌ في `/men/homs/sq2/khalid/` يحتاج مخطّطاً نطاقُه `/men/` — **سلفٌ لا خلَف**.
+ *    والتحميلُ يجلب الأحفادَ والجذرَ لا الأسلاف، فلو وُجِّه المخطّطُ إلى نطاقه لَمَا حمّلته
+ *    جلسةُ المسجد ⟵ `NO_SCHEME_FOR_SCOPE`. فيسكن الجذرَ صراحةً (نظيرُ `org_accounts` —
+ *    README الحسم ٢)، ونطاقُ سريانه `scope_path` **عمودُ بيانات** يُقرأ بـ`contains`، لا مفتاحَ
+ *    توجيه. **صفرُ توجيهٍ مشتقٍّ يرمي هنا**: الكتالوجُ ثابتُ الجذر، والقيدُ والعددُ يحملان
+ *    مسارَهما المخزَّن (لا يُخترع ولا يُشتقّ).
  * ٢. **التحميلُ حشوٌ لا إعادةُ تشغيل.** المعرّفُ الوحيدُ من العدّاد `dle-N` للقيد، و`saveEntry`
  *    تستقبل القيدَ **بمعرّفه** — فلا إعادةَ تخصيصٍ (كالعُهد لا كالدفتر)، ويكفي استئنافُ العدّاد.
+ *    ولذلك **`sequences` تسكن مصدرَ القيود** لا مصدرَ الكتالوج: معرّفاتُ الكتالوج خارجيّة.
  * ٣. **لا عدّادَ مشتقٌّ ولا سجلَّ تدقيقٍ محليّ.** النقاطُ **مخزَّنةٌ في القيد** (ق-٤١) لا رولّ-أب
  *    يُطابَق، والحائزُ لا وجودَ له هنا. **ولا تدقيقَ يملكه هذا المستودع**: تدقيقُ الوحدة
  *    يُعلَن في `defineServerFn` (طبقةُ السطوح) لا في المستودع — فلا `AuditRecord` يُوحَّد
@@ -28,31 +52,46 @@ import { DailyLogStore } from "../../features/dailyLog/data/store.js"
 import type { PointsBlock } from "../../features/dailyLog/types.js"
 import { sequenceRow, suffixOf } from "./shared.js"
 
-const SOURCE = "dailyLog"
+const CATALOG_SOURCE = "dailyLog.catalog"
+const ENTRIES_SOURCE = "dailyLog.entries"
 const SEQUENCE = "dailyLog.seq"
 
 /**
- * سقفُ صفوف وحدة العمل (G23 · CR-026 ب · قب-٤٨) — **مشتقٌّ من رقمٍ مقيسٍ لا مُقدَّر**،
- * وهو الوحدةُ التي حذّر ملفُّ المهمة والوصفةُ من أنّ **أوّلَ إخفاقٍ لـG23 قد يقع فيها**.
+ * سقفُ **الكتالوج** (G23 · CR-026 ب · CR-029/الوصفة §٤-٠) — حمولةٌ **مقيَّدةٌ بنيوياً لا مقدَّرة**.
+ *
+ * الكتالوجُ مخطّطاتٌ وأنشطتُها، و**لا ينمو مع الميدان**: لا مع عدد المساجد ولا الأشخاص ولا
+ * الإدخالات. المخطّطُ يُختار لكلِّ نطاقٍ بـ«أعمقُ نطاقٍ يحتوي الوحدة» (ق-٤٢) ⟵ عددُه بعددِ
+ * النطاقات التي تستحقّ منهجاً خاصّاً (قسمٌ أو منطقةٌ) لا بعدد المساجد، وأنشطةُ المخطّط
+ * **سقفُها النظريُّ ثمانية أنواعٍ في اليوم** (ملحق ADR أ، ملاحظةُ الصدق ١). فالبذرةُ اليومَ
+ * مخطّطان وأنشطتُهما، وأسخى تقديرٍ لشبكةٍ ناضجة **عشراتٌ**.
+ *
+ * فالسقفُ **١٬٠٠٠** هامشٌ ~١٠× على أسخى تقدير. **وهذا هو المقصودُ من الفصل**: جلسةُ
+ * `activityCatalog.view` بالجذر تُحمّل **هذه الصفوفَ وحدَها** — لا قيدَ سجل يومٍ واحداً.
+ */
+const CATALOG_ROW_BUDGET = 1_000
+
+/**
+ * سقفُ **القيود** (G23 · CR-026 ب · قب-٤٨) — **مُسنَدٌ إلى أوسع وحدةٍ واقعية**، لا إلى حمل
+ * الشبكة: *سقفٌ بحجم الشبكة لا يحرس شيئاً* (الوصفة §٤-٠). وهذه الوحدةُ هي التي حذّر ملفُّ
+ * المهمة والوصفةُ من أنّ **أوّلَ إخفاقٍ لـG23 قد يقع فيها**.
  *
  * نطاقُ التحميل نطاقُ وحدة (مسجدٌ أو منطقة). والمحمولُ الأثقلُ `daily_entries`:
  *  · ADR-001 ملحق أ **يقيس** اشتقاقَه: ٤٠٠ مسجد × ٢٠ إدخالاً/أسبوع × ٥٢ = **~٤١٦٬٠٠٠ صفٍّ/سنة
  *    للشبكة**، أي **~١٬٠٤٠ إدخالاً للمسجد الواحد في السنة**.
  *  · وأوسعُ منطقةٍ في الشبكة اليوم **دون العشرين مسجداً** ⟵ ~٢٠٬٨٠٠ إدخالٍ في السنة، وبالاحتفاظ
- *    **سنتين** (قب-٦) ⟵ **~٤١٬٦٠٠**. ومعها إسقاطُ الوحدات (بضعُ عشرات)، والكتالوجُ الشبكيّ
- *    (مخطّطاتٌ وأنشطةٌ بالعشرات)، والأعدادُ (عددٌ لكل مسجد) — كلُّها هوامشُ صغيرة.
+ *    **سنتين** (قب-٦) ⟵ **~٤١٬٦٠٠**. ومعها إسقاطُ الوحدات (بضعُ عشرات) والأعدادُ (عددٌ لكل
+ *    مسجد) — وكلاهما هامشٌ صغير.
  *
  * فالسقفُ **٦٠٬٠٠٠** يترك على أوسع منطقةٍ (~٤١٬٦٠٠ للسنتين) هامشاً ~١.٤×، ويبقى **دون سقف
  * الذاكرة بمراحل** (١٢٨ م.ب — ADR §١-٤). ولذلك **أوّلُ تجاوزٍ هنا ليس «تضخّمَ بيانات» بل
  * «قراءةٌ وسّعت النطاق»** — وهو بعينه ما أراد قب-٤٨ أن ينزع عنه الصمت.
  *
- * > ⚠️ **وثغرةٌ مُصرَّحٌ بها لا مدفونة** (زنادُ CR-026): شاشةُ إدارة الكتالوج تقرأ **بالجذر**
- * > (`activityCatalog.view` ⟵ `rootScope`)، والكتالوجُ ساكنُ الجذر. فلو حُمِّل المستودعُ
- * > كلُّه بنطاقِ الجذر لَحُمِّلت **كلُّ قيود الشبكة** (~٨٣٢ ألفاً للسنتين) — قراءةٌ وسّعت النطاق
- * > يتعذّر تضييقُها تحت العقد المتزامن (لا نطاقَ يحمّل الجذرَ وحدَه دون أحفاده). **لا أرفع
- * > السقفَ لأخفيها**: رفعتُ `CR-DRAFT-dailyLog-catalog-scope` (§٩)، والقرارُ لمدير البرنامج.
+ * **وحملُ الشبكة كلِّها (~٨٣٢ ألفاً للسنتين) يتجاوزه عمداً**: تحميلُ القيود بالجذر **بناءٌ
+ * أحمر** — وهو بعينه ما جاء له الفصل، إذ لم يعد لقراءة الكتالوج حاجةٌ إلى جرِّ هذا الجدول.
+ * **ولا سطحَ اليومَ يقرأ القيودَ بالجذر**: سطوحُ القيد والأعداد كلُّها `unitScope`، والجذريُّ
+ * منها اثنان — كلاهما كتالوج (`endpoints.ts`).
  */
-const ROW_BUDGET = 60_000
+const ENTRIES_ROW_BUDGET = 60_000
 
 function table(rows: RowSet, name: string): ReadonlyMap<string, SqlRow> {
   return rows.get(name) ?? new Map<string, SqlRow>()
@@ -71,40 +110,19 @@ function decodeIds(text: string): readonly string[] {
   return Object.freeze(JSON.parse(text) as string[])
 }
 
-export function persistentDailyLog(store: DailyLogStore): PersistentStore {
+/**
+ * **كتالوجُ سجل اليوم** — مخطّطاتٌ وأنشطةٌ نطاقُها **جذرُ الشبكة**، تُقرأ من كلِّ وحدة.
+ * مصدرٌ مستقلٌّ بحكم §٤-٠: قراءتُه لا تجرّ قيدَ سجل يومٍ ولا عددَ أُسرةٍ واحداً.
+ */
+export function persistentDailyCatalog(store: DailyLogStore): PersistentStore {
   const tenantId = store.tenantId
-  /** أعلى عدّادٍ رآه التحميل — يصون الحتميّة حين يكون النطاقُ جزئياً. */
-  let hydratedSeq = 0
-
-  /** المعرّفُ الوحيدُ من العدّاد هو القيد `dle-N`؛ سائرُ المعرّفات خارجيّةٌ (مخطّط/نشاط/مسار). */
-  const derivedSeq = (): number => {
-    let max = hydratedSeq
-    for (const entry of store.entries()) max = Math.max(max, suffixOf(entry.id))
-    return max
-  }
-
   return {
-    name: SOURCE,
-    rowBudget: ROW_BUDGET,
-    tables: [
-      "daily_units",
-      "daily_schemes",
-      "daily_activities",
-      "daily_rosters",
-      "daily_entries",
-      { table: "sequences", owns: (r) => r["name"] === SEQUENCE },
-    ],
+    name: CATALOG_SOURCE,
+    rowBudget: CATALOG_ROW_BUDGET,
+    tables: ["daily_schemes", "daily_activities"],
 
     project: () =>
       new Map([
-        collect(
-          store.units().map((unit) => ({
-            tenant_id: tenantId,
-            unit_path: unit.path,
-            id: unit.id,
-          })),
-          "daily_units",
-        ),
         collect(
           // **الكتالوجُ يسكن الجذرَ** (فرق ١): `scope_path` بيانُ سريانه، و`unit_path` توجيهُه الشبكيّ.
           store.schemes().map((scheme) => ({
@@ -132,6 +150,72 @@ export function persistentDailyLog(store: DailyLogStore): PersistentStore {
             valid_from: encodeDate(activity.validFrom),
           })),
           "daily_activities",
+        ),
+      ]),
+
+    load: (rows) => {
+      for (const row of table(rows, "daily_schemes").values()) {
+        store.saveScheme({
+          tenantId,
+          id: readText(row, "id"),
+          ar: readText(row, "ar"),
+          scopePath: readText(row, "scope_path"),
+          active: readBoolean(row, "active"),
+        })
+      }
+      for (const row of table(rows, "daily_activities").values()) {
+        store.saveActivity({
+          tenantId,
+          id: readText(row, "id"),
+          schemeId: readText(row, "scheme_id"),
+          activityId: readText(row, "activity_id"),
+          ar: readText(row, "ar"),
+          weight: readInt(row, "weight"),
+          maxPerDay: readIntOrNull(row, "max_per_day"),
+          requiresParticipation: readBoolean(row, "requires_participation"),
+          active: readBoolean(row, "active"),
+          validFrom: readDate(row, "valid_from"),
+        })
+      }
+    },
+  }
+}
+
+/**
+ * **القيودُ التشغيلية** — إسقاطُ الوحدات والأعدادُ والقيود، ونطاقُها **مسارُ الوحدة**.
+ * ومعها عدّادُ المعرّفات (`sequences`) لأنه **يولّد معرّفاتِ القيود** لا معرّفاتِ الكتالوج.
+ */
+export function persistentDailyEntries(store: DailyLogStore): PersistentStore {
+  const tenantId = store.tenantId
+  /** أعلى عدّادٍ رآه التحميل — يصون الحتميّة حين يكون النطاقُ جزئياً. */
+  let hydratedSeq = 0
+
+  /** المعرّفُ الوحيدُ من العدّاد هو القيد `dle-N`؛ سائرُ المعرّفات خارجيّةٌ (مخطّط/نشاط/مسار). */
+  const derivedSeq = (): number => {
+    let max = hydratedSeq
+    for (const entry of store.entries()) max = Math.max(max, suffixOf(entry.id))
+    return max
+  }
+
+  return {
+    name: ENTRIES_SOURCE,
+    rowBudget: ENTRIES_ROW_BUDGET,
+    tables: [
+      "daily_units",
+      "daily_rosters",
+      "daily_entries",
+      { table: "sequences", owns: (r) => r["name"] === SEQUENCE },
+    ],
+
+    project: () =>
+      new Map([
+        collect(
+          store.units().map((unit) => ({
+            tenant_id: tenantId,
+            unit_path: unit.path,
+            id: unit.id,
+          })),
+          "daily_units",
         ),
         collect(
           store.rosters().map((roster) => ({
@@ -170,29 +254,6 @@ export function persistentDailyLog(store: DailyLogStore): PersistentStore {
     load: (rows) => {
       for (const row of table(rows, "daily_units").values()) {
         store.saveUnit({ tenantId, id: readText(row, "id"), path: readText(row, "unit_path") })
-      }
-      for (const row of table(rows, "daily_schemes").values()) {
-        store.saveScheme({
-          tenantId,
-          id: readText(row, "id"),
-          ar: readText(row, "ar"),
-          scopePath: readText(row, "scope_path"),
-          active: readBoolean(row, "active"),
-        })
-      }
-      for (const row of table(rows, "daily_activities").values()) {
-        store.saveActivity({
-          tenantId,
-          id: readText(row, "id"),
-          schemeId: readText(row, "scheme_id"),
-          activityId: readText(row, "activity_id"),
-          ar: readText(row, "ar"),
-          weight: readInt(row, "weight"),
-          maxPerDay: readIntOrNull(row, "max_per_day"),
-          requiresParticipation: readBoolean(row, "requires_participation"),
-          active: readBoolean(row, "active"),
-          validFrom: readDate(row, "valid_from"),
-        })
       }
       for (const row of table(rows, "daily_rosters").values()) {
         store.saveRoster({

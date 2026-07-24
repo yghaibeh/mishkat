@@ -11,6 +11,7 @@ import {
   ok,
   err,
   type Account,
+  type AccountStatus,
   type RegistrationRequest,
   type Result,
   type StoredAssignment,
@@ -50,6 +51,14 @@ export type ProvisionInput = {
   readonly targetUnitId: string
   readonly targetRoleId: RoleId
   readonly username: string
+}
+
+/**
+ * لقطةُ حالِ الحساب — **حالتُه وتكليفُه على هذه الوحدة** (ق-٨٣ · CR-028). و`\u2014` تعني
+ * «لا تكليفَ من هذا الطلب بعد»، فيظهر في «بعد» ما أضافه الفعلُ بالضبط لا أكثر.
+ */
+function accountLabel(status: AccountStatus, role: RoleId | null, unitId: string): string {
+  return `${status} \u00b7 ${role === null ? "\u2014" : `${role}@${unitId}`}`
 }
 
 export function provision(
@@ -98,6 +107,9 @@ export function provision(
       targetType: "account",
       targetId: account.personId,
       reason: null,
+      // **لا حسابَ قبله**: يُنشأ الآن بتكليفه المعتمَد — و`null` قيمةٌ معلنةٌ تقول ذلك.
+      before: null,
+      after: accountLabel(account.status, input.targetRoleId, unit.id),
     })
     return ok({ account, assignment })
   })
@@ -185,6 +197,9 @@ export function approveRegistration(
       targetType: "account",
       targetId: account.personId,
       reason: null,
+      // **حسابٌ قد يكون قائماً** (طلبُ دورٍ ثانٍ) وقد لا يكون — والفرقُ يُقال لا يُطمس.
+      before: existing === null ? null : accountLabel(existing.status, null, unit.id),
+      after: accountLabel(account.status, request.requestedRoleId, unit.id),
     })
     return ok({ account, assignment })
   })

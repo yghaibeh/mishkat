@@ -39,6 +39,14 @@ export type DecideInput = {
   readonly reasonAr?: string
 }
 
+/**
+ * لقطةُ حالِ الفعل المعلَّق — **الحالةُ ومَن بتَّها** (ق-٨٣ · CR-028): «أيُّ تعديلٍ يغيّر
+ * الحائزَ أو الحالة يكتب قبل/بعد». وصياغتُها **واحدةٌ في الطرفين** فلا يُقرأ القيدُ بلسانين.
+ */
+function actionLabel(action: Pick<PendingAction, "status" | "decidedBy">): string {
+  return `${action.status} \u00b7 ${action.decidedBy ?? "\u2014"}`
+}
+
 /** تجميدٌ عميق — الحمولةُ تُختم عند الاقتراح ولا تُبدَّل بين الاقتراح والبتّ (§٥.١). */
 function deepFreeze<T>(value: T): T {
   if (value !== null && typeof value === "object") {
@@ -124,6 +132,9 @@ export function proposeAction(
     targetType: "financeAction",
     targetId: id,
     reason: null,
+    // **لا حالَ قبله**: الفعلُ يُنشأ الآن — و`null` قيمةٌ معلنةٌ تقول ذلك، لا إغفال.
+    before: null,
+    after: actionLabel(store.getAction(id)!),
   })
   return ok(store.getAction(id)!)
 }
@@ -167,6 +178,8 @@ export function decideAction(
       targetType: "financeAction",
       targetId: action.id,
       reason,
+      before: actionLabel(action),
+      after: actionLabel(store.getAction(action.id)!),
     })
     return ok(store.getAction(action.id)!)
   }
@@ -191,6 +204,9 @@ export function decideAction(
       targetType: "financeAction",
       targetId: action.id,
       reason: executed.error.code,
+      // **الفشلُ انتقالُ حالٍ لا عدمُه** (`pending` ⟵ `failed`): يُحفظ صراحةً أعلاه، فيُقال.
+      before: actionLabel(action),
+      after: actionLabel(store.getAction(action.id)!),
     })
     return executed
   }
@@ -212,6 +228,8 @@ export function decideAction(
     targetType: "financeAction",
     targetId: action.id,
     reason: reason.length === 0 ? null : reason,
+    before: actionLabel(action),
+    after: actionLabel(store.getAction(action.id)!),
   })
   return ok(store.getAction(action.id)!)
 }

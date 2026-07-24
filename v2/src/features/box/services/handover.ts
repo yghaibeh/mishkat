@@ -123,6 +123,9 @@ export function handoverDown(
         targetType: "boxHandover",
         targetId: id,
         reason: null,
+        // **لا حائزَ قبله**: التسليمُ يُنشأ الآن بانتظار إقرار المستلِم.
+        before: null,
+        after: handoverLabel(stores.box.getHandover(id)!),
       })
       return boxOk({ posting: posted.value, handover: stores.box.getHandover(id)! })
     })
@@ -130,6 +133,14 @@ export function handoverDown(
     if (e instanceof HandoverAbort) return e.failure
     throw e
   }
+}
+
+/**
+ * لقطةُ حالِ التسليم — **الحائزُ وحالُ إقراره** (ق-٨٣ · CR-028): *«من كان يحوزها لا يضيع»*.
+ * ولا مبلغَ فيها ولا عملة: **القيدُ هو مصدرُ كلِّ رقم** (ق-٦٠)، ولقطةٌ تحمل مبلغاً نسخةٌ ثالثة.
+ */
+function handoverLabel(handover: BoxHandover): string {
+  return `${handover.toCustodianPersonId} \u00b7 ${handover.acknowledgedBy === null ? "pending" : `acknowledgedBy:${handover.acknowledgedBy}`}`
 }
 
 /**
@@ -162,6 +173,9 @@ export function acknowledgeHandover(
     targetType: "boxHandover",
     targetId: handover.id,
     reason: null,
+    // **انتقالُ حيازةٍ صريح** — وهو نصُّ ق-٨٣ حرفياً: بانتظارِ إقرارٍ ⟵ مُقَرٌّ بيدِ فلان.
+    before: handoverLabel(handover),
+    after: handoverLabel(stores.box.getHandover(handover.id)!),
   })
   return boxOk(stores.box.getHandover(handover.id)!)
 }
