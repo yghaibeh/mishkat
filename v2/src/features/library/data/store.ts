@@ -68,6 +68,10 @@ export class LibraryStore {
   getUnit(id: string): LibraryUnit | null {
     return this.unitMap.get(id) ?? null
   }
+  /** تعدادُ الإسقاط — يحتاجه **الإسقاطُ إلى القاعدة** وحدَه (نظيرُ `custody.units()`): قراءةٌ لا سطحُ تحرير. */
+  units(): readonly LibraryUnit[] {
+    return Object.freeze([...this.unitMap.values()])
+  }
 
   saveCategory(c: LibraryCategory): void {
     this.categoryMap.set(c.id, Object.freeze({ ...c, tenantId: this.tenantId }))
@@ -120,6 +124,10 @@ export class LibraryStore {
   }
   getProgress(materialId: string, personId: string): MaterialProgress | null {
     return this.progressMap.get(progressKey(materialId, personId)) ?? null
+  }
+  /** تعدادُ خطوط الزمن — **للإسقاط إلى القاعدة** وحدَه؛ لا عدّادَ مخزَّن، فكلُّ رقمٍ اشتقاقٌ عند القراءة (§١). */
+  progress(): readonly MaterialProgress[] {
+    return Object.freeze([...this.progressMap.values()])
   }
 
   // ── المعاملة الذرّية ───────────────────────────────────────────────────────

@@ -37,6 +37,8 @@ import { CUSTODY_TABLES } from "./schema/custody.js"
 import { DAILY_LOG_TABLES } from "./schema/dailyLog.js"
 import { INFRASTRUCTURE_TABLES } from "./schema/infrastructure.js"
 import { LEDGER_TABLES } from "./schema/ledger.js"
+import { LIBRARY_TABLES } from "./schema/library.js"
+import { MEDIA_TABLES } from "./schema/media.js"
 import { NOTIFICATIONS_TABLES } from "./schema/notifications.js"
 import { ORG_TABLES } from "./schema/org.js"
 import { SHARED_TABLES } from "./schema/shared.js"
@@ -55,7 +57,9 @@ export const TABLES: readonly TableSpec[] = [
   ...LEDGER_TABLES,
   ...CUSTODY_TABLES,
   ...DAILY_LOG_TABLES,
+  ...MEDIA_TABLES,
   ...NOTIFICATIONS_TABLES,
+  ...LIBRARY_TABLES,
   ...SUPERVISION_TABLES,
   ...SHARED_TABLES,
 ]
