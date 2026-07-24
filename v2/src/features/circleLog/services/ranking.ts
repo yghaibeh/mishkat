@@ -11,6 +11,7 @@
 import type { CircleLogStore } from "../data/store.js"
 import { settingBoolean, settingNumber, settingText, type SessionContext } from "./context.js"
 import { dayKeyIn, shiftDayKey } from "./day.js"
+import { foldMarks } from "./periods.js"
 import type { CircleRef } from "./circleModel.js"
 import type { SessionRow } from "../types.js"
 
@@ -39,11 +40,18 @@ function pct(part: number, whole: number): number {
   return whole === 0 ? 0 : (part * FULL_PCT) / whole
 }
 
-function measure(rows: readonly SessionRow[], gradeMax: number): {
+/** سطرُ جلسةٍ **مع يومِها** — لازمٌ بعد CR-020 لأنّ الحضورَ يُجمع باليوم لا بالفترة. */
+type DatedRow = { readonly dayKey: string; readonly row: SessionRow }
+
+function measure(dated: readonly DatedRow[], gradeMax: number): {
   readonly attendancePct: number
   readonly gradePct: number
 } {
-  const present = rows.filter((r) => r.attendance === "present").length
+  // **CR-٠٢٠ — تُجمع فترات اليوم ولا تُضاعَف**: حلقةٌ تعقد صباحاً ومساءً لا تُقاس على ضِعف
+  // ما تُقاس عليه جارتُها ذاتُ الفترة الواحدة. **والمقياسُ يومٌ × ملتحق، لا سطرُ فترة.**
+  const marks = [...foldMarks(dated, (d) => `${d.dayKey}|${d.row.enrollmentId}`, (d) => d.row.attendance).values()]
+  const rows = dated.map((d) => d.row)
+  const present = marks.filter((m) => m === "present").length
   // **الشكلُ لا يُقصي حلقةً من التقييم** (ق-٩١): جلسةُ منهاجٍ تُسهم بحضورها، وعلاماتُها
   // **غيرُ موجودةٍ** لا صفرٌ كاذب — فمقامُ المتوسّط يعدّ ما سُجِّل وحده.
   const grades = rows
@@ -56,7 +64,9 @@ function measure(rows: readonly SessionRow[], gradeMax: number): {
     .filter((g): g is number => g !== null)
   const gradeSum = grades.reduce((sum, g) => sum + g, 0)
   return {
-    attendancePct: pct(present, rows.length),
+    // **المقامُ أيامٌ × ملتحقين** — والعلاماتُ تبقى على أسطرها كلِّها: **تقييمُ فترتين تقييمان
+    // حقيقيّان** لا تكرارٌ لواحد، ومتوسّطُهما متوسّطٌ لا مضاعفة.
+    attendancePct: pct(present, marks.length),
     // **مطبَّعٌ على الحدّ الأعلى**: النسبةُ لا تفترض «من ١٠» بل تسأل الإعدادَ عن مقامها.
     gradePct: pct(gradeSum, grades.length * gradeMax),
   }
@@ -82,7 +92,9 @@ export function circleRanking(
   const sessions = store.sessions().filter((s) => s.dayKey >= fromDayKey)
 
   const rows = ctx.circles.circlesInScope(scopePath).map((circle: CircleRef): RankRow => {
-    const rows = sessions.filter((s) => s.circleId === circle.id).flatMap((s) => s.rows)
+    const rows = sessions
+      .filter((s) => s.circleId === circle.id)
+      .flatMap((s) => s.rows.map((row): DatedRow => ({ dayKey: s.dayKey, row })))
     if (rows.length === 0) {
       return {
         circleId: circle.id,

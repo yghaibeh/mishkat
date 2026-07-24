@@ -20,6 +20,7 @@ import type { CircleLogStore } from "../data/store.js"
 import { settingBoolean, settingNumber, settingText, type SessionContext } from "./context.js"
 import { dayKeyIn } from "./day.js"
 import { validateRecitation } from "./mushaf.js"
+import { resolvePeriodId } from "./periods.js"
 import type { CircleRef } from "./circleModel.js"
 import type { SessionShapeKind } from "./sessionShape.js"
 import {
@@ -51,6 +52,11 @@ export type RecordSessionInput = {
   readonly circleId: string
   /** لحظةُ الجلسة — ومنها يُشتقّ مفتاحُ اليوم بالمنطقة المضبوطة (لا نصٌّ من العميل). */
   readonly at: Date
+  /**
+   * **CR-٠٢٠** — فترةُ اليوم من القائمة المحصورة. وغيابُها **حالٌ مشروعٌ في شبكةٍ لم تُقسّم
+   * يومَها** (⇒ «اليومُ كلُّه»)، **ورفضٌ مُشخِّصٌ في شبكةٍ قسّمته** (`PERIOD_REQUIRED`).
+   */
+  readonly periodId?: string
   readonly rows: readonly SessionRowInput[]
 }
 
@@ -67,6 +73,8 @@ export type CompanionInput = {
 export type RecordCurriculumSessionInput = {
   readonly circleId: string
   readonly at: Date
+  /** **CR-٠٢٠** — كالشكل الآخر سواءً: **الفترةُ صفةُ الجلسة لا صفةُ شكلها**. */
+  readonly periodId?: string
   readonly companion: CompanionInput
 }
 
@@ -140,6 +148,8 @@ function validateRow(
 type Opened = {
   readonly circle: CircleRef
   readonly dayKey: string
+  /** **CR-٠٢٠** — الفترةُ محسومةٌ قبل بلوغ المستودع: ضلعُ مفتاحٍ لا حقلٌ يُملأ بعد الكتابة. */
+  readonly periodId: string
   readonly existingId: string | null
 }
 
@@ -162,12 +172,17 @@ function identify(
   return logOk(circle)
 }
 
-/** **موضعُ الجلسة في الزمن**: يومُها بالمنطقة المضبوطة، ونافذةُ التأريخ، وقفلُ ما سبق. */
+/**
+ * **موضعُ الجلسة في الزمن**: يومُها بالمنطقة المضبوطة، ونافذةُ التأريخ، **وفترتُها** (CR-020)،
+ * وقفلُ ما سبق. والفترةُ تُحسم **قبل** سؤال المستودع لأنها **ضلعٌ في مفتاحه** — فجلسةُ المساء
+ * لا تُقاس بقفل جلسة الصباح.
+ */
 function locate(
   store: CircleLogStore,
   ctx: SessionContext,
   circle: CircleRef,
   at: Date,
+  periodId: string | undefined,
 ): DayLogResult<Opened> {
   const zone = settingText(ctx, "time.zone", circle.unitPath)
   const dayKey = dayKeyIn(at, zone)
@@ -178,12 +193,15 @@ function locate(
     return logErr("FUTURE_DATING_BLOCKED", dayKey)
   }
 
-  const existing = store.getSession(circle.id, dayKey)
+  const period = resolvePeriodId(store, periodId)
+  if (!period.ok) return period
+
+  const existing = store.getSession(circle.id, dayKey, period.value)
   // **ق-٨ — المقفلةُ لا يُكتب عليها**: حالٌ يُسأل عنه منفذاً، لا حقلٌ يُقرأ من الكيان (G22).
   if (existing !== null && ctx.isSessionLocked(existing.id)) {
     return logErr("SESSION_LOCKED", existing.id)
   }
-  return logOk({ circle, dayKey, existingId: existing?.id ?? null })
+  return logOk({ circle, dayKey, periodId: period.value, existingId: existing?.id ?? null })
 }
 
 /** **الختمُ الواحد**: كلُّ شكلٍ يصل إلى المستودع من هنا — فالكاتبُ واحدٌ بالقياس لا بالنيّة. */
@@ -200,6 +218,7 @@ function seal(
     id: opened.existingId ?? store.nextId("session"),
     circleId: opened.circle.id,
     dayKey: opened.dayKey,
+    periodId: opened.periodId,
     heldAt: at,
     shape,
     rows,
@@ -212,7 +231,8 @@ function seal(
  * **تسجيلُ يومِ حلقةٍ بشكل التحفيظ** (ق-٩٠) — أو استبدالُ ما سُجِّل فيه (upsert).
  *
  * ترتيبُ الحرّاس ملزمٌ ويُختبر بترتيبه: الحلقةُ ⟵ الأرشفةُ ⟵ الشكلُ ⟵ الأسطرُ ⟵ اليومُ ⟵
- * العضويةُ ⟵ التكرارُ ⟵ العلاماتُ والنطاقات. فيُشخَّص الخرقُ الأولُ بسببه لا بسببِ ما بعده.
+ * **الفترةُ** (CR-020) ⟵ القفلُ ⟵ العضويةُ ⟵ التكرارُ ⟵ العلاماتُ والنطاقات. فيُشخَّص الخرقُ
+ * الأولُ بسببه لا بسببِ ما بعده.
  */
 export function recordSession(
   store: CircleLogStore,
@@ -223,7 +243,7 @@ export function recordSession(
   if (!identified.ok) return identified
   if (input.rows.length === 0) return logErr("EMPTY_SESSION", input.circleId)
 
-  const opened = locate(store, ctx, identified.value, input.at)
+  const opened = locate(store, ctx, identified.value, input.at, input.periodId)
   if (!opened.ok) return opened
 
   const roster = new Set(ctx.circles.enrollmentsOf(input.circleId).map((e) => e.id))
@@ -280,7 +300,7 @@ export function recordCurriculumSession(
   const identified = identify(ctx, input.circleId, "curriculum")
   if (!identified.ok) return identified
 
-  const opened = locate(store, ctx, identified.value, input.at)
+  const opened = locate(store, ctx, identified.value, input.at, input.periodId)
   if (!opened.ok) return opened
 
   const companion = validateCompanion(input.companion)

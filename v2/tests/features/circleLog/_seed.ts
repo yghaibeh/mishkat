@@ -61,6 +61,22 @@ export const SEEDED_SURAHS: readonly { readonly id: string; readonly ar: string;
 export const MUSHAF_ID = "hafs"
 export const MUSHAF_PAGES = 604
 
+/**
+ * **CR-٠٢٠ — فتراتُ اليوم صفوفٌ مرجعية** (ق-٨٩): «صباح/مساء» كما قالهما المالكُ نصّاً.
+ * **ولا تُبذَر في `seedWorld`**: شبكةٌ لم تُعلن فتراتٍ هي **التركيبُ الأدنى** (يومٌ غيرُ مقسَّم)،
+ * وهو حالُ ما قبل CR-020 بحرفه — فتُعلَن **عمداً** في الاختبار الذي يقيس القسمة.
+ */
+export const SEEDED_PERIODS: readonly { readonly id: string; readonly ar: string; readonly ordinal: number }[] =
+  Object.freeze([
+    { id: "morning", ar: "صباح", ordinal: 1 },
+    { id: "evening", ar: "مساء", ordinal: 2 },
+  ])
+
+/** إعلانُ فترات الشبكة — صفٌّ صفّاً، كما يُعلَن كتالوجُ المصحف. */
+export function declarePeriods(log: CircleLogStore): void {
+  for (const p of SEEDED_PERIODS) log.savePeriod({ tenantId: log.tenantId, ...p })
+}
+
 /** دليلُ الفاعلين — العالمُ القانونيّ نفسُه، فلا نسخةَ أشخاصٍ ثانية. */
 export function canonicalDirectory(personId: string): Actor | null {
   return buildCanonicalWorld().people.find((p) => p.personId === personId) ?? null
